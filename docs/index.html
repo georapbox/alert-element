@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>&lt;alert-element&gt;</title>
+  <meta name="description" content="A custom element for displaying alerts and toasts.">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="stylesheet" href="lib/highlight/highlight-github.css">
+  <link rel="stylesheet" href="css/water.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="lib/highlight/highlight.min.js" defer></script>
+  <script src="js/main.js" type="module"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => window.hljs.highlightAll());</script>
+</head>
+<body>
+  <noscript>
+    <div class="noscript-banner">
+      This page requires JavaScript to work properly.
+      Please enable JavaScript in your browser settings.
+    </div>
+  </noscript>
+
+  <h1>&lt;alert-element&gt;</h1>
+  <div class="component-description">
+    <p>A custom element for displaying alerts and toasts.</p>
+    <p><a href="https://github.com/georapbox/alert-element" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
+  </div>
+
+  <h2>Examples</h2>
+
+  <ol class="table-of-contents">
+    <li><a href="#example-variants">Variants</a></li>
+    <li><a href="#example-closable">Closable</a></li>
+    <li><a href="#example-duration">Duration</a></li>
+  </ol>
+
+  <h3 id="example-variants">Variants</h3>
+  <p>
+    Set the <code>variant</code> attribute to change the alert’s variant.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="info">
+        <strong>New feature available!</strong><br>
+        You can now schedule reports to be sent automatically to your inbox every week.
+      </alert-element>
+
+      <alert-element open variant="success">
+        <strong>Your profile has been updated</strong><br>
+        All changes have been saved and will take effect immediately.
+      </alert-element>
+
+      <alert-element open variant="neutral">
+        <strong>Scheduled maintenance</strong><br>
+        Our servers will be undergoing maintenance this Saturday from 2 AM to 4 AM UTC.
+      </alert-element>
+
+      <alert-element open variant="warning">
+        <strong>Password expires soon</strong><br>
+        Your current password will expire in 5 days. Please update it to avoid losing access.
+      </alert-element>
+
+      <alert-element open variant="danger">
+        <strong>Failed to connect to database</strong><br>
+        Please check your configuration settings and try again. Contact support if the issue persists.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;alert-element open variant=&quot;info&quot;&gt;
+  &lt;strong&gt;New feature available!&lt;/strong&gt;&lt;br&gt;
+  You can now schedule reports to be sent automatically to your inbox every week.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;success&quot;&gt;
+  &lt;strong&gt;Your profile has been updated&lt;/strong&gt;&lt;br&gt;
+  All changes have been saved and will take effect immediately.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;neutral&quot;&gt;
+  &lt;strong&gt;Scheduled maintenance&lt;/strong&gt;&lt;br&gt;
+  Our servers will be undergoing maintenance this Saturday from 2 AM to 4 AM UTC.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;warning&quot;&gt;
+  &lt;strong&gt;Password expires soon&lt;/strong&gt;&lt;br&gt;
+  Your current password will expire in 5 days. Please update it to avoid losing access.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;danger&quot;&gt;
+  &lt;strong&gt;Failed to connect to database&lt;/strong&gt;&lt;br&gt;
+  Please check your configuration settings and try again. Contact support if the issue persists.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-closable">Closable</h3>
+  <p>
+    Set the <code>closable</code> attribute to display a close button that hides the alert when clicked.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="closable">
+      <button type="button" style="margin: 0;">Show Alert</button>
+
+      <alert-element variant="info" closable style="margin-block-start: 1rem;">
+        <strong>Closable alert</strong><br>
+        Click the close button to hide this alert.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+
+&lt;alert-element variant=&quot;info&quot; closable&gt;
+  &lt;strong&gt;Closable alert&lt;/strong&gt;&lt;br&gt;
+  Click the close button to hide this alert.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('disabled', '');
+  });
+
+  alert.addEventListener('alert-hide', () => {
+    button.removeAttribute('disabled');
+  });
+
+  button.addEventListener('click', () => {
+    alert.open = true;
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-duration">Duration</h3>
+  <p>
+    Set the <code>duration</code> attribute to automatically hide the alert after a specified period of time,
+    unless you interact with it while still open.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="duration">
+      <button style="margin: 0;">Show Alert</button>
+
+      <alert-element variant="info" closable duration="3000" style="margin-block-start: 1rem;">
+        This alert will automatically hide itself after <strong>3 seconds</strong>, unless you interact with it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+
+&lt;alert-element variant=&quot;info&quot; closable duration="3000"&gt;
+  This alert will automatically hide itself after 3 seconds, unless you interact with it.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
+
+  button.addEventListener('click', () => {
+    alert.open = true;
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <h2>License</h2>
+  <p>Licensed under the <a href="https://github.com/georapbox/alert-element/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
+</body>
+</html>

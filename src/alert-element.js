@@ -1,0 +1,583 @@
+// @ts-check
+
+/**
+ * Represents a value that may be of type T, or null.
+ *
+ * @template T
+ * @typedef {T | null} Nullable
+ */
+
+const COMPONENT_NAME = 'alert-element';
+const EVT_ALERT_SHOW = 'alert-show';
+const EVT_ALERT_HIDE = 'alert-hide';
+
+const toastStack = Object.assign(document.createElement('div'), {
+  className: 'alert-toast-stack',
+  style: `
+    position: fixed;
+    top: 0;
+    inset-inline-end: 0;
+    z-index: 1000;
+    width: 28rem;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  `
+});
+
+const styles = /* css */ `
+  :host {
+    display: contents;
+    box-sizing: border-box;
+
+    --alert-close-width: 1.375em;
+    --alert-close-height: 1.375em;
+    --alert-border-color: #e4e4e7;
+    --alert-fg-color: #3f3f46;
+    --alert-bg-color: #ffffff;
+    --alert-border-radius: 0.25rem;
+    --alert-info-color: #0584c7;
+    --alert-success-color: #16a34a;
+    --alert-neutral-color: #52525b;
+    --alert-warning-color: #d87708;
+    --alert-danger-color: #dc2626;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --alert-fg-color: #b6b6be;
+      --alert-bg-color: #252528;
+      --alert-border-color: #36363a;
+      --alert-info-color: #27bbfc;
+      --alert-success-color: #3ae075;
+      --alert-neutral-color: #8e8e9a;
+      --alert-warning-color: #ffbd11;
+      --alert-danger-color: #fe5c5c;
+    }
+  }
+
+  :host *,
+  :host *::before,
+  :host *::after {
+    box-sizing: inherit;
+  }
+
+  :host([hidden]),
+  [hidden],
+  ::slotted([hidden]) {
+    display: none !important;
+  }
+
+  :host(:not([open])) {
+    display: none !important;
+  }
+
+  .alert {
+    display: flex;
+    align-items: center;
+    margin: inherit;
+    border: 1px solid var(--alert-border-color);
+    border-top-width: 3px;
+    border-radius: var(--alert-border-radius);
+    background-color: var(--alert-bg-color);
+  }
+
+  :host([variant='info']) .alert {
+    border-top-color: var(--alert-info-color);
+  }
+
+  :host([variant='success']) .alert {
+    border-top-color: var(--alert-success-color);
+  }
+
+  :host([variant='neutral']) .alert {
+    border-top-color: var(--alert-neutral-color);
+  }
+
+  :host([variant='warning']) .alert {
+    border-top-color: var(--alert-warning-color);
+  }
+
+  :host([variant='danger']) .alert {
+    border-top-color: var(--alert-danger-color);
+  }
+
+  .alert__icon {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    font-size: inherit;
+  }
+
+  .alert--with-icon .alert__icon {
+    margin-inline-start: 1rem;
+  }
+
+  slot[name='icon'] > svg {
+    display: block;
+    margin-inline-start: 3rem;
+  }
+
+  :host([variant='info']) .alert__icon {
+    color: var(--alert-info-color);
+  }
+
+  :host([variant='success']) .alert__icon {
+    color: var(--alert-success-color);
+  }
+
+  :host([variant='neutral']) .alert__icon {
+    color: var(--alert-neutral-color);
+  }
+
+  :host([variant='warning']) .alert__icon {
+    color: var(--alert-warning-color);
+  }
+
+  :host([variant='danger']) .alert__icon {
+    color: var(--alert-danger-color);
+  }
+
+  .alert__message {
+    flex: 1 1 auto;
+    padding: 1rem;
+    overflow: hidden;
+    color: var(--alert-fg-color);
+    line-height: 1.5;
+  }
+
+  .alert__close {
+    display: flex;
+    align-items: center;
+    margin-inline-end:  1rem;
+    padding: 0.5rem;
+    border: none;
+    line-height: 0;
+    background: transparent;
+    color: var(--alert-fg-color);
+    font-size: inherit;
+    cursor: pointer;
+  }
+
+  :host(:not([closable])) .alert__close {
+    display: none !important;
+  }
+`;
+
+const template = document.createElement('template');
+
+template.innerHTML = /* html */ `
+  <style>${styles}</style>
+  <div class="alert" part="base" role="alert">
+    <div class="alert__icon" part="icon">
+      <slot name="icon"></slot>
+    </div>
+    <div class="alert__message" part="message" aria-live="polite">
+      <slot></slot>
+    </div>
+    <button type="button" class="alert__close" part="close" aria-label="Close">
+      <slot name="close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.125em" height="1.125em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        </svg>
+      </slot>
+    </button>
+  </div>
+`;
+
+/**
+ * @summary A custom element for displaying alerts and toasts.
+ * @documentation https://github.com/georapbox/alert-element
+ *
+ * @tagname alert-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
+ * @extends HTMLElement
+ *
+ * @property {boolean} closable - Indicates if the alert can be closed by the user.
+ * @property {boolean} open - Indicates if the alert is currently open.
+ * @property {number} duration - The duration in milliseconds before the alert automatically closes. Default is `Infinity`.
+ * @property {string} variant - The variant of the alert, which can be used to style it differently (e.g., 'info', 'success', 'warning', 'danger').
+ * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
+ *
+ * @attribute {boolean} closable - Reflects the closable property.
+ * @attribute {boolean} open - Reflects the open property.
+ * @attribute {number} duration - Reflects the duration property.
+ * @attribute {string} variant - Reflects the variant property.
+ * @attribute {string} close-label - Reflects the closeLabel property.
+ *
+ * @slot - The default slot for the alert message.
+ * @slot icon - A named slot for the alert icon.
+ * @slot close - A named slot for the close button's content.
+ *
+ * @csspart base - The base element of the alert.
+ * @csspart icon - The icon element of the alert.
+ * @csspart message - The message element of the alert.
+ * @csspart close - The close button element of the alert.
+ *
+ * @cssproperty --alert-close-width - The width of the close button.
+ * @cssproperty --alert-close-height - The height of the close button.
+ * @cssproperty --alert-fg-color - The foreground color of the alert.
+ * @cssproperty --alert-bg-color - The background color of the alert.
+ * @cssproperty --alert-border-radius - The border radius of the alert.
+ * @cssproperty --alert-border-color - The border color of the alert.
+ * @cssproperty --alert-close-focus-color - The focus color of the close button.
+ * @cssproperty --alert-info-color - The color variant for info alerts.
+ * @cssproperty --alert-success-color - The color variant for success alerts.
+ * @cssproperty --alert-neutral-color - The color variant for neutral alerts.
+ * @cssproperty --alert-warning-color - The color variant for warning alerts.
+ * @cssproperty --alert-danger-color - The color variant for danger alerts.
+ *
+ * @event alert-show - Fired when the alert is shown.
+ * @event alert-hide - Fired when the alert is hidden.
+ *
+ * @method defineCustomElement - Static method. Defines a custom element with the given name.
+ * @method show - Shows the alert; similar to setting the `open` attribute to true.
+ * @method hide - Hides the alert; similar to setting the `open` attribute to false.
+ */
+class AlertElement extends HTMLElement {
+  /** @type {Nullable<HTMLElement>} */
+  #baseEl = null;
+
+  /** @type {Nullable<HTMLButtonElement>} */
+  #closeBtn = null;
+
+  /** @type {Nullable<HTMLSlotElement>} */
+  #iconSlot = null;
+
+  /** @type {Nullable<HTMLSlotElement>} */
+  #closeSlotEl = null;
+
+  /** @type {number | undefined} */
+  #autoHideTimeout = undefined;
+
+  constructor() {
+    super();
+
+    if (!this.shadowRoot) {
+      const shadowRoot = this.attachShadow({ mode: 'open' });
+      shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+  }
+
+  static get observedAttributes() {
+    return ['open', 'duration', 'close-label'];
+  }
+
+  /**
+   * Lifecycle method that is called when attributes are changed, added, removed, or replaced.
+   *
+   * @param {string} name - The name of the attribute.
+   * @param {string} oldValue - The old value of the attribute.
+   * @param {string} newValue - The new value of the attribute.
+   */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'open' && oldValue !== newValue) {
+      this.#handleOpenAttributeChange();
+    }
+
+    if (name === 'duration' && oldValue !== newValue) {
+      this.#restartAutoHide();
+    }
+
+    if (name === 'close-label' && oldValue !== newValue) {
+      this.#updateCloseLabel();
+    }
+  }
+
+  /**
+   * Indicates if the alert element can be closed by the user.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute closable - Reflects the closable property.
+   */
+  get closable() {
+    return this.hasAttribute('closable');
+  }
+
+  set closable(value) {
+    this.toggleAttribute('closable', !!value);
+  }
+
+  /**
+   * Indicates if the alert element is open.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute open - Reflects the open property.
+   */
+  get open() {
+    return this.hasAttribute('open');
+  }
+
+  set open(value) {
+    this.toggleAttribute('open', !!value);
+  }
+
+  /**
+   * The duration in milliseconds before the alert automatically closes.
+   *
+   * @type {number}
+   * @default Infinity
+   * @attribute duration - Reflects the duration property.
+   */
+  get duration() {
+    return Number(this.getAttribute('duration')) || Infinity;
+  }
+
+  set duration(value) {
+    this.setAttribute('duration', value != null ? value.toString() : value);
+  }
+
+  /**
+   * The variant of the alert, which can be used to style it differently
+   * (e.g., 'info', 'success', 'warning', 'danger').
+   *
+   * @type {string}
+   * @default ''
+   * @attribute variant - Reflects the variant property.
+   */
+  get variant() {
+    return this.getAttribute('variant') || '';
+  }
+
+  set variant(value) {
+    this.setAttribute('variant', value);
+  }
+
+  /**
+   * The label of the default close button, used as the aria-label attribute of the close button.
+   * If user provides text content for the close button using the `close` slot,
+   * this property is ignored and the aria-label attribute is removed.
+   *
+   * @type {string}
+   * @default 'Close'
+   * @attribute close-label - Reflects the closeLabel property.
+   */
+  get closeLabel() {
+    return this.getAttribute('close-label') || 'Close';
+  }
+
+  set closeLabel(value) {
+    this.setAttribute('close-label', value != null ? value.toString() : value);
+  }
+
+  /**
+   * Lifecycle method that is called when the element is added to the DOM.
+   */
+  connectedCallback() {
+    this.#upgradeProperty('closable');
+    this.#upgradeProperty('open');
+    this.#upgradeProperty('duration');
+    this.#upgradeProperty('variant');
+    this.#upgradeProperty('closeLabel');
+
+    this.#baseEl = this.shadowRoot?.querySelector('.alert') || null;
+    this.#iconSlot = this.shadowRoot?.querySelector('slot[name="icon"]') || null;
+    this.#closeBtn = this.shadowRoot?.querySelector('button') || null;
+    this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') || null;
+
+    this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
+    this.#iconSlot?.addEventListener('slotchange', this.#handleIconSlotChange);
+    this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
+    this.addEventListener('mouseenter', this.#handleMouseEnter);
+    this.addEventListener('mouseleave', this.#handleMouseLeave);
+  }
+
+  /**
+   * Lifecycle method that is called when the element is removed from the DOM.
+   */
+  disconnectedCallback() {
+    this.#pauseAutoHide();
+    this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
+    this.#iconSlot?.removeEventListener('slotchange', this.#handleIconSlotChange);
+    this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
+    this.removeEventListener('mouseenter', this.#handleMouseEnter);
+    this.removeEventListener('mouseleave', this.#handleMouseLeave);
+  }
+
+  /**
+   * Handles the change of the open attribute.
+   * If the open attribute is set to true, the alert is shown and an event is dispatched.
+   * If the open attribute is set to false, the alert is hidden and an event is dispatched.
+   */
+  #handleOpenAttributeChange() {
+    if (this.open) {
+      this.show();
+      this.dispatchEvent(new Event(EVT_ALERT_SHOW, { bubbles: true, composed: true }));
+      this.#restartAutoHide();
+    } else {
+      this.hide();
+      this.#pauseAutoHide();
+      this.dispatchEvent(new Event(EVT_ALERT_HIDE, { bubbles: true, composed: true }));
+    }
+  }
+
+  /**
+   * Pauses the auto-hide timeout if it is set.
+   * This is useful when the user hovers over the alert to prevent it from closing.
+   */
+  #pauseAutoHide() {
+    clearTimeout(this.#autoHideTimeout);
+  }
+
+  /**
+   * Restarts the auto-hide timeout if the alert is open and the duration is not infinite.
+   * This is useful when the user hovers out of the alert to allow it to close automatically.
+   */
+  #restartAutoHide() {
+    this.#pauseAutoHide();
+    if (this.open && this.duration < Infinity) {
+      this.#autoHideTimeout = window.setTimeout(() => this.hide(), this.duration);
+    }
+  }
+
+  /**
+   * Handles the click event on the close button.
+   * If the alert is closable, it hides the alert.
+   */
+  #handleCloseBtnClick = () => {
+    this.closable && this.hide();
+  };
+
+  /**
+   * Handles the mouse enter event on the alert.
+   */
+  #handleMouseEnter = () => {
+    this.#pauseAutoHide();
+  };
+
+  /**
+   * Handles the mouse leave event on the alert.
+   */
+  #handleMouseLeave = () => {
+    this.#restartAutoHide();
+  };
+
+  /**
+   * Handles the slot change event on the icon slot.
+   */
+  #handleIconSlotChange = () => {
+    const assignedElements = this.#iconSlot?.assignedElements() || [];
+    const hasContent = assignedElements.length > 0;
+    this.#baseEl?.classList.toggle('alert--with-icon', !!hasContent);
+  };
+
+  /**
+   * Handles the slotchange event of the close slot.
+   */
+  #handleCloseSlotChange = () => {
+    this.#updateCloseLabel();
+  };
+
+  /**
+   * Updates the aria-label attribute of the close button.
+   * If the slot for the close button has text content, the aria-label attribute is removed to allow the text content to be used as the label.
+   * Otherwise, the aria-label attribute is set to the `closeLabel` property.
+   */
+  #updateCloseLabel() {
+    const closeButtonEl = this.shadowRoot?.querySelector('.alert__close');
+
+    if (!closeButtonEl) {
+      return;
+    }
+
+    /** @type {Nullable<HTMLSlotElement>} */
+    const closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') || null;
+    const assignedElements = closeSlotEl?.assignedElements() || [];
+    const hasTextContent = assignedElements?.some(el => el.textContent?.replace(/\s/g, '') !== '');
+
+    hasTextContent
+      ? closeButtonEl.removeAttribute('aria-label')
+      : closeButtonEl.setAttribute('aria-label', this.closeLabel);
+  }
+
+  /**
+   * Shows the alert element.
+   */
+  show() {
+    if (this.open) {
+      return;
+    }
+
+    this.open = true;
+  }
+
+  /**
+   * Hides the alert element.
+   */
+  hide() {
+    if (!this.open) {
+      return;
+    }
+
+    this.open = false;
+  }
+
+  /**
+   * Displays the alert as a toast notification.
+   * This method appends the alert to a toast stack and automatically hides it after the specified duration.
+   * If the toast stack is not already in the DOM, it will be appended to the body.
+   */
+  toast() {
+    return new Promise(resolve => {
+      if (toastStack.parentElement === null) {
+        document.body.append(toastStack);
+      }
+
+      toastStack.appendChild(this);
+      this.show();
+      toastStack.scrollTop = toastStack.scrollHeight;
+
+      this.addEventListener(
+        EVT_ALERT_HIDE,
+        () => {
+          toastStack.removeChild(this);
+          resolve(undefined);
+
+          if (toastStack.querySelector(COMPONENT_NAME) === null) {
+            toastStack.remove();
+          }
+        },
+        {
+          once: true
+        }
+      );
+    });
+  }
+
+  /**
+   * This is to safe guard against cases where, for instance, a framework may have added the element to the page and set a
+   * value on one of its properties, but lazy loaded its definition. Without this guard, the upgraded element would miss that
+   * property and the instance property would prevent the class property setter from ever being called.
+   *
+   * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
+   *
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel'} prop - The property name to upgrade.
+   */
+  #upgradeProperty(prop) {
+    /** @type {any} */
+    const instance = this;
+
+    if (Object.prototype.hasOwnProperty.call(instance, prop)) {
+      const value = instance[prop];
+      delete instance[prop];
+      instance[prop] = value;
+    }
+  }
+
+  /**
+   * Defines a custom element with the given name.
+   * The name must contain a dash (-).
+   *
+   * @param {string} [elementName] - The name of the custom element.
+   */
+  static defineCustomElement(elementName = COMPONENT_NAME) {
+    if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
+      window.customElements.define(elementName, AlertElement);
+    }
+  }
+}
+
+export { AlertElement };

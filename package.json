@@ -1,0 +1,67 @@
+{
+  "name": "@georapbox/alert-element",
+  "version": "1.0.0",
+  "description": "A custom element for displaying alerts and toasts.",
+  "main": "dist/alert-element.js",
+  "module": "dist/alert-element.js",
+  "unpkg": "dist/alert-element.js",
+  "type": "module",
+  "types": "dist/alert-element.d.ts",
+  "files": [
+    "/src",
+    "/dist"
+  ],
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier --ignore-unknown --write .",
+    "test": "web-test-runner",
+    "test:watch": "npm run test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
+    "types": "tsc --project tsconfig.json",
+    "dev:esbuild": "node ./scripts/dev.mjs",
+    "dev": "npm-run-all clean dev:esbuild",
+    "serve:dev": "web-dev-server --node-resolve --open /docs/ --watch",
+    "start": "npm-run-all --parallel \"serve:dev -- {1}\" dev",
+    "build:esbuild": "node ./scripts/build.mjs",
+    "build": "npm-run-all clean build:esbuild",
+    "clean": "rimraf dist",
+    "prepare": "npm-run-all clean lint test build types"
+  },
+  "keywords": [
+    "custom element",
+    "web component"
+  ],
+  "author": {
+    "name": "George Raptis",
+    "email": "georapbox@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georapbox/alert-element.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/georapbox/alert-element/issues"
+  },
+  "homepage": "https://github.com/georapbox/alert-element#readme",
+  "devDependencies": {
+    "@eslint/js": "~9.26.0",
+    "@esm-bundle/chai": "~4.3.4",
+    "@open-wc/testing": "~4.0.0",
+    "@web/dev-server": "~0.4.6",
+    "@web/test-runner": "~0.20.1",
+    "@web/test-runner-playwright": "~0.11.0",
+    "esbuild": "~0.25.4",
+    "eslint": "~9.26.0",
+    "eslint-plugin-wc": "~3.0.1",
+    "globals": "~16.1.0",
+    "npm-run-all": "~4.1.5",
+    "prettier": "~3.5.3",
+    "rimraf": "~6.0.1",
+    "sinon": "~20.0.0",
+    "typescript": "~5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
