@@ -32,17 +32,15 @@ const styles = /* css */ `
     display: contents;
     box-sizing: border-box;
 
-    --alert-close-width: 1.375em;
-    --alert-close-height: 1.375em;
-    --alert-border-color: #e4e4e7;
+    --alert-border-radius: 0.25rem;
     --alert-fg-color: #3f3f46;
     --alert-bg-color: #ffffff;
-    --alert-border-radius: 0.25rem;
-    --alert-info-color: #0584c7;
-    --alert-success-color: #16a34a;
-    --alert-neutral-color: #52525b;
-    --alert-warning-color: #d87708;
-    --alert-danger-color: #dc2626;
+    --alert-border-color: #e4e4e7;
+    --alert-info-variant-color: #0584c7;
+    --alert-success-variant-color: #16a34a;
+    --alert-neutral-variant-color: #52525b;
+    --alert-warning-variant-color: #d87708;
+    --alert-danger-variant-color: #dc2626;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -50,11 +48,11 @@ const styles = /* css */ `
       --alert-fg-color: #b6b6be;
       --alert-bg-color: #252528;
       --alert-border-color: #36363a;
-      --alert-info-color: #27bbfc;
-      --alert-success-color: #3ae075;
-      --alert-neutral-color: #8e8e9a;
-      --alert-warning-color: #ffbd11;
-      --alert-danger-color: #fe5c5c;
+      --alert-info-variant-color: #27bbfc;
+      --alert-success-variant-color: #3ae075;
+      --alert-neutral-variant-color: #8e8e9a;
+      --alert-warning-variant-color: #ffbd11;
+      --alert-danger-variant-color: #fe5c5c;
     }
   }
 
@@ -85,23 +83,23 @@ const styles = /* css */ `
   }
 
   :host([variant='info']) .alert {
-    border-top-color: var(--alert-info-color);
+    border-top-color: var(--alert-info-variant-color);
   }
 
   :host([variant='success']) .alert {
-    border-top-color: var(--alert-success-color);
+    border-top-color: var(--alert-success-variant-color);
   }
 
   :host([variant='neutral']) .alert {
-    border-top-color: var(--alert-neutral-color);
+    border-top-color: var(--alert-neutral-variant-color);
   }
 
   :host([variant='warning']) .alert {
-    border-top-color: var(--alert-warning-color);
+    border-top-color: var(--alert-warning-variant-color);
   }
 
   :host([variant='danger']) .alert {
-    border-top-color: var(--alert-danger-color);
+    border-top-color: var(--alert-danger-variant-color);
   }
 
   .alert__icon {
@@ -109,6 +107,7 @@ const styles = /* css */ `
     display: flex;
     align-items: center;
     font-size: inherit;
+    line-height: 0;
   }
 
   .alert--with-icon .alert__icon {
@@ -121,23 +120,23 @@ const styles = /* css */ `
   }
 
   :host([variant='info']) .alert__icon {
-    color: var(--alert-info-color);
+    color: var(--alert-info-variant-color);
   }
 
   :host([variant='success']) .alert__icon {
-    color: var(--alert-success-color);
+    color: var(--alert-success-variant-color);
   }
 
   :host([variant='neutral']) .alert__icon {
-    color: var(--alert-neutral-color);
+    color: var(--alert-neutral-variant-color);
   }
 
   :host([variant='warning']) .alert__icon {
-    color: var(--alert-warning-color);
+    color: var(--alert-warning-variant-color);
   }
 
   :host([variant='danger']) .alert__icon {
-    color: var(--alert-danger-color);
+    color: var(--alert-danger-variant-color);
   }
 
   .alert__message {
@@ -215,25 +214,23 @@ template.innerHTML = /* html */ `
  * @csspart message - The message element of the alert.
  * @csspart close - The close button element of the alert.
  *
- * @cssproperty --alert-close-width - The width of the close button.
- * @cssproperty --alert-close-height - The height of the close button.
  * @cssproperty --alert-fg-color - The foreground color of the alert.
  * @cssproperty --alert-bg-color - The background color of the alert.
  * @cssproperty --alert-border-radius - The border radius of the alert.
  * @cssproperty --alert-border-color - The border color of the alert.
- * @cssproperty --alert-close-focus-color - The focus color of the close button.
- * @cssproperty --alert-info-color - The color variant for info alerts.
- * @cssproperty --alert-success-color - The color variant for success alerts.
- * @cssproperty --alert-neutral-color - The color variant for neutral alerts.
- * @cssproperty --alert-warning-color - The color variant for warning alerts.
- * @cssproperty --alert-danger-color - The color variant for danger alerts.
+ * @cssproperty --alert-info-variant-color - The color variant for info alerts.
+ * @cssproperty --alert-success-variant-color - The color variant for success alerts.
+ * @cssproperty --alert-neutral-variant-color - The color variant for neutral alerts.
+ * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
+ * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
  * @event alert-show - Fired when the alert is shown.
  * @event alert-hide - Fired when the alert is hidden.
  *
  * @method defineCustomElement - Static method. Defines a custom element with the given name.
- * @method show - Shows the alert; similar to setting the `open` attribute to true.
- * @method hide - Hides the alert; similar to setting the `open` attribute to false.
+ * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
+ * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
+ * @method toast - Instance method. Displays the alert as a toast notification.
  */
 class AlertElement extends HTMLElement {
   /** @type {Nullable<HTMLElement>} */

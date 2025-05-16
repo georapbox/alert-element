@@ -5,6 +5,10 @@ import { AlertElement } from '../src/alert-element.js';
 AlertElement.defineCustomElement();
 
 describe('alert-element', () => {
+  beforeEach(() => {
+    document.querySelector('.alert-toast-stack')?.remove();
+  });
+
   afterEach(() => {
     fixtureCleanup();
   });
@@ -225,6 +229,76 @@ describe('alert-element', () => {
       el.hide();
       await elementUpdated(el);
       expect(el.open).to.be.false;
+    });
+  });
+
+  describe('mouse events', () => {
+    it('should prevent auto-hide on mouse enter and resume on mouse out', async () => {
+      const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
+      const mouseEnterEvent = new MouseEvent('mouseenter', { bubbles: true });
+      const mouseOutEvent = new MouseEvent('mouseleave', { bubbles: true });
+      el.dispatchEvent(mouseEnterEvent);
+      await aTimeout(200);
+      expect(el.open).to.be.true;
+      el.dispatchEvent(mouseOutEvent);
+      await aTimeout(200);
+      expect(el.open).to.be.false;
+    });
+  });
+
+  describe('duration', () => {
+    it('should hide alert after duration expires', async () => {
+      const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
+      expect(el.open).to.be.true;
+      await aTimeout(200);
+      expect(el.open).to.be.false;
+    });
+  });
+
+  describe('closable', () => {
+    it('should close alert when clicking on close button', async () => {
+      const el = await fixture(html`<alert-element closable></alert-element>`);
+      el.setAttribute('open', '');
+      await elementUpdated(el);
+      const closeButton = el.shadowRoot.querySelector('.alert__close');
+      closeButton.click();
+      await elementUpdated(el);
+      expect(el.open).to.be.false;
+    });
+
+    it('should not close alert when clicking on close button if closable is false', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.setAttribute('open', '');
+      await elementUpdated(el);
+      const closeButton = el.shadowRoot.querySelector('.alert__close');
+      closeButton.click();
+      await elementUpdated(el);
+      expect(el.open).to.be.true;
+    });
+  });
+
+  describe('toast', () => {
+    it('toast alert and hide it manually', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.toast();
+      await elementUpdated(el);
+      expect(el.open).to.be.true;
+      expect([...el.parentElement.classList]).to.include('alert-toast-stack');
+      el.open = false;
+      await elementUpdated(el);
+      expect(el.open).to.be.false;
+      expect(document.querySelector('.alert-toast-stack')).to.be.null;
+    });
+
+    it('toast alert and hide it automatically after duration expires', async () => {
+      const el = await fixture(html`<alert-element duration="100"></alert-element>`);
+      el.toast();
+      await elementUpdated(el);
+      expect(el.open).to.be.true;
+      expect([...el.parentElement.classList]).to.include('alert-toast-stack');
+      await aTimeout(200);
+      expect(el.open).to.be.false;
+      expect(document.querySelector('.alert-toast-stack')).to.be.null;
     });
   });
 });
