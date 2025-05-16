@@ -33,8 +33,12 @@
 
   <ol class="table-of-contents">
     <li><a href="#example-variants">Variants</a></li>
+    <li><a href="#example-icons">Icons</a></li>
     <li><a href="#example-closable">Closable</a></li>
     <li><a href="#example-duration">Duration</a></li>
+    <li><a href="#example-custom-variant">Custom variant</a></li>
+    <li><a href="#example-custom-styling">Custom styling</a></li>
+    <li><a href="#example-toast-notifications">Toast notifications</a></li>
   </ol>
 
   <h3 id="example-variants">Variants</h3>
@@ -96,6 +100,41 @@
 &lt;alert-element open variant=&quot;danger&quot;&gt;
   &lt;strong&gt;Failed to connect to database&lt;/strong&gt;&lt;br&gt;
   Please check your configuration settings and try again. Contact support if the issue persists.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-icons">Icons</h3>
+  <p>
+    Use the <code>icon</code> slot to display an icon next to the alert message.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="success">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+          </svg>
+        </span>
+        <strong>Your profile has been updated!</strong><br>
+        All changes have been saved and will take effect immediately.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;alert-element open variant="success"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
+      &lt;path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;strong&gt;Your profile has been updated!&lt;/strong&gt;&lt;br&gt;
+  All changes have been saved and will take effect immediately.
 &lt;/alert-element&gt;</code></pre>
     </details>
   </div>
@@ -176,6 +215,141 @@
     alert.open = true;
   });
 &lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-custom-variant">Custom variant</h3>
+  <p>
+    You can create custom variants by using the <code>variant</code> attribute with a custom value
+    and applying your own CSS styles.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="custom">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/>
+          </svg>
+        </span>
+        <strong>Custom variant alert</strong><br>
+        This alert uses a custom variant and style.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;alert-element open variant="custom"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;strong&gt;Custom variant alert&lt;/strong&gt;&lt;br&gt;
+  This alert uses a custom variant and style.
+&lt;/alert-element&gt;
+
+&lt;style&gt;
+  alert-element {
+    --alert-custom-variant-color: #ec4899;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    alert-element {
+      --alert-custom-variant-color: #fe94cd;
+    }
+  }
+
+  alert-element[variant="custom"]::part(base) {
+    border-top-color: var(--alert-custom-variant-color);
+  }
+
+  alert-element[variant="custom"]::part(icon) {
+    color: var(--alert-custom-variant-color);
+  }
+&lt;/style&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-custom-styling">Custom styling</h3>
+  <p>
+    You can apply custom styles to the alert element using CSS custom properties and the <code>::part()</code> pseudo-element.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open closable class="custom-alert">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+          </svg>
+        </span>
+        <strong>Custom styling alert</strong><br>
+        This alert has custom styling applied to it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code>&lt;alert-element open closable class="custom-alert"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;strong&gt;Custom styling alert&lt;/strong&gt;&lt;br&gt;
+  This alert has custom styling applied to it.
+&lt;/alert-element&gt;
+
+&lt;style&gt;
+  .custom-alert {
+    --alert-bg-color: #cfe2ff;
+    --alert-fg-color: #072c65;
+    --alert-border-color: #9ec5fe;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .custom-alert {
+      --alert-bg-color: #061633;
+      --alert-fg-color: #6ea8fe;
+      --alert-border-color: #0a4298;
+    }
+  }
+
+  .custom-alert::part(base) {
+    border-width: 1px;
+  }
+
+  .custom-alert::part(icon) {
+    color: var(--alert-fg-color);
+  }
+
+  .custom-alert::part(close) {
+    background-color: var(--alert-fg-color);
+    color: var(--alert-bg-color);
+    border-radius: 0.25rem;
+    padding: 0.375rem;
+  }
+&lt;/style&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-toast-notifications">Toast notifications</h3>
+  <p>
+    To display an alert as a toast notification, create the alert element and call its <code>toast()</code> method.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+
+    </browser-window>
+
+    <details>
+      <summary disabled>Source code</summary>
+
+<pre><code></code></pre>
     </details>
   </div>
 

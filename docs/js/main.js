@@ -15,7 +15,7 @@ document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
 
-// Example 2 - Closable Alert
+// Closable Alert
 (function () {
   const button = document.querySelector('[data-example="closable"] > button');
   const alert = document.querySelector('[data-example="closable"] > alert-element');
@@ -33,7 +33,7 @@ document.querySelectorAll('.card').forEach(el => {
   });
 })();
 
-// Example 3 - Alert with duration
+// Alert with duration
 (function () {
   const button = document.querySelector('[data-example="duration"] > button');
   const alert = document.querySelector('[data-example="duration"] > alert-element');

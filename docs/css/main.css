@@ -52,10 +52,6 @@
   font-size: 0.875rem;
 }
 
-/* .table-of-contents {
-  columns: 300px 2;
-} */
-
 @media (prefers-color-scheme: dark) {
   :root {
     --card-bg-color: #283647;
@@ -77,4 +73,57 @@ browser-window::part(main) {
 
 browser-window alert-element:not(:last-child) {
   margin-block-end: 1rem;
+}
+
+/* Custom variant */
+alert-element {
+  --alert-custom-variant-color: #823ff2;
+}
+
+@media (prefers-color-scheme: dark) {
+  alert-element {
+    --alert-custom-variant-color: #b5a1ff;
+  }
+}
+
+alert-element[variant="custom"]::part(base) {
+  border-top-color: var(--alert-custom-variant-color);
+}
+
+alert-element[variant="custom"]::part(icon) {
+  color: var(--alert-custom-variant-color);
+}
+
+/* Custom alert styles */
+.custom-alert {
+  --alert-bg-color: #cfe2ff;
+  --alert-fg-color: #072c65;
+  --alert-border-color: #9ec5fe;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-alert {
+    --alert-bg-color: #061633;
+    --alert-fg-color: #6ea8fe;
+    --alert-border-color: #0a4298;
+  }
+}
+
+.custom-alert::part(base) {
+  border-width: 1px;
+}
+
+.custom-alert::part(icon) {
+  color: var(--alert-fg-color);
+}
+
+.custom-alert::part(close) {
+  background-color: var(--alert-fg-color);
+  color: var(--alert-bg-color);
+  border-radius: 0.25rem;
+  padding: 0.375rem;
+}
+
+.alert-toast-stack alert-element {
+  margin: 1rem;
 }
