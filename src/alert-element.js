@@ -18,7 +18,7 @@ const toastStack = Object.assign(document.createElement('div'), {
     top: 0;
     inset-inline-end: 0;
     z-index: 1000;
-    width: 28rem;
+    width: 30rem;
     max-width: 100%;
     max-height: 100%;
     overflow: auto;
@@ -141,7 +141,7 @@ const styles = /* css */ `
 
   .alert__message {
     flex: 1 1 auto;
-    padding: 1rem;
+    padding: 1.25rem;
     overflow: hidden;
     color: var(--alert-fg-color);
     line-height: 1.5;
@@ -178,7 +178,7 @@ template.innerHTML = /* html */ `
     </div>
     <button type="button" class="alert__close" part="close" aria-label="Close">
       <slot name="close">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.125em" height="1.125em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
         </svg>
       </slot>
