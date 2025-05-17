@@ -100,7 +100,7 @@ By default, the component comes with some basic default styling. However, you ca
 | `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='alert-element' |
 | `show`<sup>1</sup> | Instance | Shows the alert. | - |
 | `hide`<sup>1</sup> | Instance | Hides the alert. | - |
-| `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. | - |
+| `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | - |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('alert-element').then(() => { /* call methods here */ });`
 
@@ -110,6 +110,106 @@ By default, the component comes with some basic default styling. However, you ca
 | ---- | ----------- | ------------ |
 | `alert-show` | Emitted when the alert is shown. | - |
 | `alert-hide` | Emitted when the alert is hidden. | - |
+
+## Toast notifications
+
+To display an alert as a toast notification, create an instance of the alert element and call the `toast` method.
+This will move the alert out of its initial position in the DOM into the toast stack and display it as a toast notification.
+When there are more than one toast notifications, they will stack vertically in the toast stack.
+The toast stack is a container element that is created and managed internally by the alert element and it will be 
+added in the DOM when there is at least one toast notification to display. If there are no toast notifications to display,
+the toast stack will be removed from the DOM.
+
+By default, the toast stack is a fixed positioned element that is displayed at the top and `inset-inline-end` corner of the viewport,
+but you can override its position by targeting `.alert-toast-stack` class in your stylesheet.
+
+For example, to display the toast stack at the top and `inset-inline-start` corner of the viewport, you can use the following CSS:
+
+```css
+.alert-toast-stack {
+  inset-inline-start: 0 !important;
+  inset-inline-end: auto !important;
+}
+```
+
+> [!NOTE]
+> The toast stack uses inline styles, which means you'll need to use `!important` in your CSS to override them.
+> This is a limitation of the current implementation and may be improved in the future.
+
+The default styles of the toast stack are as follows:
+
+```css
+.alert-toast-stack {
+  position: fixed;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: 1000;
+  width: 30rem;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+```
+
+### Creating toasts imperatively
+
+For convenience, you can create a utility function that creates a toast notification imperatively,
+instead of creating the alert elements in your markup. To do this, you can generate the alert element
+using JavaScript and call the `toast` method on it.
+
+```html
+<button type="button">Create toast</button>
+
+<style>
+  .alert-toast-stack alert-element {
+    maring: 1rem;
+  }
+</style>
+
+<script>
+  const button = document.querySelector('button');
+
+  button.addEventListener('click', () => {
+    toastify('This is a toast notification', {
+      variant: 'success',
+      duration: 3000,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+      </svg>`
+    });
+  });
+
+  function escapeHtml(html) {
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+
+  function toastify(message, options = {}) {
+    const defaults = {
+      duration: 5000,
+      variant: 'neutral',
+      icon: ''
+    };
+
+    options = { ...defaults, ...options };
+
+    const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
+
+    const alert = Object.assign(document.createElement('alert-element'), {
+      closable: true,
+      duration: options.duration,
+      variant: options.variant,
+      innerHTML: `${icon}${escapeHtml(message)}`
+    });
+
+    return alert.toast();
+  }
+</script>
+```
 
 ## Changelog
 
