@@ -1,5 +1,9 @@
 // @ts-check
 
+import { createToastStack } from './toast-stack.js';
+
+const toastStack = createToastStack();
+
 /**
  * Represents a value that may be of type T, or null.
  *
@@ -10,22 +14,6 @@
 const COMPONENT_NAME = 'alert-element';
 const EVT_ALERT_SHOW = 'alert-show';
 const EVT_ALERT_HIDE = 'alert-hide';
-
-const toastStack = Object.assign(document.createElement('div'), {
-  className: 'alert-toast-stack',
-  style: `
-    position: fixed;
-    top: 0;
-    inset-inline-end: 0;
-    z-index: 1000;
-    width: 30rem;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-  `
-});
 
 const styles = /* css */ `
   :host {

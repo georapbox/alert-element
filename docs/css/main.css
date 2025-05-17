@@ -126,6 +126,5 @@ alert-element[variant="custom"]::part(icon) {
 
 /* Toast alerts */
 .alert-toast-stack alert-element {
-  margin: 1rem;
   font-size: 90%;
 }

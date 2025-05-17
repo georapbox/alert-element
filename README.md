@@ -126,20 +126,20 @@ but you can override its position by targeting `.alert-toast-stack` class in you
 For example, to display the toast stack at the top and `inset-inline-start` corner of the viewport, you can use the following CSS:
 
 ```css
-.alert-toast-stack {
-  inset-inline-start: 0 !important;
-  inset-inline-end: auto !important;
+.alert-toast-stack::part(base) {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
 }
 ```
 
 > [!NOTE]
-> The toast stack uses inline styles, which means you'll need to use `!important` in your CSS to override them.
-> This is a limitation of the current implementation and may be improved in the future.
+> The toast stack has a shadow DOM root, so you need to use the `::part` pseudo-element to style it.
+> The reason for this is to encapsulate the styles of the toast stack and prevent them from leaking into the rest of your application.
 
 The default styles of the toast stack are as follows:
 
 ```css
-.alert-toast-stack {
+.alert-toast-stack::part(base) {
   position: fixed;
   top: 0;
   inset-inline-end: 0;
@@ -161,12 +161,6 @@ using JavaScript and call the `toast` method on it.
 
 ```html
 <button type="button">Create toast</button>
-
-<style>
-  .alert-toast-stack alert-element {
-    maring: 1rem;
-  }
-</style>
 
 <script>
   const button = document.querySelector('button');
@@ -200,10 +194,10 @@ using JavaScript and call the `toast` method on it.
     const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
 
     const alert = Object.assign(document.createElement('alert-element'), {
-      closable: true,
+      closable: true, // Always provide a way to close the toast notification
       duration: options.duration,
       variant: options.variant,
-      innerHTML: `${icon}${escapeHtml(message)}`
+      innerHTML: `${icon}${escapeHtml(message)}` // Escape message to prevent XSS ig you don't control the content
     });
 
     return alert.toast();
