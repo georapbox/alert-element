@@ -5,6 +5,7 @@
 }
 
 :root {
+  --body-max-width: 1024px;
   --card-bg-color: #ffffff;
   scroll-behavior: smooth;
 }
@@ -122,7 +123,7 @@ alert-element[variant="custom"]::part(icon) {
   background-color: var(--alert-fg-color);
   color: var(--alert-bg-color);
   border-radius: 0.25rem;
-  padding: 0.375rem;
+  padding: 0.25rem;
 }
 
 /* Toast alerts */

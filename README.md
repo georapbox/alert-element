@@ -128,10 +128,21 @@ For example, to display the toast stack at the top and `inset-inline-start` corn
 
 ```css
 .alert-toast-stack::part(base) {
+  inset-inline-end: auto; /* Reset the default position */
   inset-inline-start: 0;
-  inset-inline-end: auto;
 }
 ```
+
+Or if you want to display the toast stack at the top and center of the viewport, you can use the following CSS:
+
+```css
+.alert-toast-stack::part(base) {
+  inset-inline-end: 50%; /* Reset the default position */
+  transform: translateX(50%);
+}
+```
+
+Similarly, you can experiment with other variations to position the toast stack in the viewport as per your requirements.
 
 > [!NOTE]
 > The toast stack has a shadow DOM root, so you need to use the `::part` pseudo-element to style it.
