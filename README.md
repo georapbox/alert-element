@@ -116,6 +116,7 @@ By default, the component comes with some basic default styling. However, you ca
 To display an alert as a toast notification, create an instance of the alert element and call the `toast` method.
 This will move the alert out of its initial position in the DOM into the toast stack and display it as a toast notification.
 When there are more than one toast notifications, they will stack vertically in the toast stack.
+
 The toast stack is a container element that is created and managed internally by the alert element and it will be 
 added in the DOM when there is at least one toast notification to display. If there are no toast notifications to display,
 the toast stack will be removed from the DOM.
@@ -159,50 +160,54 @@ For convenience, you can create a utility function that creates a toast notifica
 instead of creating the alert elements in your markup. To do this, you can generate the alert element
 using JavaScript and call the `toast` method on it.
 
+#### HTML
+
 ```html
 <button type="button">Create toast</button>
+```
 
-<script>
-  const button = document.querySelector('button');
+#### JavaScript
 
-  button.addEventListener('click', () => {
-    toastify('This is a toast notification', {
-      variant: 'success',
-      duration: 3000,
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-      </svg>`
-    });
+```js
+const button = document.querySelector('button');
+
+button.addEventListener('click', () => {
+  toastify('This is a toast notification', {
+    variant: 'success',
+    duration: 3000,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+      <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+    </svg>`
+  });
+});
+
+function escapeHtml(html) {
+  const div = document.createElement('div');
+  div.textContent = html;
+  return div.innerHTML;
+}
+
+function toastify(message, options = {}) {
+  const defaults = {
+    duration: 5000,
+    variant: 'neutral',
+    icon: ''
+  };
+
+  options = { ...defaults, ...options };
+
+  const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
+
+  const alert = Object.assign(document.createElement('alert-element'), {
+    closable: true, // Always provide a way to close the toast notification
+    duration: options.duration,
+    variant: options.variant,
+    innerHTML: `${icon}${escapeHtml(message)}` // Escape message to prevent XSS ig you don't control the content
   });
 
-  function escapeHtml(html) {
-    const div = document.createElement('div');
-    div.textContent = html;
-    return div.innerHTML;
-  }
-
-  function toastify(message, options = {}) {
-    const defaults = {
-      duration: 5000,
-      variant: 'neutral',
-      icon: ''
-    };
-
-    options = { ...defaults, ...options };
-
-    const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
-
-    const alert = Object.assign(document.createElement('alert-element'), {
-      closable: true, // Always provide a way to close the toast notification
-      duration: options.duration,
-      variant: options.variant,
-      innerHTML: `${icon}${escapeHtml(message)}` // Escape message to prevent XSS ig you don't control the content
-    });
-
-    return alert.toast();
-  }
-</script>
+  return alert.toast();
+}
 ```
 
 ## Changelog

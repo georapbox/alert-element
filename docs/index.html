@@ -286,7 +286,9 @@ alert-element[variant="custom"]::part(icon) {
   </p>
 
   <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon>
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-styling">
+      <button type="button" style="margin: 0;" hidden>Show Alert</button>
+
       <alert-element open closable class="custom-alert">
         <span slot="icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">

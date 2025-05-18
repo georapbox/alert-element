@@ -9,7 +9,8 @@
   scroll-behavior: smooth;
 }
 
-:not(:defined) {
+:not(:defined),
+[hidden] {
   display: none !important;
 }
 

@@ -43,6 +43,25 @@ document.querySelectorAll('.card').forEach(el => {
   });
 })();
 
+// Custom styling
+(function () {
+  const button = document.querySelector('[data-example="custom-styling"] > button');
+  const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
+
+  button.addEventListener('click', () => {
+    const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
+    alert.open = true;
+  });
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('hidden', '');
+  });
+
+  alert.addEventListener('alert-hide', () => {
+    button.removeAttribute('hidden');
+  });
+})();
+
 // Toast alerts
 (function () {
   const alerts = [
