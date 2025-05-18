@@ -56,7 +56,7 @@ const styles = /* css */ `
     display: none !important;
   }
 
-  :host(:not([open])) {
+  :host(:not([open])) .alert:not([data-toast]) {
     display: none !important;
   }
 
@@ -475,6 +475,50 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Plays the entry animation for the alert element.
+   *
+   * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
+   */
+  #playEntryAnimation(element) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const keyframes = [
+      { opacity: 0, transform: 'scale(0.8)' },
+      { opacity: 1, transform: 'scale(1)' }
+    ];
+
+    const options = {
+      duration: prefersReducedMotion ? 0 : 200,
+      easing: 'ease-out'
+    };
+
+    return element?.animate(keyframes, options);
+  }
+
+  /**
+   * Plays the exit animation for the alert element.
+   *
+   * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
+   */
+  #playExitAnimation(element) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const keyframes = [
+      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.8)' }
+    ];
+
+    const options = {
+      duration: prefersReducedMotion ? 0 : 100,
+      easing: 'ease-in'
+    };
+
+    return element?.animate(keyframes, options);
+  }
+
+  /**
    * Shows the alert element.
    */
   show() {
@@ -509,21 +553,26 @@ class AlertElement extends HTMLElement {
 
       toastStack.appendChild(this);
       this.open = true;
-      toastStack.scrollTop = toastStack.scrollHeight;
+      this.#baseEl?.setAttribute('data-toast', '');
+      this.#playEntryAnimation(this.#baseEl);
+
+      const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
+      toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
 
       this.addEventListener(
         EVT_ALERT_HIDE,
         () => {
-          toastStack.removeChild(this);
-          resolve(undefined);
+          const exitAnimation = this.#playExitAnimation(this.#baseEl);
+          exitAnimation?.finished.finally(() => {
+            toastStack.removeChild(this);
+            resolve(undefined);
 
-          if (toastStack.querySelector(COMPONENT_NAME) === null) {
-            toastStack.remove();
-          }
+            if (toastStack.querySelector(COMPONENT_NAME) === null) {
+              toastStack.remove();
+            }
+          });
         },
-        {
-          once: true
-        }
+        { once: true }
       );
     });
   }

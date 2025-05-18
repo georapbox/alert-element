@@ -34,8 +34,13 @@ export function createToastStack() {
       max-width: 100%;
       max-height: 100%;
       overflow: auto;
-      scroll-behavior: smooth;
       scrollbar-width: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .stack {
+        scroll-behavior: smooth;
+      }
     }
 
     .stack > ::slotted(*) {
