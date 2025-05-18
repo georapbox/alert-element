@@ -102,11 +102,6 @@ const styles = /* css */ `
     margin-inline-start: 1rem;
   }
 
-  slot[name='icon'] > svg {
-    display: block;
-    margin-inline-start: 3rem;
-  }
-
   :host([variant='info']) .alert__icon {
     color: var(--alert-info-variant-color);
   }
@@ -389,11 +384,9 @@ class AlertElement extends HTMLElement {
    */
   #handleOpenAttributeChange() {
     if (this.open) {
-      this.show();
       this.dispatchEvent(new Event(EVT_ALERT_SHOW, { bubbles: true, composed: true }));
       this.#restartAutoHide();
     } else {
-      this.hide();
       this.#pauseAutoHide();
       this.dispatchEvent(new Event(EVT_ALERT_HIDE, { bubbles: true, composed: true }));
     }
@@ -414,7 +407,7 @@ class AlertElement extends HTMLElement {
   #restartAutoHide() {
     this.#pauseAutoHide();
     if (this.open && this.duration < Infinity) {
-      this.#autoHideTimeout = window.setTimeout(() => this.hide(), this.duration);
+      this.#autoHideTimeout = window.setTimeout(() => (this.open = false), this.duration);
     }
   }
 
@@ -423,7 +416,10 @@ class AlertElement extends HTMLElement {
    * If the alert is closable, it hides the alert.
    */
   #handleCloseBtnClick = () => {
-    this.closable && this.hide();
+    if (!this.closable) {
+      return;
+    }
+    this.open = false;
   };
 
   /**
@@ -512,7 +508,7 @@ class AlertElement extends HTMLElement {
       }
 
       toastStack.appendChild(this);
-      this.show();
+      this.open = true;
       toastStack.scrollTop = toastStack.scrollHeight;
 
       this.addEventListener(

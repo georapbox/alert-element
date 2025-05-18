@@ -25,7 +25,7 @@ export function createToastStack() {
       box-sizing: inherit;
     }
 
-    .base {
+    .stack {
       position: fixed;
       top: 0;
       inset-inline-end: 0;
@@ -38,14 +38,14 @@ export function createToastStack() {
       scrollbar-width: none;
     }
 
-    .base > ::slotted(*) {
+    .stack > ::slotted(*) {
       margin: 1rem;
     }
   `;
 
   shadowRoot.innerHTML = /* html */ `
     <style>${styles}</style>
-    <div class="base" part="base"><slot></slot></div>
+    <div class="stack" part="base"><slot></slot></div>
   `;
 
   return stack;
