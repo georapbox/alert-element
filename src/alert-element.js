@@ -231,7 +231,7 @@ class AlertElement extends HTMLElement {
   /** @type {number | undefined} */
   #autoHideTimeout = undefined;
 
-  /** @type {Nullable<{ resolve: (value?: any) => void; cleanup: () => void; }>} */
+  /** @type {Nullable<{ promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void; }>} */
   #toastInProgress = null;
 
   constructor() {
@@ -264,7 +264,8 @@ class AlertElement extends HTMLElement {
         this.#handleOpenAttributeChange();
         break;
       case 'duration':
-        this.#restartAutoHide();
+        this.#clearAutoHideTimer();
+        this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -375,11 +376,7 @@ class AlertElement extends HTMLElement {
 
     if (this.open) {
       this.#baseEl?.removeAttribute('hidden');
-
-      if (this.duration !== Infinity) {
-        console.log('connectedCallback', this.duration);
-        this.#restartAutoHide();
-      }
+      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
     } else {
       this.#baseEl?.setAttribute('hidden', '');
     }
@@ -393,7 +390,7 @@ class AlertElement extends HTMLElement {
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    this.#pauseAutoHide();
+    this.#clearAutoHideTimer();
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
     this.#iconSlot?.removeEventListener('slotchange', this.#handleIconSlotChange);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
@@ -407,16 +404,16 @@ class AlertElement extends HTMLElement {
    * If the open attribute is set to false, the alert is hidden and an event is dispatched.
    */
   #handleOpenAttributeChange() {
+    this.#clearAutoHideTimer();
+
     if (this.open) {
-      console.log('handleOpenAttributeChange', this.duration);
-      this.#restartAutoHide();
+      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
       this.#baseEl?.removeAttribute('hidden');
       this.#emitEvent(EVT_ALERT_SHOW);
       this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
         this.#emitEvent(EVT_ALERT__AFTER_SHOW);
       });
     } else {
-      this.#pauseAutoHide();
       this.#emitEvent(EVT_ALERT_HIDE);
       this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
         this.#baseEl?.setAttribute('hidden', '');
@@ -426,32 +423,34 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Pauses the auto-hide timeout if it is set.
-   * This is useful when the user hovers over the alert to prevent it from closing.
+   * Clears the auto-hide timer if it is set.
    */
-  #pauseAutoHide() {
-    if (!this.#autoHideTimeout) {
+  #clearAutoHideTimer() {
+    if (this.#autoHideTimeout === undefined) {
       return;
     }
 
     clearTimeout(this.#autoHideTimeout);
+    this.#autoHideTimeout = undefined;
   }
 
   /**
-   * Restarts the auto-hide timeout if the alert is open and the duration is not infinite.
-   * This is useful when the user hovers out of the alert to allow it to close automatically.
+   * Starts the auto-hide timer for the alert.
+   * This method sets a timeout to close the alert after the specified duration.
    */
-  #restartAutoHide() {
-    console.log('------');
-    this.#pauseAutoHide();
-
-    if (!this.open || this.duration === Infinity) {
-      return;
-    }
-
+  #startAutoHideTimer() {
     this.#autoHideTimeout = window.setTimeout(() => {
       this.open = false;
     }, this.duration);
+  }
+
+  /**
+   * Determines if the auto-hide timer should be started.
+   *
+   * @returns {boolean} - Returns true if the auto-hide timer should be started; otherwise false.
+   */
+  #shouldStartAutoHideTimer() {
+    return this.open && this.duration !== Infinity;
   }
 
   /**
@@ -469,14 +468,15 @@ class AlertElement extends HTMLElement {
    * Handles the mouse enter event on the alert.
    */
   #handleMouseEnter = () => {
-    this.#pauseAutoHide();
+    this.#clearAutoHideTimer();
   };
 
   /**
    * Handles the mouse leave event on the alert.
    */
   #handleMouseLeave = () => {
-    this.#restartAutoHide();
+    this.#clearAutoHideTimer();
+    this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
   };
 
   /**
@@ -591,11 +591,6 @@ class AlertElement extends HTMLElement {
     this.open = false;
   }
 
-  /**
-   * Displays the alert as a toast notification.
-   * This method appends the alert to a toast stack and automatically hides it after the specified duration.
-   * If the toast stack is not already in the DOM, it will be appended to the body.
-   */
   // toast() {
   //   if (this.#toastInProgress) {
   //     const { cleanup, resolve } = this.#toastInProgress;
@@ -649,13 +644,20 @@ class AlertElement extends HTMLElement {
   //   });
   // }
 
+  /**
+   * Displays the alert as a toast notification.
+   * This method appends the alert to a toast stack and automatically hides it after the specified duration.
+   * If the toast stack is not already in the DOM, it will be appended to the body.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the toast is closed.
+   */
   toast() {
     if (this.#toastInProgress) {
-      // Optional: decide whether to restart or ignore
       return this.#toastInProgress.promise;
     }
 
-    let resolveFn;
+    /** @type (v?: any) => void */
+    let resolveFn = () => {};
     const promise = new Promise(resolve => (resolveFn = resolve));
 
     const onAfterHide = () => {
