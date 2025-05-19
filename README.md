@@ -109,7 +109,9 @@ By default, the component comes with some basic default styling. However, you ca
 | Name | Description | Event Detail |
 | ---- | ----------- | ------------ |
 | `alert-show` | Emitted when the alert is shown. | - |
+| `alert-after-show` | Emitted after the alert is shown and all animations are complete. | - |
 | `alert-hide` | Emitted when the alert is hidden. | - |
+| `alert-after-hide` | Emitted after the alert is hidden and all animations are complete. | - |
 
 ## Toast notifications
 

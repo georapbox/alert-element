@@ -13,7 +13,9 @@ const toastStack = createToastStack();
 
 const COMPONENT_NAME = 'alert-element';
 const EVT_ALERT_SHOW = 'alert-show';
+const EVT_ALERT__AFTER_SHOW = 'alert-after-show';
 const EVT_ALERT_HIDE = 'alert-hide';
+const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
 
 const styles = /* css */ `
   :host {
@@ -53,10 +55,6 @@ const styles = /* css */ `
   :host([hidden]),
   [hidden],
   ::slotted([hidden]) {
-    display: none !important;
-  }
-
-  :host(:not([open])) .alert:not([data-toast]) {
     display: none !important;
   }
 
@@ -152,7 +150,7 @@ const template = document.createElement('template');
 
 template.innerHTML = /* html */ `
   <style>${styles}</style>
-  <div class="alert" part="base" role="alert">
+  <div class="alert" part="base" role="alert" hidden>
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
@@ -207,8 +205,10 @@ template.innerHTML = /* html */ `
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @event alert-show - Fired when the alert is shown.
- * @event alert-hide - Fired when the alert is hidden.
+ * @event alert-show - Emitted when the alert is shown.
+ * @event alert-after-show - Emitted after the alert is shown and all animations are complete.
+ * @event alert-hide - Emitted when the alert is hidden.
+ * @event alert-after-hide - Emitted after the alert is hidden and all animations are complete.
  *
  * @method defineCustomElement - Static method. Defines a custom element with the given name.
  * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
@@ -374,11 +374,14 @@ class AlertElement extends HTMLElement {
     this.addEventListener('mouseleave', this.#handleMouseLeave);
 
     if (this.open) {
-      this.#handleOpenAttributeChange();
-    }
+      this.#baseEl?.removeAttribute('hidden');
 
-    if (this.duration !== Infinity) {
-      this.#restartAutoHide();
+      if (this.duration !== Infinity) {
+        console.log('connectedCallback', this.duration);
+        this.#restartAutoHide();
+      }
+    } else {
+      this.#baseEl?.setAttribute('hidden', '');
     }
 
     if (this.closeLabel) {
@@ -405,11 +408,20 @@ class AlertElement extends HTMLElement {
    */
   #handleOpenAttributeChange() {
     if (this.open) {
-      this.dispatchEvent(new Event(EVT_ALERT_SHOW, { bubbles: true, composed: true }));
+      console.log('handleOpenAttributeChange', this.duration);
       this.#restartAutoHide();
+      this.#baseEl?.removeAttribute('hidden');
+      this.#emitEvent(EVT_ALERT_SHOW);
+      this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
+        this.#emitEvent(EVT_ALERT__AFTER_SHOW);
+      });
     } else {
       this.#pauseAutoHide();
-      this.dispatchEvent(new Event(EVT_ALERT_HIDE, { bubbles: true, composed: true }));
+      this.#emitEvent(EVT_ALERT_HIDE);
+      this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
+        this.#baseEl?.setAttribute('hidden', '');
+        this.#emitEvent(EVT_ALERT_AFTER_HIDE);
+      });
     }
   }
 
@@ -430,6 +442,7 @@ class AlertElement extends HTMLElement {
    * This is useful when the user hovers out of the alert to allow it to close automatically.
    */
   #restartAutoHide() {
+    console.log('------');
     this.#pauseAutoHide();
 
     if (!this.open || this.duration === Infinity) {
@@ -504,18 +517,19 @@ class AlertElement extends HTMLElement {
    * Plays the entry animation for the alert element.
    *
    * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @param {number} [duration=200] - The duration of the animation in milliseconds.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
-  #playEntryAnimation(element) {
+  #playEntryAnimation(element, duration = 200) {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const keyframes = [
-      { opacity: 0, transform: 'scale(0.8)' },
+      { opacity: 0, transform: 'scale(0.85)' },
       { opacity: 1, transform: 'scale(1)' }
     ];
 
     const options = {
-      duration: prefersReducedMotion ? 0 : 200,
+      duration: prefersReducedMotion ? 0 : duration,
       easing: 'ease-out'
     };
 
@@ -526,22 +540,33 @@ class AlertElement extends HTMLElement {
    * Plays the exit animation for the alert element.
    *
    * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @param {number} [duration=200] - The duration of the animation in milliseconds.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
-  #playExitAnimation(element) {
+  #playExitAnimation(element, duration = 200) {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const keyframes = [
       { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.8)' }
+      { opacity: 0, transform: 'scale(0.85)' }
     ];
 
     const options = {
-      duration: prefersReducedMotion ? 0 : 100,
+      duration: prefersReducedMotion ? 0 : duration,
       easing: 'ease-in'
     };
 
     return element?.animate(keyframes, options);
+  }
+
+  /**
+   * Dispatches a custom event with the given name.
+   *
+   * @param {string} eventName - The name of the event to dispatch.
+   */
+  #emitEvent(eventName) {
+    const evt = new Event(eventName, { bubbles: true, composed: true });
+    this.dispatchEvent(evt);
   }
 
   /**
@@ -571,63 +596,104 @@ class AlertElement extends HTMLElement {
    * This method appends the alert to a toast stack and automatically hides it after the specified duration.
    * If the toast stack is not already in the DOM, it will be appended to the body.
    */
+  // toast() {
+  //   if (this.#toastInProgress) {
+  //     const { cleanup, resolve } = this.#toastInProgress;
+  //     cleanup();
+  //     resolve();
+  //     this.#toastInProgress = null;
+  //   }
+
+  //   return new Promise(resolve => {
+  //     if (!toastStack.parentElement) {
+  //       document.body.append(toastStack);
+  //     }
+
+  //     toastStack.appendChild(this);
+  //     this.open = true;
+
+  //     const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
+  //     toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
+
+  //     const onAfterHide = () => {
+  //       if (this.parentNode === toastStack) {
+  //         toastStack.removeChild(this);
+  //       }
+
+  //       if (!toastStack.querySelector(COMPONENT_NAME)) {
+  //         toastStack.remove();
+  //       }
+
+  //       this.#toastInProgress = null;
+  //       resolve(undefined);
+  //     };
+
+  //     this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
+
+  //     this.#toastInProgress = {
+  //       resolve,
+  //       cleanup: () => {
+  //         this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
+
+  //         if (this.parentNode === toastStack) {
+  //           toastStack.removeChild(this);
+  //         }
+
+  //         if (!toastStack.querySelector(COMPONENT_NAME)) {
+  //           toastStack.remove();
+  //         }
+
+  //         this.open = false;
+  //       }
+  //     };
+  //   });
+  // }
+
   toast() {
     if (this.#toastInProgress) {
-      const { cleanup, resolve } = this.#toastInProgress;
-      cleanup();
-      resolve();
-      this.#toastInProgress = null;
+      // Optional: decide whether to restart or ignore
+      return this.#toastInProgress.promise;
     }
 
-    return new Promise(resolve => {
-      if (toastStack.parentElement === null) {
-        document.body.append(toastStack);
-      }
+    let resolveFn;
+    const promise = new Promise(resolve => (resolveFn = resolve));
 
-      toastStack.appendChild(this);
-      this.open = true;
-      this.#baseEl?.setAttribute('data-toast', '');
-      this.#playEntryAnimation(this.#baseEl);
+    const onAfterHide = () => {
+      this.#toastInProgress?.resolve();
+      this.#toastInProgress?.cleanup();
+    };
 
-      const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
-      toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
-
-      const onHide = () => {
-        const exitAnimation = this.#playExitAnimation(this.#baseEl);
-
-        exitAnimation?.finished.finally(() => {
-          if (this.parentNode === toastStack) {
-            toastStack.removeChild(this);
-          }
-
-          if (!toastStack.querySelector(COMPONENT_NAME)) {
-            toastStack.remove();
-          }
-
-          this.#toastInProgress = null;
-          resolve(undefined);
-        });
-      };
-
-      this.addEventListener(EVT_ALERT_HIDE, onHide, { once: true });
-
-      this.#toastInProgress = {
-        resolve,
-        cleanup: () => {
-          this.removeEventListener(EVT_ALERT_HIDE, onHide);
-
-          if (this.parentNode === toastStack) {
-            toastStack.removeChild(this);
-          }
-
-          if (!toastStack.querySelector(COMPONENT_NAME)) {
-            toastStack.remove();
-          }
-
-          this.open = false;
+    this.#toastInProgress = {
+      promise,
+      resolve: resolveFn,
+      cleanup: () => {
+        this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
+        if (this.parentNode === toastStack) {
+          toastStack.removeChild(this);
         }
-      };
+        if (!toastStack.querySelector(COMPONENT_NAME)) {
+          toastStack.remove();
+        }
+        this.open = false;
+        this.#toastInProgress = null;
+      }
+    };
+
+    if (!toastStack.parentElement) {
+      document.body.append(toastStack);
+    }
+
+    toastStack.appendChild(this);
+    this.#baseEl?.setAttribute('data-toast', '');
+    this.open = true;
+
+    toastStack.shadowRoot?.querySelector('.stack')?.scrollTo({
+      top: toastStack.scrollHeight
     });
+
+    this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
+
+    return promise;
   }
 
   /**

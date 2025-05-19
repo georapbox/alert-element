@@ -25,7 +25,7 @@ document.querySelectorAll('.card').forEach(el => {
     button.setAttribute('disabled', '');
   });
 
-  alert.addEventListener('alert-hide', () => {
+  alert.addEventListener('alert-after-hide', () => {
     button.removeAttribute('disabled');
   });
 
@@ -38,6 +38,14 @@ document.querySelectorAll('.card').forEach(el => {
 (function () {
   const button = document.querySelector('[data-example="duration"] > button');
   const alert = document.querySelector('[data-example="duration"] > alert-element');
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('disabled', '');
+  });
+
+  alert.addEventListener('alert-after-hide', () => {
+    button.removeAttribute('disabled');
+  });
 
   button.addEventListener('click', () => {
     alert.open = true;
@@ -58,7 +66,7 @@ document.querySelectorAll('.card').forEach(el => {
     button.setAttribute('hidden', '');
   });
 
-  alert.addEventListener('alert-hide', () => {
+  alert.addEventListener('alert-after-hide', () => {
     button.removeAttribute('hidden');
   });
 })();

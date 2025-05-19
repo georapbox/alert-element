@@ -16,12 +16,19 @@ function stubMatchMedia(reducedMotion) {
 }
 
 describe('alert-element', () => {
+  let matchMediaStub;
+
   beforeEach(() => {
     document.querySelector('.alert-toast-stack')?.remove();
+
+    // Emulate prefers-reduced-motion: reduce
+    // to avoid waiting for animations to complete
+    matchMediaStub = stubMatchMedia('reduce');
   });
 
   afterEach(() => {
     fixtureCleanup();
+    matchMediaStub.restore();
   });
 
   describe('accessibility', () => {
@@ -289,18 +296,6 @@ describe('alert-element', () => {
   });
 
   describe('toast', () => {
-    let matchMediaStub;
-
-    before(() => {
-      // Emulate prefers-reduced-motion: reduce
-      // to avoid waiting for animations to complete
-      matchMediaStub = stubMatchMedia('reduce');
-    });
-
-    after(() => {
-      matchMediaStub.restore();
-    });
-
     it('toast alert and hide it manually', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       el.toast();
