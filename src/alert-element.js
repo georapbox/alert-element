@@ -689,9 +689,8 @@ class AlertElement extends HTMLElement {
     this.#baseEl?.setAttribute('data-toast', '');
     this.open = true;
 
-    toastStack.shadowRoot?.querySelector('.stack')?.scrollTo({
-      top: toastStack.scrollHeight
-    });
+    const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
+    toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
 
     this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
 

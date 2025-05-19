@@ -178,7 +178,7 @@ alert.addEventListener('alert-show', () => {
   button.setAttribute('disabled', '');
 });
 
-alert.addEventListener('alert-hide', () => {
+alert.addEventListener('alert-after-hide', () => {
   button.removeAttribute('disabled');
 });
 
@@ -386,6 +386,7 @@ alert-element[variant="custom"]::part(icon) {
       <summary>Source code</summary>
 
       <h4>HTML</h4>
+
 <pre><code class="hljs language-xml">&lt;button type="button" data-variant="info"&gt;Info&lt;/button&gt;
 &lt;button type="button" data-variant="success"&gt;Success&lt;/button&gt;
 &lt;button type="button" data-variant="neutral"&gt;Neutral&lt;/button&gt;
@@ -413,6 +414,7 @@ alert-element[variant="custom"]::part(icon) {
 &lt;/alert-element&gt;</code></pre>
 
       <h4>JavaScript</h4>
+
 <pre><code class="hljs language-js">const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
 
 variants.forEach(variant => {
@@ -439,9 +441,11 @@ variants.forEach(variant => {
       <summary>Source code</summary>
 
       <h4>HTML</h4>
+
 <pre><code class="hljs language-xml">&lt;button type="button"&gt;Create toast&lt;/button&gt;</code></pre>
 
       <h4>JavaScript</h4>
+
 <pre><code class="hljs language-js">const button = document.querySelector('button');
 
 let count = 0;
