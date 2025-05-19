@@ -231,6 +231,9 @@ class AlertElement extends HTMLElement {
   /** @type {number | undefined} */
   #autoHideTimeout = undefined;
 
+  /** @type {Nullable<{ resolve: (value?: any) => void; cleanup: () => void; }>} */
+  #toastInProgress = null;
+
   constructor() {
     super();
 
@@ -252,16 +255,22 @@ class AlertElement extends HTMLElement {
    * @param {string} newValue - The new value of the attribute.
    */
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'open' && oldValue !== newValue) {
-      this.#handleOpenAttributeChange();
+    if (!this.isConnected || oldValue === newValue) {
+      return;
     }
 
-    if (name === 'duration' && oldValue !== newValue) {
-      this.#restartAutoHide();
-    }
-
-    if (name === 'close-label' && oldValue !== newValue) {
-      this.#updateCloseLabel();
+    switch (name) {
+      case 'open':
+        this.#handleOpenAttributeChange();
+        break;
+      case 'duration':
+        this.#restartAutoHide();
+        break;
+      case 'close-label':
+        this.#updateCloseLabel();
+        break;
+      default:
+        break;
     }
   }
 
@@ -354,8 +363,8 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('closeLabel');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') || null;
+    this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') || null;
     this.#iconSlot = this.shadowRoot?.querySelector('slot[name="icon"]') || null;
-    this.#closeBtn = this.shadowRoot?.querySelector('button') || null;
     this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') || null;
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
@@ -363,6 +372,18 @@ class AlertElement extends HTMLElement {
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
     this.addEventListener('mouseenter', this.#handleMouseEnter);
     this.addEventListener('mouseleave', this.#handleMouseLeave);
+
+    if (this.open) {
+      this.#handleOpenAttributeChange();
+    }
+
+    if (this.duration !== Infinity) {
+      this.#restartAutoHide();
+    }
+
+    if (this.closeLabel) {
+      this.#updateCloseLabel();
+    }
   }
 
   /**
@@ -397,6 +418,10 @@ class AlertElement extends HTMLElement {
    * This is useful when the user hovers over the alert to prevent it from closing.
    */
   #pauseAutoHide() {
+    if (!this.#autoHideTimeout) {
+      return;
+    }
+
     clearTimeout(this.#autoHideTimeout);
   }
 
@@ -406,9 +431,14 @@ class AlertElement extends HTMLElement {
    */
   #restartAutoHide() {
     this.#pauseAutoHide();
-    if (this.open && this.duration < Infinity) {
-      this.#autoHideTimeout = window.setTimeout(() => (this.open = false), this.duration);
+
+    if (!this.open || this.duration === Infinity) {
+      return;
     }
+
+    this.#autoHideTimeout = window.setTimeout(() => {
+      this.open = false;
+    }, this.duration);
   }
 
   /**
@@ -458,20 +488,16 @@ class AlertElement extends HTMLElement {
    * Otherwise, the aria-label attribute is set to the `closeLabel` property.
    */
   #updateCloseLabel() {
-    const closeButtonEl = this.shadowRoot?.querySelector('.alert__close');
-
-    if (!closeButtonEl) {
+    if (!this.#closeBtn) {
       return;
     }
 
-    /** @type {Nullable<HTMLSlotElement>} */
-    const closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') || null;
-    const assignedElements = closeSlotEl?.assignedElements() || [];
+    const assignedElements = this.#closeSlotEl?.assignedElements() || [];
     const hasTextContent = assignedElements?.some(el => el.textContent?.replace(/\s/g, '') !== '');
 
     hasTextContent
-      ? closeButtonEl.removeAttribute('aria-label')
-      : closeButtonEl.setAttribute('aria-label', this.closeLabel);
+      ? this.#closeBtn.removeAttribute('aria-label')
+      : this.#closeBtn.setAttribute('aria-label', this.closeLabel);
   }
 
   /**
@@ -546,6 +572,13 @@ class AlertElement extends HTMLElement {
    * If the toast stack is not already in the DOM, it will be appended to the body.
    */
   toast() {
+    if (this.#toastInProgress) {
+      const { cleanup, resolve } = this.#toastInProgress;
+      cleanup();
+      resolve();
+      this.#toastInProgress = null;
+    }
+
     return new Promise(resolve => {
       if (toastStack.parentElement === null) {
         document.body.append(toastStack);
@@ -559,21 +592,41 @@ class AlertElement extends HTMLElement {
       const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
       toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
 
-      this.addEventListener(
-        EVT_ALERT_HIDE,
-        () => {
-          const exitAnimation = this.#playExitAnimation(this.#baseEl);
-          exitAnimation?.finished.finally(() => {
-            toastStack.removeChild(this);
-            resolve(undefined);
+      const onHide = () => {
+        const exitAnimation = this.#playExitAnimation(this.#baseEl);
 
-            if (toastStack.querySelector(COMPONENT_NAME) === null) {
-              toastStack.remove();
-            }
-          });
-        },
-        { once: true }
-      );
+        exitAnimation?.finished.finally(() => {
+          if (this.parentNode === toastStack) {
+            toastStack.removeChild(this);
+          }
+
+          if (!toastStack.querySelector(COMPONENT_NAME)) {
+            toastStack.remove();
+          }
+
+          this.#toastInProgress = null;
+          resolve(undefined);
+        });
+      };
+
+      this.addEventListener(EVT_ALERT_HIDE, onHide, { once: true });
+
+      this.#toastInProgress = {
+        resolve,
+        cleanup: () => {
+          this.removeEventListener(EVT_ALERT_HIDE, onHide);
+
+          if (this.parentNode === toastStack) {
+            toastStack.removeChild(this);
+          }
+
+          if (!toastStack.querySelector(COMPONENT_NAME)) {
+            toastStack.remove();
+          }
+
+          this.open = false;
+        }
+      };
     });
   }
 

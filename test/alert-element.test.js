@@ -4,6 +4,17 @@ import { AlertElement } from '../src/alert-element.js';
 
 AlertElement.defineCustomElement();
 
+function stubMatchMedia(reducedMotion) {
+  return sinon.stub(window, 'matchMedia').callsFake(query => ({
+    matches: query === `(prefers-reduced-motion: ${reducedMotion})`,
+    media: query,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  }));
+}
+
 describe('alert-element', () => {
   beforeEach(() => {
     document.querySelector('.alert-toast-stack')?.remove();
@@ -278,6 +289,18 @@ describe('alert-element', () => {
   });
 
   describe('toast', () => {
+    let matchMediaStub;
+
+    before(() => {
+      // Emulate prefers-reduced-motion: reduce
+      // to avoid waiting for animations to complete
+      matchMediaStub = stubMatchMedia('reduce');
+    });
+
+    after(() => {
+      matchMediaStub.restore();
+    });
+
     it('toast alert and hide it manually', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       el.toast();
@@ -291,12 +314,13 @@ describe('alert-element', () => {
     });
 
     it('toast alert and hide it automatically after duration expires', async () => {
-      const el = await fixture(html`<alert-element duration="100"></alert-element>`);
+      const DURATION = 100;
+      const el = await fixture(html`<alert-element duration="${DURATION}"></alert-element>`);
       el.toast();
       await elementUpdated(el);
       expect(el.open).to.be.true;
       expect([...el.parentElement.classList]).to.include('alert-toast-stack');
-      await aTimeout(200);
+      await aTimeout(DURATION + 100); // wait for duration to expire + some buffer
       expect(el.open).to.be.false;
       expect(document.querySelector('.alert-toast-stack')).to.be.null;
     });
