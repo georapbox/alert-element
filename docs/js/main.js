@@ -6,14 +6,6 @@ const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert
 
 const { AlertElement } = await import(componentUrl);
 
-document.addEventListener('alert-show', evt => {
-  console.log('alert-show =>', evt.target);
-});
-
-document.addEventListener('alert-hide', evt => {
-  console.log('alert-hide =>', evt.target);
-});
-
 AlertElement.defineCustomElement();
 
 document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
@@ -73,7 +65,18 @@ document.querySelectorAll('.card').forEach(el => {
 
 // Toast alerts
 (function () {
-  const button = document.querySelector('[data-example="toast"] > button');
+  const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
+
+  variants.forEach(variant => {
+    const button = document.querySelector(`[data-example="toasts"] > button[data-variant="${variant}"]`);
+    const alert = document.querySelector(`[data-example="toasts"] > alert-element[variant="${variant}"]`);
+    button.addEventListener('click', () => alert.toast());
+  });
+})();
+
+// Creating toasts imperatively
+(function () {
+  const button = document.querySelector('[data-example="imperative-toasts"] > button');
   let count = 0;
 
   button.addEventListener('click', () => {
@@ -97,7 +100,7 @@ function escapeHtml(html) {
 
 function toastify(message, options = {}) {
   const defaults = {
-    duration: 5000,
+    duration: 3000,
     variant: 'neutral',
     icon: ''
   };

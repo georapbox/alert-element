@@ -32,6 +32,10 @@
   margin-bottom: 0;
 }
 
+.table-of-contents {
+  columns: 18.75rem 2;
+}
+
 .card {
   background-color: var(--card-bg-color);
   padding: 1rem;
@@ -127,6 +131,54 @@ alert-element[variant="custom"]::part(icon) {
 }
 
 /* Toast alerts */
+[data-example="toasts"] {
+  --info: #0584c7;
+  --success: #16a34a;
+  --neutral: #52525b;
+  --warning: #d87708;
+  --danger: #dc2626;
+}
+
+[data-example="toasts"] button[data-variant],
+[data-example="toasts"] button[data-variant]:hover {
+  color: #ffffff;
+}
+
+[data-example="toasts"] button[data-variant="info"] {
+  background-color: var(--info);
+}
+
+[data-example="toasts"] button[data-variant="success"] {
+  background-color: var(--success);
+}
+
+[data-example="toasts"] button[data-variant="neutral"] {
+  background-color: var(--neutral);
+}
+
+[data-example="toasts"] button[data-variant="warning"] {
+  background-color: var(--warning);
+}
+
+[data-example="toasts"] button[data-variant="danger"] {
+  background-color: var(--danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-example="toasts"] {
+    --info: #27bbfc;
+    --success: #3ae075;
+    --neutral: #8e8e9a;
+    --warning: #ffbd11;
+    --danger: #fe5c5c;
+  }
+
+  [data-example="toasts"] button[data-variant],
+  [data-example="toasts"] button[data-variant]:hover {
+    color: #000000;
+  }
+}
+
 .alert-toast-stack alert-element {
   font-size: 90%;
 }

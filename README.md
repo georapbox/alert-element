@@ -165,11 +165,11 @@ The default styles of the toast stack are as follows:
 }
 ```
 
-### Creating toasts imperatively
+## Creating toasts imperatively
 
 For convenience, you can create a utility function that creates a toast notification imperatively,
 instead of creating the alert elements in your markup. To do this, you can generate the alert element
-using JavaScript and call the `toast` method on it.
+using JavaScript and call the `toast()` method on it.
 
 #### HTML
 

@@ -39,6 +39,7 @@
     <li><a href="#example-custom-variant">Custom variant</a></li>
     <li><a href="#example-custom-styling">Custom styling</a></li>
     <li><a href="#example-toast-notifications">Toast notifications</a></li>
+    <li><a href="#example-imperative-toast-notifications">Creating toasts imperatively</a></li>
   </ol>
 
   <h3 id="example-variants">Variants</h3>
@@ -353,7 +354,84 @@ alert-element[variant="custom"]::part(icon) {
   </p>
 
   <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="toast">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="toasts">
+      <button type="button" data-variant="info">Info</button>
+      <button type="button" data-variant="success">Success</button>
+      <button type="button" data-variant="neutral">Neutral</button>
+      <button type="button" data-variant="warning">Warning</button>
+      <button type="button" data-variant="danger">Danger</button>
+
+      <alert-element variant="info" duration="3000" closable>
+        This is an info toast notification.
+      </alert-element>
+
+      <alert-element variant="success" duration="3000" closable>
+        This is a success toast notification.
+      </alert-element>
+
+      <alert-element variant="neutral" duration="3000" closable>
+        This is a neutral toast notification.
+      </alert-element>
+
+      <alert-element variant="warning" duration="3000" closable>
+        This is a warning toast notification.
+      </alert-element>
+
+      <alert-element variant="danger" duration="3000" closable>
+        This is a danger toast notification.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+      <h4>HTML</h4>
+<pre><code class="hljs language-xml">&lt;button type="button" data-variant="info"&gt;Info&lt;/button&gt;
+&lt;button type="button" data-variant="success"&gt;Success&lt;/button&gt;
+&lt;button type="button" data-variant="neutral"&gt;Neutral&lt;/button&gt;
+&lt;button type="button" data-variant="warning"&gt;Warning&lt;/button&gt;
+&lt;button type="button" data-variant="danger"&gt;Danger&lt;/button&gt;
+
+&lt;alert-element variant="info" duration="3000" closable&gt;
+  This is an info toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="success" duration="3000" closable&gt;
+  This is a success toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="neutral" duration="3000" closable&gt;
+  This is a neutral toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="warning" duration="3000" closable&gt;
+  This is a warning toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="danger" duration="3000" closable&gt;
+  This is a danger toast notification.
+&lt;/alert-element&gt;</code></pre>
+
+      <h4>JavaScript</h4>
+<pre><code class="hljs language-js">const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
+
+variants.forEach(variant => {
+  const button = document.querySelector(`button[data-variant="${variant}"]`);
+  const alert = document.querySelector(`alert-element[variant="${variant}"]`);
+  button.addEventListener('click', () => alert.toast());
+});</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-imperative-toast-notifications">Creating toasts imperatively</h3>
+  <p>
+    For convenience, you can create a utility function that creates a toast notification imperatively, instead of creating the alert elements in your markup.
+    To do this, you can generate the alert element using JavaScript and call the <code>toast()</code> method on it.
+    For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#creating-toasts-imperatively" target="_blank" rel="noreferrer noopener">documentation</a>.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="imperative-toasts">
       <button type="button">Create toast</button>
     </browser-window>
 
@@ -382,7 +460,7 @@ button.addEventListener('click', () => {
 
 function toastify(message, options = {}) {
   const defaults = {
-    duration: 5000,
+    duration: 3000,
     variant: 'neutral',
     icon: ''
   };
