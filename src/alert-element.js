@@ -13,7 +13,7 @@ const toastStack = createToastStack();
 
 const COMPONENT_NAME = 'alert-element';
 const EVT_ALERT_SHOW = 'alert-show';
-const EVT_ALERT__AFTER_SHOW = 'alert-after-show';
+const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
 const EVT_ALERT_HIDE = 'alert-hide';
 const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
 
@@ -419,7 +419,7 @@ class AlertElement extends HTMLElement {
       this.#baseEl?.removeAttribute('hidden');
       this.#emitEvent(EVT_ALERT_SHOW);
       this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
-        this.#emitEvent(EVT_ALERT__AFTER_SHOW);
+        this.#emitEvent(EVT_ALERT_AFTER_SHOW);
       });
     } else {
       this.#emitEvent(EVT_ALERT_HIDE);
@@ -578,25 +578,51 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Waits for an event to be triggered on the specified element.
+   *
+   * @param {HTMLElement} element - The element to wait for the event on.
+   * @param {string} eventName - The name of the event to wait for.
+   * @returns {Promise<void>} - A promise that resolves when the event is triggered.
+   */
+  #waitForEvent(element, eventName) {
+    console.log(element);
+    return new Promise(resolve => {
+      const handler = (/** @type {Event} */ evt) => {
+        if (evt.target === element) {
+          element.removeEventListener(eventName, handler);
+          resolve(undefined);
+        }
+      };
+      element.addEventListener(eventName, handler);
+    });
+  }
+
+  /**
    * Shows the alert element.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the alert is shown, after the show animation is complete.
    */
   show() {
     if (this.open) {
-      return;
+      return Promise.resolve();
     }
 
     this.open = true;
+    return this.#waitForEvent(this, EVT_ALERT_AFTER_SHOW);
   }
 
   /**
    * Hides the alert element.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the alert is hidden, after the hide animation is complete.
    */
   hide() {
     if (!this.open) {
-      return;
+      return Promise.resolve();
     }
 
     this.open = false;
+    return this.#waitForEvent(this, EVT_ALERT_AFTER_HIDE);
   }
 
   /**
