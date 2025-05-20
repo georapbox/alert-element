@@ -29,7 +29,10 @@
   },
   "keywords": [
     "custom element",
-    "web component"
+    "web component",
+    "alert",
+    "notification",
+    "toast"
   ],
   "author": {
     "name": "George Raptis",

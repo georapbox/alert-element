@@ -28,7 +28,7 @@ export function createToastStack() {
     .stack {
       position: fixed;
       top: 0;
-      inset-inline-end: 0;
+      right: 0;
       z-index: 1000;
       width: 30rem;
       max-width: 100%;

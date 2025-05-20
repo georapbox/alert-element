@@ -92,6 +92,7 @@ const styles = /* css */ `
     flex: 0 0 auto;
     display: flex;
     align-items: center;
+    color: var(--alert-fg-color);
     font-size: inherit;
     line-height: 0;
   }
@@ -174,10 +175,10 @@ template.innerHTML = /* html */ `
  * @tagname alert-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
  * @extends HTMLElement
  *
- * @property {boolean} closable - Indicates if the alert can be closed by the user.
- * @property {boolean} open - Indicates if the alert is currently open.
- * @property {number} duration - The duration in milliseconds before the alert automatically closes. Default is `Infinity`.
- * @property {string} variant - The variant of the alert, which can be used to style it differently (e.g., 'info', 'success', 'warning', 'danger').
+ * @property {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
+ * @property {boolean} open - Indicates whether the alert is open or not.
+ * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  *
  * @attribute {boolean} closable - Reflects the closable property.
@@ -187,17 +188,17 @@ template.innerHTML = /* html */ `
  * @attribute {string} close-label - Reflects the closeLabel property.
  *
  * @slot - The default slot for the alert message.
- * @slot icon - A named slot for the alert icon.
- * @slot close - A named slot for the close button's content.
+ * @slot icon - Slot to display an icon before the alert message.
+ * @slot close - Slot to display custom content for the close button.
  *
  * @csspart base - The base element of the alert.
  * @csspart icon - The icon element of the alert.
  * @csspart message - The message element of the alert.
  * @csspart close - The close button element of the alert.
  *
+ * @cssproperty --alert-border-radius - The border radius of the alert.
  * @cssproperty --alert-fg-color - The foreground color of the alert.
  * @cssproperty --alert-bg-color - The background color of the alert.
- * @cssproperty --alert-border-radius - The border radius of the alert.
  * @cssproperty --alert-border-color - The border color of the alert.
  * @cssproperty --alert-info-variant-color - The color variant for info alerts.
  * @cssproperty --alert-success-variant-color - The color variant for success alerts.
@@ -205,15 +206,15 @@ template.innerHTML = /* html */ `
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @event alert-show - Emitted when the alert is shown.
- * @event alert-after-show - Emitted after the alert is shown and all animations are complete.
- * @event alert-hide - Emitted when the alert is hidden.
- * @event alert-after-hide - Emitted after the alert is hidden and all animations are complete.
- *
  * @method defineCustomElement - Static method. Defines a custom element with the given name.
  * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
  * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
  * @method toast - Instance method. Displays the alert as a toast notification.
+ *
+ * @event alert-show - Emitted when the alert is shown.
+ * @event alert-after-show - Emitted after the alert is shown and all animations are complete.
+ * @event alert-hide - Emitted when the alert is hidden.
+ * @event alert-after-hide - Emitted after the alert is hidden and all animations are complete.
  */
 class AlertElement extends HTMLElement {
   /** @type {Nullable<HTMLElement>} */
@@ -276,7 +277,7 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Indicates if the alert element can be closed by the user.
+   * Indicates whether the alert element can be closed by the user.
    *
    * @type {boolean}
    * @default false
@@ -291,7 +292,7 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Indicates if the alert element is open.
+   * Indicates whether the alert element is open.
    *
    * @type {boolean}
    * @default false
@@ -306,14 +307,21 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * The duration in milliseconds before the alert automatically closes.
+   * The duration in milliseconds for which the alert will be displayed before automatically closing.
    *
    * @type {number}
    * @default Infinity
    * @attribute duration - Reflects the duration property.
    */
   get duration() {
-    return Number(this.getAttribute('duration')) || Infinity;
+    const attr = this.getAttribute('duration');
+
+    if (attr === null) {
+      return Infinity;
+    }
+
+    const value = Number(attr);
+    return Number.isNaN(value) ? Infinity : value;
   }
 
   set duration(value) {
@@ -321,8 +329,8 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * The variant of the alert, which can be used to style it differently
-   * (e.g., 'info', 'success', 'warning', 'danger').
+   * The alert's theme variant.
+   * Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
    *
    * @type {string}
    * @default ''

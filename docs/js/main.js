@@ -16,6 +16,33 @@ document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
 
+function escapeHtml(html) {
+  const div = document.createElement('div');
+  div.textContent = html;
+  return div.innerHTML;
+}
+
+function toastify(message, options = {}) {
+  const defaults = {
+    duration: 3000,
+    variant: 'neutral',
+    icon: ''
+  };
+
+  options = { ...defaults, ...options };
+
+  const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
+
+  const alert = Object.assign(document.createElement('alert-element'), {
+    closable: true,
+    duration: options.duration,
+    variant: options.variant,
+    innerHTML: `${icon}${escapeHtml(message)}`
+  });
+
+  return alert.toast();
+}
+
 // Closable Alert
 (function () {
   const button = document.querySelector('[data-example="closable"] > button');
@@ -105,29 +132,28 @@ document.querySelectorAll('.card').forEach(el => {
   });
 })();
 
-function escapeHtml(html) {
-  const div = document.createElement('div');
-  div.textContent = html;
-  return div.innerHTML;
-}
-
-function toastify(message, options = {}) {
-  const defaults = {
-    duration: 3000,
-    variant: 'neutral',
-    icon: ''
-  };
-
-  options = { ...defaults, ...options };
-
-  const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
-
+// Custom toast stack position
+(function () {
+  const button = document.querySelector('[data-example="custom-toast-stack-position"] > button');
   const alert = Object.assign(document.createElement('alert-element'), {
-    closable: true,
-    duration: options.duration,
-    variant: options.variant,
-    innerHTML: `${icon}${escapeHtml(message)}`
+    variant: ['info', 'success', 'neutral', 'warning', 'danger'][Math.floor(Math.random() * 5)],
+    duration: 3000,
+    closable: true
   });
 
-  return alert.toast();
-}
+  alert.addEventListener('alert-after-hide', () => {
+    document.body.removeAttribute('data-toast-stack-position');
+  });
+
+  button.addEventListener('click', () => {
+    const checkedRadio = document.querySelector(
+      '[data-example="custom-toast-stack-position"] input[type="radio"]:checked'
+    );
+    const position = checkedRadio ? checkedRadio.value : 'top-right';
+
+    alert.textContent = `I'm positioned at ${position}.`;
+    alert.toast({ forceRestart: true });
+
+    document.body.setAttribute('data-toast-stack-position', position);
+  });
+})();

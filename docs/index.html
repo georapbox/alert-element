@@ -16,6 +16,19 @@
   <script>document.addEventListener('DOMContentLoaded', () => window.hljs.highlightAll());</script>
 </head>
 <body>
+  <button id="foo">Foo</button>
+
+  <alert-element>Foo alert</alert-element>
+
+  <script>
+    document.getElementById('foo').addEventListener('click', () => {
+      document.querySelector('alert-element').show().then(() => {
+        console.log('Opened');
+
+      })
+    });
+  </script>
+
   <noscript>
     <div class="noscript-banner">
       This page requires JavaScript to work properly.
@@ -40,6 +53,7 @@
     <li><a href="#example-custom-styling">Custom styling</a></li>
     <li><a href="#example-toast-notifications">Toast notifications</a></li>
     <li><a href="#example-imperative-toast-notifications">Creating toasts imperatively</a></li>
+    <li><a href="#example-custom-toast-stack-position">Custom toast stack position</a></li>
   </ol>
 
   <h3 id="example-variants">Variants</h3>
@@ -312,10 +326,6 @@
     border-width: 1px;
   }
 
-  .custom-alert::part(icon) {
-    color: var(--alert-fg-color);
-  }
-
   .custom-alert::part(close) {
     background-color: var(--alert-fg-color);
     color: var(--alert-bg-color);
@@ -490,6 +500,133 @@
     div.textContent = html;
     return div.innerHTML;
   }
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-custom-toast-stack-position">Custom toast stack position</h3>
+  <p>
+    You can customize the position of the toast stack by targeting the <code>.alert-toast-stack</code> class in your stylesheet.
+  </p>
+  <blockquote>
+    <strong style="color: var(--links);">NOTE</strong><br>
+    In real-world applications, toast alerts should be displayed in a single position on the screen for better user experience.
+    This example uses multiple positions for demonstration purposes only.
+  </blockquote>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-toast-stack-position">
+      <fieldset style="display: flex; flex-wrap: wrap; column-gap: 1rem; margin-block-end: 1rem;">
+        <legend>Toast stack position</legend>
+        <div>
+          <input type="radio" id="top-right" value="top-right" name="name="toast-stack-poisiton" checked>
+          <label for="top-right">Top right</label>
+        </div>
+        <div>
+          <input type="radio" id="top-center" value="top-center" name="name="toast-stack-poisiton">
+          <label for="top-center">Top center</label>
+        </div>
+        <div>
+          <input type="radio" id="top-left" value="top-left" name="name="toast-stack-poisiton">
+          <label for="top-left">Top left</label>
+        </div>
+        <div>
+          <input type="radio" id="bottom-left" value="bottom-left" name="name="toast-stack-poisiton">
+          <label for="bottom-left">Bottom left</label>
+        </div>
+        <div>
+          <input type="radio" id="bottom-center" value="bottom-center" name="name="toast-stack-poisiton">
+          <label for="bottom-center">Bottom center</label>
+        </div>
+        <div>
+          <input type="radio" id="bottom-right" value="bottom-right" name="name="toast-stack-poisiton">
+          <label for="bottom-right">Bottom right</label>
+        </div>
+      </fieldset>
+
+      <button type="button" style="margin: 0;">Create toast</button>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code>&lt;style&gt;
+  [data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+    top: 0;
+    right: 0;
+  }
+
+  [data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  [data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+    right: auto;
+    left: 0;
+  }
+
+  [data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {
+    right: auto;
+    left: 0;
+    top: auto;
+    bottom: 0;
+  }
+
+  [data-toast-stack-position="bottom-center"] .alert-toast-stack::part(base) {
+    right: 50%;
+    transform: translateX(50%);
+    top: auto;
+    bottom: 0;
+  }
+
+  [data-toast-stack-position="bottom-right"] .alert-toast-stack::part(base) {
+    top: auto;
+    bottom: 0;
+  }
+&lt;/style&gt;
+
+&lt;input type="radio" id="top-right" value="top-right" name="name="toast-stack-poisiton" checked&gt;
+&lt;label for="top-right"&gt;Top right&lt;/label&gt;
+
+&lt;input type="radio" id="top-center" value="top-center" name="name="toast-stack-poisiton"&gt;
+&lt;label for="top-center"&gt;Top center&lt;/label&gt;
+
+&lt;input type="radio" id="top-left" value="top-left" name="name="toast-stack-poisiton"&gt;
+&lt;label for="top-left"&gt;Top left&lt;/label&gt;
+
+&lt;input type="radio" id="bottom-left" value="bottom-left" name="name="toast-stack-poisiton"&gt;
+&lt;label for="bottom-left"&gt;Bottom left&lt;/label&gt;
+
+&lt;input type="radio" id="bottom-center" value="bottom-center" name="name="toast-stack-poisiton"&gt;
+&lt;label for="bottom-center"&gt;Bottom center&lt;/label&gt;
+
+&lt;input type="radio" id="bottom-right" value="bottom-right" name="name="toast-stack-poisiton"&gt;
+&lt;label for="bottom-right"&gt;Bottom right&lt;/label&gt;
+
+&lt;button type="button"&gt;Create toast&lt;/button&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = Object.assign(document.createElement('alert-element'), {
+    variant: 'info',
+    duration: 3000,
+    closable: true
+  });
+
+  alert.addEventListener('alert-after-hide', () =&gt; {
+    document.body.removeAttribute('data-toast-stack-position');
+  });
+
+  button.addEventListener('click', () =&gt; {
+    const checkedRadio = document.querySelector('input[type="radio"]:checked');
+    const position = checkedRadio ? checkedRadio.value : 'top-right';
+
+    alert.textContent = `I'm positioned at ${position}.`;
+    alert.toast({ forceRestart: true });
+
+    document.body.setAttribute('data-toast-stack-position', position);
+  });
 &lt;/script&gt;</code></pre>
     </details>
   </div>

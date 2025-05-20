@@ -52,7 +52,6 @@
   font-weight: 500;
 }
 
-
 .back-top {
   text-align: right;
   font-size: 0.875rem;
@@ -119,10 +118,6 @@ alert-element[variant="custom"]::part(icon) {
   border-width: 1px;
 }
 
-.custom-alert::part(icon) {
-  color: var(--alert-fg-color);
-}
-
 .custom-alert::part(close) {
   background-color: var(--alert-fg-color);
   color: var(--alert-bg-color);
@@ -181,4 +176,39 @@ alert-element[variant="custom"]::part(icon) {
 
 .alert-toast-stack alert-element {
   font-size: 90%;
+}
+
+/* Custom toast stack poisiton */
+[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+  top: 0;
+  right: 0;
+}
+
+[data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+}
+
+[data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+  top: auto;
+  bottom: 0;
+}
+
+[data-toast-stack-position="bottom-center"] .alert-toast-stack::part(base) {
+  right: 50%;
+  transform: translateX(50%);
+  top: auto;
+  bottom: 0;
+}
+
+[data-toast-stack-position="bottom-right"] .alert-toast-stack::part(base) {
+  top: auto;
+  bottom: 0;
 }

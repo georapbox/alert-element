@@ -56,10 +56,10 @@ By default, the component comes with some basic default styling. However, you ca
 ### Properties
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `closable` | ✓ | Boolean | - | `false` | Indicates if the alert can be closed by the user. |
-| `open` | ✓ | Boolean | - | `false` | Indicates if the alert is currently open. |
-| `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. |
-| `variant` | ✓ | String | - | `""` | The variant of the alert. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
+| `closable` | ✓ | Boolean | - | `false` | Indicates whether the alert can be closed by the user by providing a close button. |
+| `open` | ✓ | Boolean | - | `false` | Indicates whether the alert is open or not. |
+| `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
+| `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 
 ### Slots
@@ -67,8 +67,8 @@ By default, the component comes with some basic default styling. However, you ca
 | Name | Description |
 | ---- | ----------- |
 | default/unnamed | The default slot for the alert message. |
-| `icon` | The icon slot for the alert icon. |
-| `close` | The close button slot that overrides its content. |
+| `icon` | Slot to display an icon before the alert message. |
+| `close` | Slot to display custom content for the close button. |
 
 ### CSS Parts
 
@@ -83,10 +83,10 @@ By default, the component comes with some basic default styling. However, you ca
 
 | Name | Description | Default |
 | ---- | ----------- | ------- |
+| `--alert-border-radius` | The border radius of the alert. | `0.25rem` |
 | `--alert-fg-color` | The foreground color of the alert. | Light: `#3f3f46` - Dark: `#b6b6be` |
 | `--alert-bg-color` | The background color of the alert. | Light: `#ffffff` - Dark: `#252528` |
 | `--alert-border-color` | The border color of the alert. | Light: `#e4e4e7` - Dark: `#36363a` |
-| `--alert-border-radius` | The border radius of the alert. | `0.25rem` |
 | `--alert-info-variant-color` | The color variant for info alerts. | Light: `#0584c7` - Dark: `#27bbfc` |
 | `--alert-success-variant-color` | The color variant for success alerts. | Light: `#16a34a` - Dark: `#3ae075` |
 | `--alert-neutral-variant-color` | The color variant for neutral alerts. | Light: `#52525b` - Dark: `#8e8e9a` |
@@ -123,28 +123,46 @@ The toast stack is a container element that is created and managed internally by
 added in the DOM when there is at least one toast notification to display. If there are no toast notifications to display,
 the toast stack will be removed from the DOM.
 
-By default, the toast stack is a fixed positioned element that is displayed at the top and `inset-inline-end` corner of the viewport,
+By default, the toast stack is a fixed positioned element that is displayed at the top-right corner of the viewport,
 but you can override its position by targeting `.alert-toast-stack` class in your stylesheet.
 
-For example, to display the toast stack at the top and `inset-inline-start` corner of the viewport, you can use the following CSS:
+Below are some examples of how to position the toast stack in the viewport.
 
 ```css
+/* Position toast stack at the top-center of the viewport */
 .alert-toast-stack::part(base) {
-  inset-inline-end: auto; /* Reset the default position */
-  inset-inline-start: 0;
-}
-```
-
-Or if you want to display the toast stack at the top and center of the viewport, you can use the following CSS:
-
-```css
-.alert-toast-stack::part(base) {
-  inset-inline-end: 50%; /* Reset the default position */
+  right: 50%;
   transform: translateX(50%);
 }
-```
 
-Similarly, you can experiment with other variations to position the toast stack in the viewport as per your requirements.
+/* Position toast stack at the top-left of the viewport */
+.alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+}
+
+/* Position toast stack at the bottom-left of the viewport */
+.alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+  top: auto;
+  bottom: 0;
+}
+
+/* Position toast stack at the bottom-center of the viewport */
+.alert-toast-stack::part(base) {
+  right: 50%;
+  transform: translateX(50%);
+  top: auto;
+  bottom: 0;
+}
+
+/* Position toast stack at the bottom-right of the viewport */
+.alert-toast-stack::part(base) {
+  top: auto;
+  bottom: 0;
+}
+```
 
 > [!NOTE]
 > The toast stack has a shadow DOM root, so you need to use the `::part` pseudo-element to style it.
@@ -156,7 +174,7 @@ The default styles of the toast stack are as follows:
 .alert-toast-stack::part(base) {
   position: fixed;
   top: 0;
-  inset-inline-end: 0;
+  right: 0;
   z-index: 1000;
   width: 30rem;
   max-width: 100%;
@@ -203,7 +221,7 @@ function escapeHtml(html) {
 
 function toastify(message, options = {}) {
   const defaults = {
-    duration: 5000,
+    duration: 3000,
     variant: 'neutral',
     icon: ''
   };
