@@ -168,7 +168,7 @@ template.innerHTML = /* html */ `
 `;
 
 /**
- * @summary A custom element for displaying alerts and toasts.
+ * @summary A custom HTML element for displaying dismissible alerts and toast notifications
  * @documentation https://github.com/georapbox/alert-element
  *
  * @tagname alert-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
@@ -591,69 +591,26 @@ class AlertElement extends HTMLElement {
     this.open = false;
   }
 
-  // toast() {
-  //   if (this.#toastInProgress) {
-  //     const { cleanup, resolve } = this.#toastInProgress;
-  //     cleanup();
-  //     resolve();
-  //     this.#toastInProgress = null;
-  //   }
-
-  //   return new Promise(resolve => {
-  //     if (!toastStack.parentElement) {
-  //       document.body.append(toastStack);
-  //     }
-
-  //     toastStack.appendChild(this);
-  //     this.open = true;
-
-  //     const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
-  //     toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
-
-  //     const onAfterHide = () => {
-  //       if (this.parentNode === toastStack) {
-  //         toastStack.removeChild(this);
-  //       }
-
-  //       if (!toastStack.querySelector(COMPONENT_NAME)) {
-  //         toastStack.remove();
-  //       }
-
-  //       this.#toastInProgress = null;
-  //       resolve(undefined);
-  //     };
-
-  //     this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
-
-  //     this.#toastInProgress = {
-  //       resolve,
-  //       cleanup: () => {
-  //         this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
-
-  //         if (this.parentNode === toastStack) {
-  //           toastStack.removeChild(this);
-  //         }
-
-  //         if (!toastStack.querySelector(COMPONENT_NAME)) {
-  //           toastStack.remove();
-  //         }
-
-  //         this.open = false;
-  //       }
-  //     };
-  //   });
-  // }
-
   /**
    * Displays the alert as a toast notification.
    * This method appends the alert to a toast stack and automatically hides it after the specified duration.
    * If the toast stack is not already in the DOM, it will be appended to the body.
    *
+   * @param {object} [options={}] - Options for the toast notification.
+   * @param {boolean} [options.forceRestart=false] - If true, immediately cancels the active toast and starts a new one. Otherwise, if a toast is still active, any subsequent calls to toast() will be ignored.
    * @returns {Promise<void>} - A promise that resolves when the toast is closed.
    */
-  toast() {
+  toast(options = {}) {
+    const defaults = { forceRestart: false };
+    options = { ...defaults, ...options };
+
     if (this.#toastInProgress) {
-      return this.#toastInProgress.promise;
+      if (!options.forceRestart) {
+        return this.#toastInProgress.promise;
+      }
+
+      this.#toastInProgress.resolve();
+      this.#toastInProgress.cleanup();
     }
 
     /** @type (v?: any) => void */

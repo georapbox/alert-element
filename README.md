@@ -7,7 +7,7 @@
 
 # &lt;alert-element&gt;
 
-A custom element for displaying alerts and toasts.
+A custom HTML element for displaying dismissible alerts and toast notifications
 
 > [!NOTE]
 > The element is heavily inspired by the `sl-alert` element from [Shoelace](https://shoelace.style/components/alert), especially the API for creating toast notifications.
@@ -97,10 +97,10 @@ By default, the component comes with some basic default styling. However, you ca
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='alert-element' |
+| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | `elementName='alert-element'` |
 | `show`<sup>1</sup> | Instance | Shows the alert. | - |
 | `hide`<sup>1</sup> | Instance | Hides the alert. | - |
-| `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | - |
+| `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('alert-element').then(() => { /* call methods here */ });`
 
@@ -115,7 +115,7 @@ By default, the component comes with some basic default styling. However, you ca
 
 ## Toast notifications
 
-To display an alert as a toast notification, create an instance of the alert element and call the `toast` method.
+To display an alert as a toast notification, create an instance of the alert element and call the `toast()` method.
 This will move the alert out of its initial position in the DOM into the toast stack and display it as a toast notification.
 When there are more than one toast notifications, they will stack vertically in the toast stack.
 

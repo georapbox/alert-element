@@ -73,12 +73,17 @@ document.querySelectorAll('.card').forEach(el => {
 
 // Toast alerts
 (function () {
+  let forceRestart = false;
   const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
 
   variants.forEach(variant => {
     const button = document.querySelector(`[data-example="toasts"] > button[data-variant="${variant}"]`);
     const alert = document.querySelector(`[data-example="toasts"] > alert-element[variant="${variant}"]`);
-    button.addEventListener('click', () => alert.toast());
+    button.addEventListener('click', () => alert.toast({ forceRestart }));
+  });
+
+  document.querySelector('[data-example="toasts"] input[type="checkbox"]').addEventListener('change', evt => {
+    forceRestart = evt.target.checked;
   });
 })();
 

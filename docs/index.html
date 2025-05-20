@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <title>&lt;alert-element&gt;</title>
-  <meta name="description" content="A custom element for displaying alerts and toasts.">
+  <meta name="description" content="A custom HTML element for displaying dismissible alerts and toast notifications">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="lib/highlight/highlight-github.css">
   <link rel="stylesheet" href="css/water.css">
@@ -25,7 +25,7 @@
 
   <h1>&lt;alert-element&gt;</h1>
   <div class="component-description">
-    <p>A custom element for displaying alerts and toasts.</p>
+    <p>A custom HTML element for displaying dismissible alerts and toast notifications</p>
     <p><a href="https://github.com/georapbox/alert-element" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
   </div>
 
@@ -78,9 +78,7 @@
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
-
-<pre><code class="hljs language-xml">&lt;alert-element open variant=&quot;info&quot;&gt;
+<pre><code>&lt;alert-element open variant=&quot;info&quot;&gt;
   &lt;strong&gt;New feature available!&lt;/strong&gt;&lt;br&gt;
   You can now schedule reports to be sent automatically to your inbox every week.
 &lt;/alert-element&gt;
@@ -129,9 +127,7 @@
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
-
-<pre><code class="hljs language-xml">&lt;alert-element open variant="success"&gt;
+<pre><code>&lt;alert-element open variant="success"&gt;
   &lt;span slot="icon"&gt;
     &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
       &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
@@ -161,30 +157,28 @@
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
-
-<pre><code class="hljs language-xml">&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
 
 &lt;alert-element variant=&quot;info&quot; closable&gt;
   Click the close button to hide this alert.
-&lt;/alert-element&gt;</code></pre>
+&lt;/alert-element&gt;
 
-      <h4>JavaScript</h4>
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
 
-<pre><code class="hljs language-js">const button = document.querySelector('button');
-const alert = document.querySelector('alert-element');
+  alert.addEventListener('alert-show', () =&gt; {
+    button.setAttribute('disabled', '');
+  });
 
-alert.addEventListener('alert-show', () => {
-  button.setAttribute('disabled', '');
-});
+  alert.addEventListener('alert-after-hide', () =&gt; {
+    button.removeAttribute('disabled');
+  });
 
-alert.addEventListener('alert-after-hide', () => {
-  button.removeAttribute('disabled');
-});
-
-button.addEventListener('click', () => {
-  alert.open = true;
-});</code></pre>
+  button.addEventListener('click', () =&gt; {
+    alert.open = true;
+  });
+&lt;/script&gt;</code></pre>
     </details>
   </div>
 
@@ -206,22 +200,20 @@ button.addEventListener('click', () => {
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
-
-<pre><code class="hljs language-xml">&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
 
 &lt;alert-element variant=&quot;info&quot; closable duration="3000"&gt;
   This alert will automatically hide itself after 3 seconds, unless you interact with it.
-&lt;/alert-element&gt;</code></pre>
+&lt;/alert-element&gt;
 
-      <h4>JavaScript</h4>
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
 
-<pre><code class="hljs language-js">const button = document.querySelector('button');
-const alert = document.querySelector('alert-element');
-
-button.addEventListener('click', () => {
-  alert.open = true;
-});</code></pre>
+  button.addEventListener('click', () =&gt; {
+    alert.open = true;
+  });
+&lt;/script&gt;</code></pre>
     </details>
   </div>
 
@@ -247,9 +239,27 @@ button.addEventListener('click', () => {
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
+<pre><code>&lt;style&gt;
+  alert-element {
+    --alert-custom-variant-color: #ec4899;
+  }
 
-<pre><code class="hljs language-xml">&lt;alert-element open variant="custom"&gt;
+  @media (prefers-color-scheme: dark) {
+    alert-element {
+      --alert-custom-variant-color: #fe94cd;
+    }
+  }
+
+  alert-element[variant="custom"]::part(base) {
+    border-top-color: var(--alert-custom-variant-color);
+  }
+
+  alert-element[variant="custom"]::part(icon) {
+    color: var(--alert-custom-variant-color);
+  }
+&lt;/style&gt;
+
+&lt;alert-element open variant="custom"&gt;
   &lt;span slot="icon"&gt;
     &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
       &lt;path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/&gt;
@@ -258,26 +268,6 @@ button.addEventListener('click', () => {
   &lt;strong&gt;Custom variant alert&lt;/strong&gt;&lt;br&gt;
   This alert uses a custom variant and style.
 &lt;/alert-element&gt;</code></pre>
-
-      <h4>CSS</h4>
-
-<pre><code class="hljs language-css">alert-element {
-  --alert-custom-variant-color: #ec4899;
-}
-
-@media (prefers-color-scheme: dark) {
-  alert-element {
-    --alert-custom-variant-color: #fe94cd;
-  }
-}
-
-alert-element[variant="custom"]::part(base) {
-  border-top-color: var(--alert-custom-variant-color);
-}
-
-alert-element[variant="custom"]::part(icon) {
-  color: var(--alert-custom-variant-color);
-}</code></pre>
     </details>
   </div>
 
@@ -303,9 +293,38 @@ alert-element[variant="custom"]::part(icon) {
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
+<pre><code>&lt;style&gt;
+  .custom-alert {
+    --alert-bg-color: #cfe2ff;
+    --alert-fg-color: #072c65;
+    --alert-border-color: #9ec5fe;
+  }
 
-<pre><code class="hljs language-xml">&lt;alert-element open closable class="custom-alert"&gt;
+  @media (prefers-color-scheme: dark) {
+    .custom-alert {
+      --alert-bg-color: #061633;
+      --alert-fg-color: #6ea8fe;
+      --alert-border-color: #0a4298;
+    }
+  }
+
+  .custom-alert::part(base) {
+    border-width: 1px;
+  }
+
+  .custom-alert::part(icon) {
+    color: var(--alert-fg-color);
+  }
+
+  .custom-alert::part(close) {
+    background-color: var(--alert-fg-color);
+    color: var(--alert-bg-color);
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+  }
+&lt;/style&gt;
+
+&lt;alert-element open closable class="custom-alert"&gt;
   &lt;span slot="icon"&gt;
     &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
       &lt;path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/&gt;
@@ -313,37 +332,6 @@ alert-element[variant="custom"]::part(icon) {
   &lt;/span&gt;
   This alert has custom styling applied to it.
 &lt;/alert-element&gt;</code></pre>
-
-      <h4>CSS</h4>
-
-<pre><code class="hljs language-css">.custom-alert {
-  --alert-bg-color: #cfe2ff;
-  --alert-fg-color: #072c65;
-  --alert-border-color: #9ec5fe;
-}
-
-@media (prefers-color-scheme: dark) {
-  .custom-alert {
-    --alert-bg-color: #061633;
-    --alert-fg-color: #6ea8fe;
-    --alert-border-color: #0a4298;
-  }
-}
-
-.custom-alert::part(base) {
-  border-width: 1px;
-}
-
-.custom-alert::part(icon) {
-  color: var(--alert-fg-color);
-}
-
-.custom-alert::part(close) {
-  background-color: var(--alert-fg-color);
-  color: var(--alert-bg-color);
-  border-radius: 0.25rem;
-  padding: 0.25rem;
-}</code></pre>
     </details>
   </div>
 
@@ -360,6 +348,14 @@ alert-element[variant="custom"]::part(icon) {
       <button type="button" data-variant="neutral">Neutral</button>
       <button type="button" data-variant="warning">Warning</button>
       <button type="button" data-variant="danger">Danger</button>
+
+      <div style="margin-block-start: 1rem;">
+        <input type="checkbox" id="restartToastCheck">
+        <label for="restartToastCheck">Force restart</label>
+        <p style="margin: 0; text-wrap: pretty;">
+          <small>When checked, immediately cancels the active toast and starts a new one. Otherwise, if a toast is still active, any subsequent calls to <code>toast()</code> will be ignored.</small>
+        </p>
+      </div>
 
       <alert-element variant="info" duration="3000" closable>
         This is an info toast notification.
@@ -385,13 +381,14 @@ alert-element[variant="custom"]::part(icon) {
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
-
-<pre><code class="hljs language-xml">&lt;button type="button" data-variant="info"&gt;Info&lt;/button&gt;
+<pre><code>&lt;button type="button" data-variant="info"&gt;Info&lt;/button&gt;
 &lt;button type="button" data-variant="success"&gt;Success&lt;/button&gt;
 &lt;button type="button" data-variant="neutral"&gt;Neutral&lt;/button&gt;
 &lt;button type="button" data-variant="warning"&gt;Warning&lt;/button&gt;
 &lt;button type="button" data-variant="danger"&gt;Danger&lt;/button&gt;
+
+&lt;input type="checkbox" id="forceRestart"&gt;
+&lt;label for="forceRestart"&gt;Force restart&lt;/label&gt;
 
 &lt;alert-element variant="info" duration="3000" closable&gt;
   This is an info toast notification.
@@ -411,17 +408,27 @@ alert-element[variant="custom"]::part(icon) {
 
 &lt;alert-element variant="danger" duration="3000" closable&gt;
   This is a danger toast notification.
-&lt;/alert-element&gt;</code></pre>
+&lt;/alert-element&gt;
 
-      <h4>JavaScript</h4>
+&lt;script&gt;
+  const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
 
-<pre><code class="hljs language-js">const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
+  variants.forEach(variant =&gt; {
+    const button = document.querySelector(`button[data-variant="${variant}"]`);
+    const alert = document.querySelector(`alert-element[variant="${variant}"]`);
 
-variants.forEach(variant => {
-  const button = document.querySelector(`button[data-variant="${variant}"]`);
-  const alert = document.querySelector(`alert-element[variant="${variant}"]`);
-  button.addEventListener('click', () => alert.toast());
-});</code></pre>
+    button.addEventListener('click', () =&gt; {
+      alert.toast({ forceRestart });
+    });
+  });
+
+  let forceRestart = false;
+  const restartCheckbox = document.querySelector('input[type="checkbox"]');
+
+  restartCheckbox.addEventListener('change', evt =&gt; {
+    forceRestart = evt.target.checked;
+  });
+&lt;/script&gt;</code></pre>
     </details>
   </div>
 
@@ -440,52 +447,50 @@ variants.forEach(variant => {
     <details>
       <summary>Source code</summary>
 
-      <h4>HTML</h4>
+<pre><code>&lt;button type="button"&gt;Create toast&lt;/button&gt;
 
-<pre><code class="hljs language-xml">&lt;button type="button"&gt;Create toast&lt;/button&gt;</code></pre>
+&lt;script&gt;
+  const button = document.querySelector('button');
 
-      <h4>JavaScript</h4>
+  let count = 0;
 
-<pre><code class="hljs language-js">const button = document.querySelector('button');
-
-let count = 0;
-
-button.addEventListener('click', () => {
-  toastify(`This is a custom toast alert #${++count}`, {
-    icon: `
-      &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
-        &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
-        &lt;path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/&gt;
-      &lt;/svg&gt;
-    `,
-    variant: 'info'
+  button.addEventListener('click', () =&gt; {
+    toastify(`This is a custom toast alert #${++count}`, {
+      icon: `
+        &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+          &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
+          &lt;path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/&gt;
+        &lt;/svg&gt;
+      `,
+      variant: 'info'
+    });
   });
-});
 
-function toastify(message, options = {}) {
-  const defaults = {
-    duration: 3000,
-    variant: 'neutral',
-    icon: ''
-  };
+  function toastify(message, options = {}) {
+    const defaults = {
+      duration: 3000,
+      variant: 'neutral',
+      icon: ''
+    };
 
-  options = { ...defaults, ...options };
+    options = { ...defaults, ...options };
 
-  const icon = options.icon ? `&lt;span slot="icon"&gt;${options.icon}&lt;/span&gt;` : '';
+    const icon = options.icon ? `&lt;span slot="icon"&gt;${options.icon}&lt;/span&gt;` : '';
 
-  const alert = Object.assign(document.createElement('alert-element'), {
-    closable: true,
-    duration: options.duration,
-    variant: options.variant,
-    innerHTML: `${icon}${escapeHtml(message)}`
-  });
-}
+    const alert = Object.assign(document.createElement('alert-element'), {
+      closable: true,
+      duration: options.duration,
+      variant: options.variant,
+      innerHTML: `${icon}${escapeHtml(message)}`
+    });
+  }
 
-function escapeHtml(html) {
-  const div = document.createElement('div');
-  div.textContent = html;
-  return div.innerHTML;
-}</code></pre>
+  function escapeHtml(html) {
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+&lt;/script&gt;</code></pre>
     </details>
   </div>
 
