@@ -11,6 +11,11 @@ const toastStack = createToastStack();
  * @typedef {T | null} Nullable
  */
 
+/**
+ * @typedef {{ keyframes: Keyframe[]; options?: KeyframeAnimationOptions }} AnimationDefinition
+ * @typedef {{ show?: AnimationDefinition; hide?: AnimationDefinition }} CustomAnimations
+ */
+
 const COMPONENT_NAME = 'alert-element';
 const EVT_ALERT_SHOW = 'alert-show';
 const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
@@ -180,6 +185,7 @@ template.innerHTML = /* html */ `
  * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
+ * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @attribute {boolean} closable - Reflects the closable property.
  * @attribute {boolean} open - Reflects the open property.
@@ -234,6 +240,12 @@ class AlertElement extends HTMLElement {
 
   /** @type {Nullable<{ promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void; }>} */
   #toastInProgress = null;
+
+  /** @type {CustomAnimations | undefined} */
+  #animations;
+
+  /** @type {CustomAnimations | undefined} */
+  static customAnimations;
 
   constructor() {
     super();
@@ -362,6 +374,20 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Custom animation keyframes and options for show/hide.
+   *
+   * @type {CustomAnimations | undefined}
+   * @default undefined
+   */
+  get customAnimations() {
+    return this.#animations;
+  }
+
+  set customAnimations(value) {
+    this.#animations = value;
+  }
+
+  /**
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
@@ -370,11 +396,12 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('duration');
     this.#upgradeProperty('variant');
     this.#upgradeProperty('closeLabel');
+    this.#upgradeProperty('customAnimations');
 
-    this.#baseEl = this.shadowRoot?.querySelector('.alert') || null;
-    this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') || null;
-    this.#iconSlot = this.shadowRoot?.querySelector('slot[name="icon"]') || null;
-    this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') || null;
+    this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
+    this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') ?? null;
+    this.#iconSlot = this.shadowRoot?.querySelector('slot[name="icon"]') ?? null;
+    this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') ?? null;
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
     this.#iconSlot?.addEventListener('slotchange', this.#handleIconSlotChange);
@@ -522,25 +549,73 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Resolves the animation keyframes and options for show/hide.
+   * Prioritizes instance-level settings, then static/global fallback, then defaults.
+   *
+   * @returns {{show: AnimationDefinition, hide: AnimationDefinition}}
+   */
+  #getAnimations() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const defaultAnimations = {
+      show: {
+        keyframes: [
+          { opacity: 0, transform: 'scale(0.85)' },
+          { opacity: 1, transform: 'scale(1)' }
+        ],
+        options: {
+          duration: 200,
+          easing: 'ease-out'
+        }
+      },
+      hide: {
+        keyframes: [
+          { opacity: 1, transform: 'scale(1)' },
+          { opacity: 0, transform: 'scale(0.85)' }
+        ],
+        options: {
+          duration: 200,
+          easing: 'ease-in'
+        }
+      }
+    };
+
+    const userAnimations = this.customAnimations || AlertElement.customAnimations || {};
+
+    /** @type {(key: 'show' | 'hide') => KeyframeAnimationOptions} */
+    const resolveOptions = key => {
+      const user = userAnimations[key]?.options ?? {};
+      const fallback = defaultAnimations[key].options;
+      return {
+        ...fallback,
+        ...user,
+        duration:
+          prefersReducedMotion || this.customAnimations === null || AlertElement.customAnimations === null
+            ? 0
+            : (user.duration ?? fallback.duration)
+      };
+    };
+
+    return {
+      show: {
+        keyframes: userAnimations.show?.keyframes ?? defaultAnimations.show.keyframes,
+        options: resolveOptions('show')
+      },
+      hide: {
+        keyframes: userAnimations.hide?.keyframes ?? defaultAnimations.hide.keyframes,
+        options: resolveOptions('hide')
+      }
+    };
+  }
+
+  /**
    * Plays the entry animation for the alert element.
    *
    * @param {Nullable<HTMLElement>} element - The element to animate.
-   * @param {number} [duration=200] - The duration of the animation in milliseconds.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
-  #playEntryAnimation(element, duration = 200) {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const keyframes = [
-      { opacity: 0, transform: 'scale(0.85)' },
-      { opacity: 1, transform: 'scale(1)' }
-    ];
-
-    const options = {
-      duration: prefersReducedMotion ? 0 : duration,
-      easing: 'ease-out'
-    };
-
+  #playEntryAnimation(element) {
+    const { keyframes, options } = this.#getAnimations().show;
     return element?.animate(keyframes, options);
   }
 
@@ -548,22 +623,10 @@ class AlertElement extends HTMLElement {
    * Plays the exit animation for the alert element.
    *
    * @param {Nullable<HTMLElement>} element - The element to animate.
-   * @param {number} [duration=200] - The duration of the animation in milliseconds.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
-  #playExitAnimation(element, duration = 200) {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const keyframes = [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.85)' }
-    ];
-
-    const options = {
-      duration: prefersReducedMotion ? 0 : duration,
-      easing: 'ease-in'
-    };
-
+  #playExitAnimation(element) {
+    const { keyframes, options } = this.#getAnimations().hide;
     return element?.animate(keyframes, options);
   }
 
@@ -698,7 +761,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */

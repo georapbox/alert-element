@@ -61,6 +61,7 @@ By default, the component comes with some basic default styling. However, you ca
 | `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
 | `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
+| `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
 ### Slots
 
@@ -240,6 +241,51 @@ function toastify(message, options = {}) {
   return alert.toast();
 }
 ```
+
+## Animations
+
+The element uses the [Web Animations API](https://developer.mozilla.org/docs/Web/API/Web_Animations_API) to animate the alert when it is shown or hidden.
+It comes with a default animation, but you can override it by providing your own animation options, either globally using the static `AlertElement.customAnimations` property or per instance using the `customAnimations` property.
+For example, you can override the default animation options for the `show` and `hide` animations as follows:
+
+```js
+const customAnimations = {
+  show: {
+    keyframes: [
+      { opacity: 0, transform: 'rotateX(90deg) scale(0.8)' },
+      { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)' },
+      { opacity: 1, transform: 'rotateX(5deg) scale(0.97)' },
+      { opacity: 1, transform: 'rotateX(0deg) scale(1)' }
+    ],
+    options: {
+      duration: 600,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+    }
+  },
+  hide: {
+    keyframes: [
+      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.8)' }
+    ],
+    options: {
+      duration: 400,
+      easing: 'ease-in'
+    }
+  }
+};
+
+// Set the custom animations globally
+AlertElement.customAnimations = customAnimations;
+
+// Or set the custom animations for a specific instance
+const alert = document.querySelector('alert-element');
+alert.customAnimations = customAnimations;
+````
+
+> [!NOTE]
+> Animations respect the users' `prefers-reduced-motion` setting.
+> If the user has enabled the setting on their system, the animations will be disabled and the element will be shown/hidden instantly.
+> To disable animations for all users no matter their settings, you can set the `customAnimations` property to `null`.
 
 ## Changelog
 

@@ -157,3 +157,46 @@ function toastify(message, options = {}) {
     document.body.setAttribute('data-toast-stack-position', position);
   });
 })();
+
+// Custom animations
+(function () {
+  const button = document.querySelector('[data-example="custom-animations"] > button');
+  const alert = document.querySelector('[data-example="custom-animations"] > alert-element');
+
+  alert.customAnimations = {
+    show: {
+      keyframes: [
+        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)' },
+        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)' },
+        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)' },
+        { opacity: 1, transform: 'rotateX(0deg) scale(1)' }
+      ],
+      options: {
+        duration: 600,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+      }
+    },
+    hide: {
+      keyframes: [
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(0.8)' }
+      ],
+      options: {
+        duration: 400,
+        easing: 'ease-in'
+      }
+    }
+  };
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('hidden', '');
+  });
+
+  alert.addEventListener('alert-after-hide', () => {
+    button.removeAttribute('hidden');
+  });
+
+  button.addEventListener('click', () => {
+    alert.show();
+  });
+})();

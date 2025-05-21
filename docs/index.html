@@ -41,6 +41,7 @@
     <li><a href="#example-toast-notifications">Toast notifications</a></li>
     <li><a href="#example-imperative-toast-notifications">Creating toasts imperatively</a></li>
     <li><a href="#example-custom-toast-stack-position">Custom toast stack position</a></li>
+    <li><a href="#example-custom-animations">Custom animations</a></li>
   </ol>
 
   <h3 id="example-variants">Variants</h3>
@@ -177,7 +178,7 @@
   });
 
   button.addEventListener('click', () =&gt; {
-    alert.open = true;
+    alert.show();
   });
 &lt;/script&gt;</code></pre>
     </details>
@@ -212,7 +213,7 @@
   const alert = document.querySelector('alert-element');
 
   button.addEventListener('click', () =&gt; {
-    alert.open = true;
+    alert.show();
   });
 &lt;/script&gt;</code></pre>
     </details>
@@ -438,13 +439,13 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon data-example="imperative-toasts">
-      <button type="button">Create toast</button>
+      <button type="button">Create Toast</button>
     </browser-window>
 
     <details>
       <summary>Source code</summary>
 
-<pre><code>&lt;button type="button"&gt;Create toast&lt;/button&gt;
+<pre><code>&lt;button type="button"&gt;Create Toast&lt;/button&gt;
 
 &lt;script&gt;
   const button = document.querySelector('button');
@@ -531,7 +532,7 @@
         </div>
       </fieldset>
 
-      <button type="button" style="margin: 0;">Create toast</button>
+      <button type="button" style="margin: 0;">Create Toast</button>
     </browser-window>
 
     <details>
@@ -591,7 +592,7 @@
 &lt;input type="radio" id="bottom-right" value="bottom-right" name="name="toast-stack-poisiton"&gt;
 &lt;label for="bottom-right"&gt;Bottom right&lt;/label&gt;
 
-&lt;button type="button"&gt;Create toast&lt;/button&gt;
+&lt;button type="button"&gt;Create Toast&lt;/button&gt;
 
 &lt;script&gt;
   const button = document.querySelector('button');
@@ -613,6 +614,66 @@
     alert.toast({ forceRestart: true });
 
     document.body.setAttribute('data-toast-stack-position', position);
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-custom-animations">Custom animations</h3>
+  <p>
+    You can customize the animations of the alert element using the <code>customAnimations</code> property.
+    For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#animations" target="_blank" rel="noreferrer noopener">documentation</a>.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-animations">
+      <button type="button" style="margin: 0;">Show Alert</button>
+
+      <alert-element variant="info" duration="3000" closable>
+        This alert has custom animations applied to it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+
+&lt;alert-element variant="info" duration="3000" closable&gt;
+  This alert has custom animations applied to it.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
+
+  alert.customAnimations = {
+    show: {
+      keyframes: [
+        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)' },
+        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)' },
+        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)' },
+        { opacity: 1, transform: 'rotateX(0deg) scale(1)' }
+      ],
+      options: {
+        duration: 600,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+      }
+    },
+    hide: {
+      keyframes: [
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(0.8)' }
+      ],
+      options: {
+        duration: 400,
+        easing: 'ease-in'
+      }
+    }
+  };
+
+  button.addEventListener('click', () =&gt; {
+    alert.show();
   });
 &lt;/script&gt;</code></pre>
     </details>
