@@ -585,15 +585,15 @@ class AlertElement extends HTMLElement {
    * @returns {Promise<void>} - A promise that resolves when the event is triggered.
    */
   #waitForEvent(element, eventName) {
-    console.log(element);
     return new Promise(resolve => {
-      const handler = (/** @type {Event} */ evt) => {
-        if (evt.target === element) {
-          element.removeEventListener(eventName, handler);
-          resolve(undefined);
+      const done = (/** @type {Event} */ evt) => {
+        if (evt.target !== element) {
+          return;
         }
+        resolve();
       };
-      element.addEventListener(eventName, handler);
+
+      element.addEventListener(eventName, done, { once: true });
     });
   }
 
@@ -661,12 +661,15 @@ class AlertElement extends HTMLElement {
       resolve: resolveFn,
       cleanup: () => {
         this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
+
         if (this.parentNode === toastStack) {
           toastStack.removeChild(this);
         }
+
         if (!toastStack.querySelector(COMPONENT_NAME)) {
           toastStack.remove();
         }
+
         this.open = false;
         this.#toastInProgress = null;
       }

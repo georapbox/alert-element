@@ -136,7 +136,7 @@ function toastify(message, options = {}) {
 (function () {
   const button = document.querySelector('[data-example="custom-toast-stack-position"] > button');
   const alert = Object.assign(document.createElement('alert-element'), {
-    variant: ['info', 'success', 'neutral', 'warning', 'danger'][Math.floor(Math.random() * 5)],
+    variant: 'info',
     duration: 3000,
     closable: true
   });
