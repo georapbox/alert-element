@@ -69,6 +69,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+p {
+  text-wrap: pretty;
+}
+
 button {
   transition:
     background-color var(--animation-duration) linear,

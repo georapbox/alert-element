@@ -151,7 +151,7 @@ function toastify(message, options = {}) {
     );
     const position = checkedRadio ? checkedRadio.value : 'top-right';
 
-    alert.textContent = `I'm positioned at ${position}.`;
+    alert.textContent = `This alert is currently positioned at ${position}.`;
     alert.toast({ forceRestart: true });
 
     document.body.setAttribute('data-toast-stack-position', position);
