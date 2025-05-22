@@ -127,6 +127,10 @@ the toast stack will be removed from the DOM.
 By default, the toast stack is a fixed positioned element that is displayed at the top-right corner of the viewport,
 but you can override its position by targeting `.alert-toast-stack` class in your stylesheet.
 
+> [!NOTE]
+> The toast stack has a shadow DOM root, so you need to use the `::part` pseudo-element to style it.
+> The reason for this is to encapsulate the styles of the toast stack and prevent them from leaking into the rest of your application.
+
 Below are some examples of how to position the toast stack in the viewport.
 
 ```css
@@ -164,10 +168,6 @@ Below are some examples of how to position the toast stack in the viewport.
   bottom: 0;
 }
 ```
-
-> [!NOTE]
-> The toast stack has a shadow DOM root, so you need to use the `::part` pseudo-element to style it.
-> The reason for this is to encapsulate the styles of the toast stack and prevent them from leaking into the rest of your application.
 
 The default styles of the toast stack are as follows:
 
@@ -286,6 +286,29 @@ alert.customAnimations = customAnimations;
 > Animations respect the users' `prefers-reduced-motion` setting.
 > If the user has enabled the setting on their system, the animations will be disabled and the element will be shown/hidden instantly.
 > To disable animations for all users no matter their settings, you can set the `customAnimations` property to `null`.
+
+## Invoker Commands (Experimental)
+
+> [!NOTE]
+> This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
+> The API is still in the early stages and might change in the future. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
+
+The element supports the Invoker Commands API, enabling a more declarative way to control alerts. Use the following commands:
+
+- `--alert-show` - shows the alert element
+- `--alert-hide` - hides the alert element
+
+To trigger these commands, add the `commandfor` and `command` attributes to a button, targeting the alert element by its `id` attribute.
+
+```html
+<button type="button" commandfor="myAlert" command="--alert-show">Show Alert</button>
+<button type="button" commandfor="myAlert" command="--alert-hide">Hide Alert</button>
+
+<alert-element variant="info" id="myAlert">
+  <strong>Alert with invoker commands</strong><br>
+  This alert uses invoker commands to toggle its visibility.
+</alert-element>
+```
 
 ## Changelog
 

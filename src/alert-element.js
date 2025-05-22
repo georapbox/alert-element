@@ -12,8 +12,16 @@ const toastStack = createToastStack();
  */
 
 /**
+ * Represents the keyframe animation options.
+ *
  * @typedef {{ keyframes: Keyframe[]; options?: KeyframeAnimationOptions }} AnimationDefinition
  * @typedef {{ show?: AnimationDefinition; hide?: AnimationDefinition }} CustomAnimations
+ */
+
+/**
+ * Represents a command event.
+ *
+ * @typedef {Event & { command: string }} CommandEvent
  */
 
 const COMPONENT_NAME = 'alert-element';
@@ -21,6 +29,8 @@ const EVT_ALERT_SHOW = 'alert-show';
 const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
 const EVT_ALERT_HIDE = 'alert-hide';
 const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
+const COMMAND_ALERT_SHOW = '--alert-show';
+const COMMAND_ALERT_HIDE = '--alert-hide';
 
 const styles = /* css */ `
   :host {
@@ -408,6 +418,7 @@ class AlertElement extends HTMLElement {
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
     this.addEventListener('mouseenter', this.#handleMouseEnter);
     this.addEventListener('mouseleave', this.#handleMouseLeave);
+    this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
 
     if (this.open) {
       this.#baseEl?.removeAttribute('hidden');
@@ -431,6 +442,7 @@ class AlertElement extends HTMLElement {
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
     this.removeEventListener('mouseenter', this.#handleMouseEnter);
     this.removeEventListener('mouseleave', this.#handleMouseLeave);
+    this.removeEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
   }
 
   /**
@@ -531,6 +543,24 @@ class AlertElement extends HTMLElement {
   };
 
   /**
+   * Handles the command event.
+   *
+   * @param {CommandEvent} evt - The command event.
+   */
+  #handleCommandEvent = evt => {
+    switch (evt.command) {
+      case COMMAND_ALERT_SHOW:
+        this.open = true;
+        break;
+      case COMMAND_ALERT_HIDE:
+        this.open = false;
+        break;
+      default:
+        break;
+    }
+  };
+
+  /**
    * Updates the aria-label attribute of the close button.
    * If the slot for the close button has text content, the aria-label attribute is removed to allow the text content to be used as the label.
    * Otherwise, the aria-label attribute is set to the `closeLabel` property.
@@ -560,22 +590,22 @@ class AlertElement extends HTMLElement {
     const defaultAnimations = {
       show: {
         keyframes: [
-          { opacity: 0, transform: 'scale(0.85)' },
+          { opacity: 0, transform: 'scale(0.9)' },
           { opacity: 1, transform: 'scale(1)' }
         ],
         options: {
-          duration: 200,
-          easing: 'ease-out'
+          duration: 250,
+          easing: 'ease'
         }
       },
       hide: {
         keyframes: [
           { opacity: 1, transform: 'scale(1)' },
-          { opacity: 0, transform: 'scale(0.85)' }
+          { opacity: 0, transform: 'scale(0.9)' }
         ],
         options: {
-          duration: 200,
-          easing: 'ease-in'
+          duration: 250,
+          easing: 'ease'
         }
       }
     };
