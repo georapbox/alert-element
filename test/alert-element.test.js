@@ -58,7 +58,7 @@ describe('alert-element', () => {
     it('close button has default aria-label attribute if user provides non-text content for the button', async () => {
       const el = await fixture(html`
         <alert-element>
-          <span slot="close"><img src="img.png" alt="" /></span>
+          <span slot="close"><img src="" /></span>
         </alert-element>
       `);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
@@ -68,7 +68,7 @@ describe('alert-element', () => {
     it('close button has custom aria-label attribute if user provides non-text content for the button and close-label attribute', async () => {
       const el = await fixture(html`
         <alert-element close-label="Close me">
-          <span slot="close"><img src="img.png" alt="" /></span>
+          <span slot="close"><img src="" /></span>
         </alert-element>
       `);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
@@ -179,7 +179,7 @@ describe('alert-element', () => {
       expect(iconSlot).to.exist;
       const icon = document.createElement('img');
       icon.setAttribute('slot', 'icon');
-      icon.src = 'icon.png';
+      icon.src = '';
       el.appendChild(icon);
       await elementUpdated(el);
       expect(iconSlot.assignedElements()).to.deep.equal([icon]);

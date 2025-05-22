@@ -63,7 +63,7 @@ body {
   max-width: var(--body-max-width);
   margin: 20px auto;
   padding: 0 10px;
-  word-wrap: break-word;
+  overflow-x: hidden;
   color: var(--text-main);
   background: var(--background-body);
   text-rendering: optimizeLegibility;

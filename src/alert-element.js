@@ -112,7 +112,7 @@ const styles = /* css */ `
     line-height: 0;
   }
 
-  .alert--with-icon .alert__icon {
+  .alert__icon ::slotted(*) {
     margin-inline-start: 1rem;
   }
 
@@ -238,9 +238,6 @@ class AlertElement extends HTMLElement {
 
   /** @type {Nullable<HTMLButtonElement>} */
   #closeBtn = null;
-
-  /** @type {Nullable<HTMLSlotElement>} */
-  #iconSlot = null;
 
   /** @type {Nullable<HTMLSlotElement>} */
   #closeSlotEl = null;
@@ -410,11 +407,9 @@ class AlertElement extends HTMLElement {
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
     this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') ?? null;
-    this.#iconSlot = this.shadowRoot?.querySelector('slot[name="icon"]') ?? null;
     this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') ?? null;
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
-    this.#iconSlot?.addEventListener('slotchange', this.#handleIconSlotChange);
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
     this.addEventListener('mouseenter', this.#handleMouseEnter);
     this.addEventListener('mouseleave', this.#handleMouseLeave);
@@ -438,7 +433,6 @@ class AlertElement extends HTMLElement {
   disconnectedCallback() {
     this.#clearAutoHideTimer();
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
-    this.#iconSlot?.removeEventListener('slotchange', this.#handleIconSlotChange);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
     this.removeEventListener('mouseenter', this.#handleMouseEnter);
     this.removeEventListener('mouseleave', this.#handleMouseLeave);
@@ -524,15 +518,6 @@ class AlertElement extends HTMLElement {
   #handleMouseLeave = () => {
     this.#clearAutoHideTimer();
     this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
-  };
-
-  /**
-   * Handles the slot change event on the icon slot.
-   */
-  #handleIconSlotChange = () => {
-    const assignedElements = this.#iconSlot?.assignedElements() || [];
-    const hasContent = assignedElements.length > 0;
-    this.#baseEl?.classList.toggle('alert--with-icon', !!hasContent);
   };
 
   /**

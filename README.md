@@ -289,10 +289,6 @@ alert.customAnimations = customAnimations;
 
 ## Invoker Commands (Experimental)
 
-> [!NOTE]
-> This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
-> The API is still in the early stages and might change in the future. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
-
 The element supports the Invoker Commands API, enabling a more declarative way to control alerts. Use the following commands:
 
 - `--alert-show` - shows the alert element
@@ -309,6 +305,10 @@ To trigger these commands, add the `commandfor` and `command` attributes to a bu
   This alert uses invoker commands to toggle its visibility.
 </alert-element>
 ```
+
+> [!NOTE]
+> This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
+> The API is still in the early stages and might change in the future. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
 
 ## Changelog
 
