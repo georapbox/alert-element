@@ -1,6 +1,17 @@
-import { expect, fixture, fixtureCleanup, html, elementUpdated, aTimeout } from '@open-wc/testing';
+import { expect, fixture, fixtureCleanup, html, oneEvent } from '@open-wc/testing';
 import sinon from 'sinon';
 import { AlertElement } from '../src/alert-element.js';
+import {
+  EVT_ALERT_SHOW,
+  EVT_ALERT_AFTER_SHOW,
+  EVT_ALERT_HIDE,
+  EVT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+} from '../src/constants.js';
 
 AlertElement.defineCustomElement();
 
@@ -76,76 +87,98 @@ describe('alert-element', () => {
     });
   });
 
-  describe('attributes - properties', () => {
+  describe('properties - attribures', () => {
     // closable
+    it('reflects property "closable" to attribute "closable"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.closable = true;
+      expect(el.hasAttribute('closable')).to.be.true;
+      el.closable = false;
+      expect(el.hasAttribute('closable')).to.be.false;
+    });
+
     it('reflects attribute "closable" to property "closable"', async () => {
       const el = await fixture(html`<alert-element closable></alert-element>`);
       expect(el.closable).to.be.true;
     });
 
-    it('reflects property "closable" to attribute "closable"', async () => {
+    // open
+    it('reflects property "open" to attribute "open"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.closable = true;
-      await elementUpdated(el);
-      expect(el.hasAttribute('closable')).to.be.true;
-      el.closable = false;
-      await elementUpdated(el);
-      expect(el.hasAttribute('closable')).to.be.false;
+      el.open = true;
+      expect(el.hasAttribute('open')).to.be.true;
+      el.open = false;
+      expect(el.hasAttribute('open')).to.be.false;
     });
 
-    // open
     it('reflects attribute "open" to property "open"', async () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
       expect(el.open).to.be.true;
     });
 
-    it('reflects property "open" to attribute "open"', async () => {
+    // duration
+    it('reflects property "duration" to attribute "duration"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.open = true;
-      await elementUpdated(el);
-      expect(el.hasAttribute('open')).to.be.true;
-      el.open = false;
-      await elementUpdated(el);
-      expect(el.hasAttribute('open')).to.be.false;
+      el.duration = 3000;
+      expect(el.getAttribute('duration')).to.equal('3000');
     });
 
-    // duration
     it('reflects attribute "duration" to property "duration"', async () => {
       const el = await fixture(html`<alert-element duration="3000"></alert-element>`);
       expect(el.duration).to.equal(3000);
     });
 
-    it('reflects property "duration" to attribute "duration"', async () => {
+    it('property duration returns Infinity if invalid value is set', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.duration = 3000;
-      await elementUpdated(el);
-      expect(el.getAttribute('duration')).to.equal('3000');
+      el.duration = 'invalid';
+      expect(el.duration).to.equal(Infinity);
+      el.duration = null;
+      expect(el.duration).to.equal(Infinity);
+      el.duration = undefined;
+      expect(el.duration).to.equal(Infinity);
+      el.duration = NaN;
+      expect(el.duration).to.equal(Infinity);
     });
 
     // variant
+    it('reflects property "variant" to attribute "variant"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.variant = 'info';
+      expect(el.getAttribute('variant')).to.equal('info');
+    });
+
     it('reflects attribute "variant" to property "variant"', async () => {
       const el = await fixture(html`<alert-element variant="info"></alert-element>`);
       expect(el.variant).to.equal('info');
     });
 
-    it('reflects property "variant" to attribute "variant"', async () => {
+    it('property variant returns empty string if not set', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.variant = 'info';
-      await elementUpdated(el);
-      expect(el.getAttribute('variant')).to.equal('info');
+      expect(el.variant).to.equal('');
     });
 
-    // close-label
+    // closeLabel
+    it('reflects property "closeLabel" to attribute "close-label"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.closeLabel = 'Close me';
+      expect(el.getAttribute('close-label')).to.equal('Close me');
+    });
+
     it('reflects attribute "close-label" to property "closeLabel"', async () => {
       const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
       expect(el.closeLabel).to.equal('Close me');
     });
 
-    it('reflects property "closeLabel" to attribute "close-label"', async () => {
+    // customAnimations
+    it('does not reflect attribute "custom-animations" to property "customAnimations"', async () => {
+      const el = await fixture(html`<alert-element custom-animations></alert-element>`);
+      expect(el.customAnimations).to.be.undefined;
+    });
+
+    it('does not reflect property "customAnimations" to attribute "custom-animations"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.closeLabel = 'Close me';
-      await elementUpdated(el);
-      expect(el.getAttribute('close-label')).to.equal('Close me');
+      el.customAnimations = { show: null, hide: null };
+      expect(el.getAttribute('custom-animations')).to.be.null;
     });
   });
 
@@ -157,7 +190,6 @@ describe('alert-element', () => {
       const p = document.createElement('p');
       p.textContent = 'Main content goes here';
       el.appendChild(p);
-      await elementUpdated(el);
       expect(bodySlot.assignedElements()).to.deep.equal([p]);
     });
 
@@ -169,7 +201,6 @@ describe('alert-element', () => {
       close.setAttribute('slot', 'close');
       close.textContent = 'Close';
       el.appendChild(close);
-      await elementUpdated(el);
       expect(closeSlot.assignedElements()).to.deep.equal([close]);
     });
 
@@ -181,7 +212,6 @@ describe('alert-element', () => {
       icon.setAttribute('slot', 'icon');
       icon.src = '';
       el.appendChild(icon);
-      await elementUpdated(el);
       expect(iconSlot.assignedElements()).to.deep.equal([icon]);
     });
   });
@@ -213,62 +243,108 @@ describe('alert-element', () => {
   });
 
   describe('custom events', () => {
-    it('should fire "alert-show" event', async () => {
+    it(`fires "${EVT_ALERT_SHOW}" and "${EVT_ALERT_AFTER_SHOW}" with null detail`, async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      const spy = sinon.spy();
-      el.addEventListener('alert-show', spy);
+      const showEvent = oneEvent(el, EVT_ALERT_SHOW);
+      const afterShowEvent = oneEvent(el, EVT_ALERT_AFTER_SHOW);
       el.setAttribute('open', '');
-      expect(spy).to.have.been.called;
+      expect(await showEvent).to.be.an.instanceOf(CustomEvent);
+      expect((await showEvent).detail).to.be.null;
+      expect(await showEvent).to.be.an.instanceOf(CustomEvent);
+      expect((await afterShowEvent).detail).to.be.null;
     });
 
-    it('should fire "alert-hide" event', async () => {
+    it(`fires "${EVT_ALERT_HIDE}" and "${EVT_ALERT_AFTER_HIDE}" with detail containing reason`, async () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
-      const spy = sinon.spy();
-      el.addEventListener('alert-hide', spy);
+      const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
+      const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
       el.removeAttribute('open');
-      expect(spy).to.have.been.called;
+      expect(await hideEvent).to.be.an.instanceOf(CustomEvent);
+      expect((await hideEvent).detail).to.be.an('object');
+      expect(await afterHideEvent).to.be.an.instanceOf(CustomEvent);
+      expect((await afterHideEvent).detail).to.be.an('object');
+    });
+
+    describe('close reason', () => {
+      it(`should set reason to "${CLOSE_REASON_USER}" when alert closed by user clicking on close button`, async () => {
+        const el = await fixture(html`<alert-element open closable></alert-element>`);
+        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        const closeButton = el.shadowRoot.querySelector('.alert__close');
+        closeButton.click();
+        expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_USER });
+        expect((await afterHideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_USER });
+      });
+
+      it(`should set reason to "${CLOSE_REASON_TIMEOUT}" when alert closed by timeout`, async () => {
+        const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
+        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_TIMEOUT });
+        expect((await afterHideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_TIMEOUT });
+      });
+
+      it(`should set reason to "${CLOSE_REASON_API}" when alert closed by API`, async () => {
+        const el = await fixture(html`<alert-element open></alert-element>`);
+        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        await el.hide();
+        expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_API });
+        expect((await afterHideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_API });
+      });
     });
   });
 
   describe('methods', () => {
     it('should show alert when calling "show()" method', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      aTimeout(100);
-      el.show();
-      await elementUpdated(el);
+      await el.show();
       expect(el.open).to.be.true;
     });
 
+    it(`should not fire "${EVT_ALERT_SHOW}" when alert is already open`, async () => {
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      const listener = sinon.spy();
+      el.addEventListener(EVT_ALERT_SHOW, listener);
+      await el.show(); // Call show() while alert is already open
+      expect(listener).to.not.have.been.called;
+    });
+
     it('should hide alert when calling "hide()" method', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.setAttribute('open', '');
-      await elementUpdated(el);
-      aTimeout(100);
-      el.hide();
-      await elementUpdated(el);
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      await el.hide();
       expect(el.open).to.be.false;
+    });
+
+    it(`should not fire "${EVT_ALERT_HIDE}" when alert is already closed`, async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      const listener = sinon.spy();
+      el.addEventListener(EVT_ALERT_HIDE, listener);
+      await el.hide(); // Call show() while alert is already open
+      expect(listener).to.not.have.been.called;
     });
   });
 
   describe('mouse events', () => {
     it('should prevent auto-hide on mouse enter and resume on mouse out', async () => {
-      const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
-      const mouseEnterEvent = new MouseEvent('mouseenter', { bubbles: true });
-      const mouseOutEvent = new MouseEvent('mouseleave', { bubbles: true });
-      el.dispatchEvent(mouseEnterEvent);
-      await aTimeout(200);
+      const DURATION = 100;
+      const el = await fixture(html`<alert-element open duration="${DURATION}"></alert-element>`);
+      el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); // Simulate mouseenter (pause auto-hide)
+      await new Promise(resolve => setTimeout(resolve, DURATION + 50)); // Wait longer than the duration to verify it didn't auto-close
       expect(el.open).to.be.true;
-      el.dispatchEvent(mouseOutEvent);
-      await aTimeout(200);
+      const hideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      el.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })); // Resume auto-hide by simulating mouseleave
+      await hideEvent;
       expect(el.open).to.be.false;
     });
   });
 
   describe('duration', () => {
     it('should hide alert after duration expires', async () => {
-      const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
+      const el = await fixture(html`<alert-element open></alert-element>`);
       expect(el.open).to.be.true;
-      await aTimeout(200);
+      el.duration = 100;
+      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
       expect(el.open).to.be.false;
     });
   });
@@ -277,20 +353,16 @@ describe('alert-element', () => {
     it('should close alert when clicking on close button', async () => {
       const el = await fixture(html`<alert-element closable></alert-element>`);
       el.setAttribute('open', '');
-      await elementUpdated(el);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
       closeButton.click();
-      await elementUpdated(el);
       expect(el.open).to.be.false;
     });
 
     it('should not close alert when clicking on close button if closable is false', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       el.setAttribute('open', '');
-      await elementUpdated(el);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
       closeButton.click();
-      await elementUpdated(el);
       expect(el.open).to.be.true;
     });
   });
@@ -299,25 +371,44 @@ describe('alert-element', () => {
     it('toast alert and hide it manually', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       el.toast();
-      await elementUpdated(el);
       expect(el.open).to.be.true;
       expect([...el.parentElement.classList]).to.include('alert-toast-stack');
       el.open = false;
-      await elementUpdated(el);
       expect(el.open).to.be.false;
+      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
       expect(document.querySelector('.alert-toast-stack')).to.be.null;
     });
 
     it('toast alert and hide it automatically after duration expires', async () => {
-      const DURATION = 100;
-      const el = await fixture(html`<alert-element duration="${DURATION}"></alert-element>`);
+      const el = await fixture(html`<alert-element duration="100"></alert-element>`);
       el.toast();
-      await elementUpdated(el);
       expect(el.open).to.be.true;
       expect([...el.parentElement.classList]).to.include('alert-toast-stack');
-      await aTimeout(DURATION + 100); // wait for duration to expire + some buffer
+      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
       expect(el.open).to.be.false;
       expect(document.querySelector('.alert-toast-stack')).to.be.null;
+    });
+  });
+
+  describe('command events', () => {
+    it(`should open alert on "${COMMAND_ALERT_SHOW}" command`, async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      const afterShowEvent = oneEvent(el, EVT_ALERT_AFTER_SHOW);
+      const commandEvent = new Event('command', { bubbles: true, composed: true });
+      Object.defineProperty(commandEvent, 'command', { value: COMMAND_ALERT_SHOW });
+      el.dispatchEvent(commandEvent);
+      await afterShowEvent;
+      expect(el.open).to.be.true;
+    });
+
+    it(`should close alert on "${COMMAND_ALERT_HIDE}" command`, async () => {
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      const commandEvent = new Event('command', { bubbles: true, composed: true });
+      Object.defineProperty(commandEvent, 'command', { value: COMMAND_ALERT_HIDE });
+      el.dispatchEvent(commandEvent);
+      await afterHideEvent;
+      expect(el.open).to.be.false;
     });
   });
 });

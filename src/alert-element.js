@@ -1,6 +1,18 @@
 // @ts-check
 
 import { createToastStack } from './toast-stack.js';
+import {
+  COMPONENT_NAME,
+  EVT_ALERT_SHOW,
+  EVT_ALERT_AFTER_SHOW,
+  EVT_ALERT_HIDE,
+  EVT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+} from './constants.js';
 
 const toastStack = createToastStack();
 
@@ -24,13 +36,11 @@ const toastStack = createToastStack();
  * @typedef {Event & { command: string }} CommandEvent
  */
 
-const COMPONENT_NAME = 'alert-element';
-const EVT_ALERT_SHOW = 'alert-show';
-const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
-const EVT_ALERT_HIDE = 'alert-hide';
-const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
-const COMMAND_ALERT_SHOW = '--alert-show';
-const COMMAND_ALERT_HIDE = '--alert-hide';
+/**
+ * Represents the close reason for the alert.
+ *
+ * @typedef { 'user' | 'timeout' | 'api' } CloseReason
+ */
 
 const styles = /* css */ `
   :host {
@@ -254,6 +264,9 @@ class AlertElement extends HTMLElement {
   /** @type {CustomAnimations | undefined} */
   static customAnimations;
 
+  /** @type {CloseReason} */
+  #closeReason = CLOSE_REASON_API;
+
   constructor() {
     super();
 
@@ -455,10 +468,11 @@ class AlertElement extends HTMLElement {
         this.#emitEvent(EVT_ALERT_AFTER_SHOW);
       });
     } else {
-      this.#emitEvent(EVT_ALERT_HIDE);
+      this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
       this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
         this.#baseEl?.setAttribute('hidden', '');
-        this.#emitEvent(EVT_ALERT_AFTER_HIDE);
+        this.#emitEvent(EVT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
+        this.#closeReason = CLOSE_REASON_API;
       });
     }
   }
@@ -481,6 +495,7 @@ class AlertElement extends HTMLElement {
    */
   #startAutoHideTimer() {
     this.#autoHideTimeout = window.setTimeout(() => {
+      this.#closeReason = CLOSE_REASON_TIMEOUT;
       this.open = false;
     }, this.duration);
   }
@@ -502,6 +517,7 @@ class AlertElement extends HTMLElement {
     if (!this.closable) {
       return;
     }
+    this.#closeReason = CLOSE_REASON_USER;
     this.open = false;
   };
 
@@ -538,6 +554,7 @@ class AlertElement extends HTMLElement {
         this.open = true;
         break;
       case COMMAND_ALERT_HIDE:
+        this.#closeReason = CLOSE_REASON_API;
         this.open = false;
         break;
       default:
@@ -649,9 +666,11 @@ class AlertElement extends HTMLElement {
    * Dispatches a custom event with the given name.
    *
    * @param {string} eventName - The name of the event to dispatch.
+   * @param {Nullable<any>} detail - The detail object to include with the event.
    */
-  #emitEvent(eventName) {
-    const evt = new Event(eventName, { bubbles: true, composed: true });
+  #emitEvent(eventName, detail = null) {
+    const options = { bubbles: true, composed: true, detail };
+    const evt = new CustomEvent(eventName, options);
     this.dispatchEvent(evt);
   }
 

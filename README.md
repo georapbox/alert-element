@@ -109,10 +109,15 @@ By default, the component comes with some basic default styling. However, you ca
 
 | Name | Description | Event Detail |
 | ---- | ----------- | ------------ |
-| `alert-show` | Emitted when the alert is shown. | - |
-| `alert-after-show` | Emitted after the alert is shown and all animations are complete. | - |
-| `alert-hide` | Emitted when the alert is hidden. | - |
-| `alert-after-hide` | Emitted after the alert is hidden and all animations are complete. | - |
+| `alert-show` | Emitted when the alert is shown. | `null` |
+| `alert-after-show` | Emitted after the alert is shown and all animations are complete. | `null` |
+| `alert-hide` | Emitted when the alert is hidden. | `{ reason: 'user' | 'timeout' | 'api' }` |
+| `alert-after-hide` | Emitted after the alert is hidden and all animations are complete. | `{ reason: 'user' | 'timeout' | 'api' }` |
+
+The events `alert-hide` and `alert-after-hide` have a `reason` property in the event detail that indicates how the alert was hidden. The possible values are:
+- `user` - The alert was closed by the user using the close button.
+- `timeout` - The alert was closed automatically after the duration (if set) has elapsed.
+- `api` - The alert was closed programmatically by using either the `hide()` method, or the `open` property, or the Invoker Commands API.
 
 ## Toast notifications
 

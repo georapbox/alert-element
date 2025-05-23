@@ -3,7 +3,6 @@ import '../lib/browser-window.js';
 const url = window.location.href;
 const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
 const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert-element.js';
-
 const { AlertElement } = await import(componentUrl);
 
 AlertElement.defineCustomElement();
@@ -61,6 +60,25 @@ function toastify(message, options = {}) {
   });
 })();
 
+// Custom close button
+(function () {
+  const button = document.querySelector('[data-example="custom-close-button"] > button');
+  const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('hidden', '');
+  });
+
+  alert.addEventListener('alert-after-hide', () => {
+    button.removeAttribute('hidden');
+  });
+
+  button.addEventListener('click', () => {
+    const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
+    alert.open = true;
+  });
+})();
+
 // Alert with duration
 (function () {
   const button = document.querySelector('[data-example="duration"] > button');
@@ -85,7 +103,6 @@ function toastify(message, options = {}) {
   const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
 
   button.addEventListener('click', () => {
-    const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
     alert.open = true;
   });
 
