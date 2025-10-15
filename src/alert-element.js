@@ -39,7 +39,13 @@ const toastStack = createToastStack();
 /**
  * Represents the close reason for the alert.
  *
- * @typedef { 'user' | 'timeout' | 'api' } CloseReason
+ * @typedef {'user' | 'timeout' | 'api'} CloseReason
+ */
+
+/**
+ * Represents how the alert should be announced to screen readers.
+ *
+ * @typedef {'alert' | 'status' | 'none'} Announce
  */
 
 const styles = /* css */ `
@@ -180,7 +186,7 @@ template.innerHTML = /* html */ `
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
-    <div class="alert__message" part="message" aria-live="polite">
+    <div class="alert__message" part="message">
       <slot></slot>
     </div>
     <button type="button" class="alert__close" part="close" aria-label="Close">
@@ -205,12 +211,14 @@ template.innerHTML = /* html */ `
  * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
+ * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @attribute {boolean} closable - Reflects the closable property.
  * @attribute {boolean} open - Reflects the open property.
  * @attribute {number} duration - Reflects the duration property.
  * @attribute {string} variant - Reflects the variant property.
+ * @attribute {string} announce - Reflects the announce property.
  * @attribute {string} close-label - Reflects the closeLabel property.
  *
  * @slot - The default slot for the alert message.
@@ -277,7 +285,7 @@ class AlertElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'duration', 'close-label'];
+    return ['open', 'duration', 'close-label', 'announce'];
   }
 
   /**
@@ -302,6 +310,13 @@ class AlertElement extends HTMLElement {
         break;
       case 'close-label':
         this.#updateCloseLabel();
+        break;
+      case 'announce':
+        if (this.announce !== 'none') {
+          this.#baseEl?.setAttribute('role', this.announce);
+        } else {
+          this.#baseEl?.removeAttribute('role');
+        }
         break;
       default:
         break;
@@ -394,6 +409,21 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Defines how the alert should be announced to screen readers.
+   *
+   * @type {Announce}
+   * @default 'alert'
+   */
+  get announce() {
+    const val = this.getAttribute('announce');
+    return val === 'alert' || val === 'status' || val === 'none' ? val : 'alert';
+  }
+
+  set announce(value) {
+    this.setAttribute('announce', value != null ? value.toString() : value);
+  }
+
+  /**
    * Custom animation keyframes and options for show/hide.
    *
    * @type {CustomAnimations | undefined}
@@ -416,6 +446,7 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('duration');
     this.#upgradeProperty('variant');
     this.#upgradeProperty('closeLabel');
+    this.#upgradeProperty('announce');
     this.#upgradeProperty('customAnimations');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
@@ -437,6 +468,12 @@ class AlertElement extends HTMLElement {
 
     if (this.closeLabel) {
       this.#updateCloseLabel();
+    }
+
+    if (this.announce !== 'none') {
+      this.#baseEl?.setAttribute('role', this.announce);
+    } else {
+      this.#baseEl?.removeAttribute('role');
     }
   }
 
@@ -795,7 +832,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'customAnimations'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */
