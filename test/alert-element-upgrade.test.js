@@ -11,6 +11,7 @@ describe('alert-element upgrading', () => {
     el.open = true;
     el.variant = 'info';
     el.closeLabel = 'Close alert';
+    el.announce = 'status';
 
     // Upgrade custom element
     AlertElement.defineCustomElement();
@@ -22,6 +23,7 @@ describe('alert-element upgrading', () => {
     expect(el.getAttribute('open')).to.equal('');
     expect(el.getAttribute('variant')).to.equal('info');
     expect(el.getAttribute('close-label')).to.equal('Close alert');
+    expect(el.getAttribute('announce')).to.equal('status');
   });
 
   afterEach(() => {
