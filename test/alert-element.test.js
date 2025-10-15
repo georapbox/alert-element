@@ -66,6 +66,12 @@ describe('alert-element', () => {
       expect(base).to.not.have.attribute('role');
     });
 
+    it('base element has role="alert" if announce has an invalid value', async () => {
+      const el = await fixture(html`<alert-element announce="invalid"></alert-element>`);
+      const base = el.shadowRoot.querySelector('.alert');
+      expect(base).to.have.attribute('role', 'alert');
+    });
+
     it('close button has a default aria-label attribute', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
