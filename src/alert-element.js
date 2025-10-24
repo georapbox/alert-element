@@ -13,6 +13,7 @@ import {
   CLOSE_REASON_TIMEOUT,
   CLOSE_REASON_API
 } from './constants.js';
+import { Timer } from './timer.js';
 
 const toastStack = createToastStack();
 
@@ -260,9 +261,6 @@ class AlertElement extends HTMLElement {
   /** @type {Nullable<HTMLSlotElement>} */
   #closeSlotEl = null;
 
-  /** @type {number | undefined} */
-  #autoHideTimeout = undefined;
-
   /** @type {Nullable<{ promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void; }>} */
   #toastInProgress = null;
 
@@ -274,6 +272,9 @@ class AlertElement extends HTMLElement {
 
   /** @type {CloseReason} */
   #closeReason = CLOSE_REASON_API;
+
+  /** @type {Nullable<Timer>} */
+  #timer = null;
 
   constructor() {
     super();
@@ -302,11 +303,30 @@ class AlertElement extends HTMLElement {
 
     switch (name) {
       case 'open':
-        this.#handleOpenAttributeChange();
+        if (this.open) {
+          this.duration !== Infinity && this.#timer?.start();
+          // console.log('open', this.#timer);
+          this.#baseEl?.removeAttribute('hidden');
+          this.#emitEvent(EVT_ALERT_SHOW);
+          this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
+            this.#emitEvent(EVT_ALERT_AFTER_SHOW);
+          });
+        } else {
+          this.duration !== Infinity && this.#timer?.reset();
+          // console.log('closed', this.#timer);
+          this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
+          this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
+            this.#baseEl?.setAttribute('hidden', '');
+            this.#emitEvent(EVT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
+            this.#closeReason = CLOSE_REASON_API;
+          });
+        }
         break;
       case 'duration':
-        this.#clearAutoHideTimer();
-        this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
+        if (this.duration !== Infinity) {
+          this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
+          this.open && this.#timer.start();
+        }
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -368,7 +388,7 @@ class AlertElement extends HTMLElement {
     }
 
     const value = Number(attr);
-    return Number.isNaN(value) ? Infinity : value;
+    return Number.isNaN(value) || value < 0 ? Infinity : value;
   }
 
   set duration(value) {
@@ -459,9 +479,12 @@ class AlertElement extends HTMLElement {
     this.addEventListener('mouseleave', this.#handleMouseLeave);
     this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
 
+    this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
+
     if (this.open) {
+      this.duration !== Infinity && this.#timer?.start();
+      // console.log('connected', this.#timer);
       this.#baseEl?.removeAttribute('hidden');
-      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
     } else {
       this.#baseEl?.setAttribute('hidden', '');
     }
@@ -481,7 +504,8 @@ class AlertElement extends HTMLElement {
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    this.#clearAutoHideTimer();
+    this.#timer?.reset();
+    this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
     this.removeEventListener('mouseenter', this.#handleMouseEnter);
@@ -490,61 +514,19 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Handles the change of the open attribute.
-   * If the open attribute is set to true, the alert is shown and an event is dispatched.
-   * If the open attribute is set to false, the alert is hidden and an event is dispatched.
+   * Handles the timer running event.
+   *
+   * @param {Timer} timer - The timer instance.
    */
-  #handleOpenAttributeChange() {
-    this.#clearAutoHideTimer();
+  #onTimerRunning = timer => {
+    const { remaining } = timer.time();
+    // console.log(remaining);
 
-    if (this.open) {
-      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
-      this.#baseEl?.removeAttribute('hidden');
-      this.#emitEvent(EVT_ALERT_SHOW);
-      this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
-        this.#emitEvent(EVT_ALERT_AFTER_SHOW);
-      });
-    } else {
-      this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
-      this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
-        this.#baseEl?.setAttribute('hidden', '');
-        this.#emitEvent(EVT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
-        this.#closeReason = CLOSE_REASON_API;
-      });
-    }
-  }
-
-  /**
-   * Clears the auto-hide timer if it is set.
-   */
-  #clearAutoHideTimer() {
-    if (this.#autoHideTimeout === undefined) {
-      return;
-    }
-
-    clearTimeout(this.#autoHideTimeout);
-    this.#autoHideTimeout = undefined;
-  }
-
-  /**
-   * Starts the auto-hide timer for the alert.
-   * This method sets a timeout to close the alert after the specified duration.
-   */
-  #startAutoHideTimer() {
-    this.#autoHideTimeout = window.setTimeout(() => {
+    if (remaining <= 0) {
       this.#closeReason = CLOSE_REASON_TIMEOUT;
       this.open = false;
-    }, this.duration);
-  }
-
-  /**
-   * Determines if the auto-hide timer should be started.
-   *
-   * @returns {boolean} - Returns true if the auto-hide timer should be started; otherwise false.
-   */
-  #shouldStartAutoHideTimer() {
-    return this.open && this.duration !== Infinity;
-  }
+    }
+  };
 
   /**
    * Handles the click event on the close button.
@@ -562,15 +544,16 @@ class AlertElement extends HTMLElement {
    * Handles the mouse enter event on the alert.
    */
   #handleMouseEnter = () => {
-    this.#clearAutoHideTimer();
+    // console.log('mousenter');
+    this.open && this.duration !== Infinity && this.#timer?.stop();
   };
 
   /**
    * Handles the mouse leave event on the alert.
    */
   #handleMouseLeave = () => {
-    this.#clearAutoHideTimer();
-    this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
+    // console.log('mouseleave');
+    this.open && this.duration !== Infinity && this.#timer?.start();
   };
 
   /**
