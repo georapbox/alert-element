@@ -97,6 +97,24 @@ function toastify(message, options = {}) {
   });
 })();
 
+// Alert with countdown
+(function () {
+  const button = document.querySelector('[data-example="countdown"] > button');
+  const alert = document.querySelector('[data-example="countdown"] > alert-element');
+
+  alert.addEventListener('alert-show', () => {
+    button.setAttribute('disabled', '');
+  });
+
+  alert.addEventListener('alert-after-hide', () => {
+    button.removeAttribute('disabled');
+  });
+
+  button.addEventListener('click', () => {
+    alert.open = true;
+  });
+})();
+
 // Custom styling
 (function () {
   const button = document.querySelector('[data-example="custom-styling"] > button');

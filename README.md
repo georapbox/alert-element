@@ -62,6 +62,7 @@ By default, the component comes with some basic default styling. However, you ca
 | `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 | `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
+| `countdown` | ✓ | Boolean | - | `false` | Indicates whether to show a countdown displaying the remaining time before the alert automatically closes. |
 | `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
 ### Slots
@@ -80,12 +81,16 @@ By default, the component comes with some basic default styling. However, you ca
 | `icon` | The icon element of the alert. |
 | `message` | The message element of the alert. |
 | `close` | The close button element of the alert. |
+| `countdown` | The countdown bar element of the alert. |
+| `countdown-elapsed` | The elapsed portion of the countdown bar. |
 
 ### CSS Custom Properties
 
 | Name | Description | Default |
 | ---- | ----------- | ------- |
 | `--alert-border-radius` | The border radius of the alert. | `0.25rem` |
+| `--alert-top-border-width` | The width of the top border of the alert. | `0.1875rem` |
+| `--alert-countdown-height` | The height of the countdown bar. | `0.1875rem` |
 | `--alert-fg-color` | The foreground color of the alert. | Light: `#3f3f46` - Dark: `#b6b6be` |
 | `--alert-bg-color` | The background color of the alert. | Light: `#ffffff` - Dark: `#252528` |
 | `--alert-border-color` | The border color of the alert. | Light: `#e4e4e7` - Dark: `#36363a` |

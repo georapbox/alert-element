@@ -102,6 +102,10 @@ alert-element[variant="custom"]::part(icon) {
   color: var(--alert-custom-variant-color);
 }
 
+alert-element[variant="custom"]::part(countdown-elapsed) {
+  background-color: var(--alert-custom-variant-color);
+}
+
 /* Custom alert styles */
 .custom-alert {
   --alert-bg-color: #cfe2ff;

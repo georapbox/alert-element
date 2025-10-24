@@ -1,7 +1,7 @@
 import { expect, fixture, fixtureCleanup, html, oneEvent } from '@open-wc/testing';
 import sinon from 'sinon';
-import { AlertElement } from '../src/alert-element.js';
 import {
+  AlertElement,
   EVT_ALERT_SHOW,
   EVT_ALERT_AFTER_SHOW,
   EVT_ALERT_HIDE,
@@ -11,7 +11,7 @@ import {
   CLOSE_REASON_USER,
   CLOSE_REASON_TIMEOUT,
   CLOSE_REASON_API
-} from '../src/constants.js';
+} from '../src/alert-element.js';
 
 AlertElement.defineCustomElement();
 
@@ -203,6 +203,18 @@ describe('alert-element', () => {
     it('reflects attribute "announce" to property "announce"', async () => {
       const el = await fixture(html`<alert-element announce="status"></alert-element>`);
       expect(el.announce).to.equal('status');
+    });
+
+    // countdown
+    it('reflects property "countdown" to attribute "countdown"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.countdown = true;
+      expect(el.hasAttribute('countdown')).to.be.true;
+    });
+
+    it('reflects attribute "countdown" to property "countdown"', async () => {
+      const el = await fixture(html`<alert-element countdown></alert-element>`);
+      expect(el.countdown).to.be.true;
     });
 
     // customAnimations

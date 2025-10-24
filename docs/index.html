@@ -37,6 +37,7 @@
     <li><a href="#example-closable">Closable</a></li>
     <li><a href="#example-custom-close-button">Custom close button</a></li>
     <li><a href="#example-duration">Duration</a></li>
+    <li><a href="#example-countdown">Countdown</a></li>
     <li><a href="#example-custom-variant">Custom variant</a></li>
     <li><a href="#example-custom-styling">Custom styling</a></li>
     <li><a href="#example-toast-notifications">Toast notifications</a></li>
@@ -246,6 +247,41 @@
     </details>
   </div>
 
+  <h3 id="example-countdown">Countdown</h3>
+  <p>
+    Set the <code>countdown</code> attribute to display a countdown bar that indicates the remaining time
+    before the alert automatically hides itself.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="countdown">
+      <button style="margin: 0;">Show Alert</button>
+
+      <alert-element variant="info" closable duration="10000" countdown style="margin-block-start: 1rem;">
+        This alert will automatically hide itself after <strong>10 seconds</strong>, unless you interact with it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+
+&lt;alert-element variant=&quot;info&quot; closable duration="10000" countdown&gt;
+  This alert will automatically hide itself after 3 seconds, unless you interact with it.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
+
+  button.addEventListener('click', () =&gt; {
+    alert.show();
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
   <h3 id="example-custom-variant">Custom variant</h3>
   <p>
     You can create custom variants by using the <code>variant</code> attribute with a custom value
@@ -285,6 +321,10 @@
 
   alert-element[variant="custom"]::part(icon) {
     color: var(--alert-custom-variant-color);
+  }
+
+  alert-element[variant="custom"]::part(countdown-elapsed) {
+    background-color: var(--alert-custom-variant-color);
   }
 &lt;/style&gt;
 
@@ -382,23 +422,23 @@
         </p>
       </div>
 
-      <alert-element variant="info" duration="3000" closable>
+      <alert-element variant="info" duration="3000" countdown closable>
         This is an info toast notification.
       </alert-element>
 
-      <alert-element variant="success" duration="3000" closable>
+      <alert-element variant="success" duration="3000" countdown closable>
         This is a success toast notification.
       </alert-element>
 
-      <alert-element variant="neutral" duration="3000" closable>
+      <alert-element variant="neutral" duration="3000" countdown closable>
         This is a neutral toast notification.
       </alert-element>
 
-      <alert-element variant="warning" duration="3000" closable>
+      <alert-element variant="warning" duration="3000" countdown closable>
         This is a warning toast notification.
       </alert-element>
 
-      <alert-element variant="danger" duration="3000" closable>
+      <alert-element variant="danger" duration="3000" countdown closable>
         This is a danger toast notification.
       </alert-element>
     </browser-window>

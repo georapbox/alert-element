@@ -1,20 +1,21 @@
 // @ts-check
 
 import { createToastStack } from './toast-stack.js';
-import {
-  COMPONENT_NAME,
-  EVT_ALERT_SHOW,
-  EVT_ALERT_AFTER_SHOW,
-  EVT_ALERT_HIDE,
-  EVT_ALERT_AFTER_HIDE,
-  COMMAND_ALERT_SHOW,
-  COMMAND_ALERT_HIDE,
-  CLOSE_REASON_USER,
-  CLOSE_REASON_TIMEOUT,
-  CLOSE_REASON_API
-} from './constants.js';
 import { Timer } from './timer.js';
 
+const COMPONENT_NAME = 'alert-element';
+const EVT_ALERT_SHOW = 'alert-show';
+const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
+const EVT_ALERT_HIDE = 'alert-hide';
+const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
+const COMMAND_ALERT_SHOW = '--alert-show';
+const COMMAND_ALERT_HIDE = '--alert-hide';
+const CLOSE_REASON_USER = 'user';
+const CLOSE_REASON_TIMEOUT = 'timeout';
+const CLOSE_REASON_API = 'api';
+
+const html = String.raw;
+const css = String.raw;
 const toastStack = createToastStack();
 
 /**
@@ -49,12 +50,11 @@ const toastStack = createToastStack();
  * @typedef {'alert' | 'status' | 'none'} Announce
  */
 
-const styles = /* css */ `
+const styles = css`
   :host {
-    display: contents;
-    box-sizing: border-box;
-
     --alert-border-radius: 0.25rem;
+    --alert-top-border-width: 0.1875rem;
+    --alert-countdown-height: 0.1875rem;
     --alert-fg-color: #3f3f46;
     --alert-bg-color: #ffffff;
     --alert-border-color: #e4e4e7;
@@ -63,6 +63,8 @@ const styles = /* css */ `
     --alert-neutral-variant-color: #52525b;
     --alert-warning-variant-color: #d87708;
     --alert-danger-variant-color: #dc2626;
+    display: contents;
+    box-sizing: border-box;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -91,31 +93,29 @@ const styles = /* css */ `
   }
 
   .alert {
+    position: relative;
     display: flex;
     align-items: center;
     margin: inherit;
     border: 1px solid var(--alert-border-color);
-    border-top-width: 3px;
+    border-top-width: var(--alert-top-border-width);
     border-radius: var(--alert-border-radius);
+    overflow: hidden;
     background-color: var(--alert-bg-color);
   }
 
   :host([variant='info']) .alert {
     border-top-color: var(--alert-info-variant-color);
   }
-
   :host([variant='success']) .alert {
     border-top-color: var(--alert-success-variant-color);
   }
-
   :host([variant='neutral']) .alert {
     border-top-color: var(--alert-neutral-variant-color);
   }
-
   :host([variant='warning']) .alert {
     border-top-color: var(--alert-warning-variant-color);
   }
-
   :host([variant='danger']) .alert {
     border-top-color: var(--alert-danger-variant-color);
   }
@@ -136,19 +136,15 @@ const styles = /* css */ `
   :host([variant='info']) .alert__icon {
     color: var(--alert-info-variant-color);
   }
-
   :host([variant='success']) .alert__icon {
     color: var(--alert-success-variant-color);
   }
-
   :host([variant='neutral']) .alert__icon {
     color: var(--alert-neutral-variant-color);
   }
-
   :host([variant='warning']) .alert__icon {
     color: var(--alert-warning-variant-color);
   }
-
   :host([variant='danger']) .alert__icon {
     color: var(--alert-danger-variant-color);
   }
@@ -161,10 +157,14 @@ const styles = /* css */ `
     line-height: 1.5;
   }
 
+  .alert:has(.alert__countdown:not([hidden])) .alert__message {
+    padding-bottom: calc(1.25rem + var(--alert-countdown-height));
+  }
+
   .alert__close {
     display: flex;
     align-items: center;
-    margin-inline-end:  1rem;
+    margin-inline-end: 1rem;
     padding: 0.5rem;
     border: none;
     line-height: 0;
@@ -177,23 +177,66 @@ const styles = /* css */ `
   :host(:not([closable])) .alert__close {
     display: none !important;
   }
+
+  .alert__countdown {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--alert-countdown-height);
+    background-color: var(--alert-border-color);
+  }
+
+  .alert__countdown-elapsed {
+    width: 0;
+    height: 100%;
+  }
+
+  :host([variant='info']) .alert__countdown-elapsed {
+    background-color: var(--alert-info-variant-color);
+  }
+  :host([variant='success']) .alert__countdown-elapsed {
+    background-color: var(--alert-success-variant-color);
+  }
+  :host([variant='neutral']) .alert__countdown-elapsed {
+    background-color: var(--alert-neutral-variant-color);
+  }
+  :host([variant='warning']) .alert__countdown-elapsed {
+    background-color: var(--alert-warning-variant-color);
+  }
+  :host([variant='danger']) .alert__countdown-elapsed {
+    background-color: var(--alert-danger-variant-color);
+  }
 `;
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */ `
-  <style>${styles}</style>
+template.innerHTML = html`
+  <style>
+    ${styles}
+  </style>
+
   <div class="alert" part="base" role="alert" hidden>
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
-    <div class="alert__message" part="message">
-      <slot></slot>
+    <div class="alert__message" part="message"><slot></slot></div>
+    <div class="alert__countdown" part="countdown" hidden>
+      <div class="alert__countdown-elapsed" part="countdown-elapsed"></div>
     </div>
     <button type="button" class="alert__close" part="close" aria-label="Close">
       <slot name="close">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+          />
         </svg>
       </slot>
     </button>
@@ -213,6 +256,7 @@ template.innerHTML = /* html */ `
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
+ * @property {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @attribute {boolean} closable - Reflects the closable property.
@@ -220,6 +264,7 @@ template.innerHTML = /* html */ `
  * @attribute {number} duration - Reflects the duration property.
  * @attribute {string} variant - Reflects the variant property.
  * @attribute {string} announce - Reflects the announce property.
+ * @attribute {boolean} countdown - Reflects the countdown property.
  * @attribute {string} close-label - Reflects the closeLabel property.
  *
  * @slot - The default slot for the alert message.
@@ -230,8 +275,12 @@ template.innerHTML = /* html */ `
  * @csspart icon - The icon element of the alert.
  * @csspart message - The message element of the alert.
  * @csspart close - The close button element of the alert.
+ * @csspart countdown - The countdown bar element of the alert.
+ * @csspart countdown-elapsed - The elapsed portion of the countdown bar.
  *
  * @cssproperty --alert-border-radius - The border radius of the alert.
+ * @cssproperty --alert-top-border-width - The top border width of the alert.
+ * @cssproperty --alert-countdown-height - The height of the countdown bar.
  * @cssproperty --alert-fg-color - The foreground color of the alert.
  * @cssproperty --alert-bg-color - The background color of the alert.
  * @cssproperty --alert-border-color - The border color of the alert.
@@ -252,6 +301,9 @@ template.innerHTML = /* html */ `
  * @event alert-after-hide - Emitted after the alert is hidden and all animations are complete.
  */
 class AlertElement extends HTMLElement {
+  /** @type {boolean} */
+  #isConnected = false;
+
   /** @type {Nullable<HTMLElement>} */
   #baseEl = null;
 
@@ -276,6 +328,12 @@ class AlertElement extends HTMLElement {
   /** @type {Nullable<Timer>} */
   #timer = null;
 
+  /** @type {Nullable<HTMLElement>} */
+  #countdownEl = null;
+
+  /** @type {Nullable<HTMLElement>} */
+  #countdownElapsedEl = null;
+
   constructor() {
     super();
 
@@ -286,7 +344,7 @@ class AlertElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'duration', 'close-label', 'announce'];
+    return ['open', 'duration', 'close-label', 'announce', 'countdown'];
   }
 
   /**
@@ -297,7 +355,7 @@ class AlertElement extends HTMLElement {
    * @param {string} newValue - The new value of the attribute.
    */
   attributeChangedCallback(name, oldValue, newValue) {
-    if (!this.isConnected || oldValue === newValue) {
+    if (!this.#isConnected || oldValue === newValue) {
       return;
     }
 
@@ -305,7 +363,6 @@ class AlertElement extends HTMLElement {
       case 'open':
         if (this.open) {
           this.duration !== Infinity && this.#timer?.start();
-          // console.log('open', this.#timer);
           this.#baseEl?.removeAttribute('hidden');
           this.#emitEvent(EVT_ALERT_SHOW);
           this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
@@ -313,7 +370,6 @@ class AlertElement extends HTMLElement {
           });
         } else {
           this.duration !== Infinity && this.#timer?.reset();
-          // console.log('closed', this.#timer);
           this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
           this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
             this.#baseEl?.setAttribute('hidden', '');
@@ -323,10 +379,9 @@ class AlertElement extends HTMLElement {
         }
         break;
       case 'duration':
-        if (this.duration !== Infinity) {
-          this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
-          this.open && this.#timer.start();
-        }
+        this.#timer?.reset();
+        this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
+        this.open && this.duration !== Infinity && this.#timer.start();
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -337,6 +392,9 @@ class AlertElement extends HTMLElement {
         } else {
           this.#baseEl?.removeAttribute('role');
         }
+        break;
+      case 'countdown':
+        this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
         break;
       default:
         break;
@@ -388,7 +446,7 @@ class AlertElement extends HTMLElement {
     }
 
     const value = Number(attr);
-    return Number.isNaN(value) || value < 0 ? Infinity : value;
+    return Number.isNaN(value) ? Infinity : value;
   }
 
   set duration(value) {
@@ -444,6 +502,21 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute countdown - Reflects the countdown property.
+   */
+  get countdown() {
+    return this.hasAttribute('countdown');
+  }
+
+  set countdown(value) {
+    this.toggleAttribute('countdown', !!value);
+  }
+
+  /**
    * Custom animation keyframes and options for show/hide.
    *
    * @type {CustomAnimations | undefined}
@@ -461,17 +534,22 @@ class AlertElement extends HTMLElement {
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
+    this.#isConnected = true;
+
     this.#upgradeProperty('closable');
     this.#upgradeProperty('open');
     this.#upgradeProperty('duration');
     this.#upgradeProperty('variant');
     this.#upgradeProperty('closeLabel');
     this.#upgradeProperty('announce');
+    this.#upgradeProperty('countdown');
     this.#upgradeProperty('customAnimations');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
     this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') ?? null;
     this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') ?? null;
+    this.#countdownEl = this.shadowRoot?.querySelector('.alert__countdown') ?? null;
+    this.#countdownElapsedEl = this.shadowRoot?.querySelector('.alert__countdown-elapsed') ?? null;
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
@@ -483,7 +561,6 @@ class AlertElement extends HTMLElement {
 
     if (this.open) {
       this.duration !== Infinity && this.#timer?.start();
-      // console.log('connected', this.#timer);
       this.#baseEl?.removeAttribute('hidden');
     } else {
       this.#baseEl?.setAttribute('hidden', '');
@@ -498,12 +575,15 @@ class AlertElement extends HTMLElement {
     } else {
       this.#baseEl?.removeAttribute('role');
     }
+
+    this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
   }
 
   /**
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
+    this.#isConnected = false;
     this.#timer?.reset();
     this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
@@ -520,7 +600,10 @@ class AlertElement extends HTMLElement {
    */
   #onTimerRunning = timer => {
     const { remaining } = timer.time();
-    // console.log(remaining);
+
+    if (this.#countdownElapsedEl != null) {
+      this.#countdownElapsedEl.style.width = `${(remaining / timer._duration) * 100}%`;
+    }
 
     if (remaining <= 0) {
       this.#closeReason = CLOSE_REASON_TIMEOUT;
@@ -544,7 +627,6 @@ class AlertElement extends HTMLElement {
    * Handles the mouse enter event on the alert.
    */
   #handleMouseEnter = () => {
-    // console.log('mousenter');
     this.open && this.duration !== Infinity && this.#timer?.stop();
   };
 
@@ -552,7 +634,6 @@ class AlertElement extends HTMLElement {
    * Handles the mouse leave event on the alert.
    */
   #handleMouseLeave = () => {
-    // console.log('mouseleave');
     this.open && this.duration !== Infinity && this.#timer?.start();
   };
 
@@ -815,7 +896,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'customAnimations'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */
@@ -841,4 +922,15 @@ class AlertElement extends HTMLElement {
   }
 }
 
-export { AlertElement };
+export {
+  AlertElement,
+  EVT_ALERT_SHOW,
+  EVT_ALERT_AFTER_SHOW,
+  EVT_ALERT_HIDE,
+  EVT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+};

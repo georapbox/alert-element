@@ -87,7 +87,7 @@ export class Timer {
    * @returns {Timer} The Timer instance.
    */
   start() {
-    if (this._started || (this._duration >= 0 && this._time >= this._duration)) {
+    if (this._started || (this._duration >= 0 && this._time > this._duration)) {
       return this;
     }
 
