@@ -548,6 +548,8 @@
       variant: options.variant,
       innerHTML: `${icon}${escapeHtml(message)}`
     });
+
+    return alert.toast();
   }
 
   function escapeHtml(html) {
