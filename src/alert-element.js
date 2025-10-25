@@ -99,6 +99,7 @@ const styles = css`
     margin: inherit;
     border: 1px solid var(--alert-border-color);
     border-top-width: var(--alert-top-border-width);
+    border-top-color: var(--alert-fg-color);
     border-radius: var(--alert-border-radius);
     overflow: hidden;
     background-color: var(--alert-bg-color);
@@ -190,6 +191,7 @@ const styles = css`
   .alert__countdown-elapsed {
     width: 0;
     height: 100%;
+    background-color: var(--alert-fg-color);
   }
 
   :host([variant='info']) .alert__countdown-elapsed {
