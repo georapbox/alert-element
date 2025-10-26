@@ -3,7 +3,8 @@ import '../lib/browser-window.js';
 const url = window.location.href;
 const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
 const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert-element.js';
-const { AlertElement } = await import(componentUrl);
+const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
+  await import(componentUrl);
 
 AlertElement.defineCustomElement();
 
@@ -235,3 +236,17 @@ function toastify(message, options = {}) {
     alert.show();
   });
 })();
+
+// Events
+document.addEventListener(EVENT_ALERT_SHOW, evt => {
+  console.log(EVENT_ALERT_SHOW, evt.target);
+});
+document.addEventListener(EVENT_ALERT_AFTER_SHOW, evt => {
+  console.log(EVENT_ALERT_AFTER_SHOW, evt.target);
+});
+document.addEventListener(EVENT_ALERT_HIDE, evt => {
+  console.log(EVENT_ALERT_HIDE, evt.target, evt.detail);
+});
+document.addEventListener(EVENT_ALERT_AFTER_HIDE, evt => {
+  console.log(EVENT_ALERT_AFTER_HIDE, evt.target, evt.detail);
+});

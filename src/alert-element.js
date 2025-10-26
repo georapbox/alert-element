@@ -4,10 +4,10 @@ import { createToastStack } from './toast-stack.js';
 import { Timer } from './timer.js';
 
 const COMPONENT_NAME = 'alert-element';
-const EVT_ALERT_SHOW = 'alert-show';
-const EVT_ALERT_AFTER_SHOW = 'alert-after-show';
-const EVT_ALERT_HIDE = 'alert-hide';
-const EVT_ALERT_AFTER_HIDE = 'alert-after-hide';
+const EVENT_ALERT_SHOW = 'alert-show';
+const EVENT_ALERT_AFTER_SHOW = 'alert-after-show';
+const EVENT_ALERT_HIDE = 'alert-hide';
+const EVENT_ALERT_AFTER_HIDE = 'alert-after-hide';
 const COMMAND_ALERT_SHOW = '--alert-show';
 const COMMAND_ALERT_HIDE = '--alert-hide';
 const CLOSE_REASON_USER = 'user';
@@ -366,16 +366,16 @@ class AlertElement extends HTMLElement {
         if (this.open) {
           this.duration !== Infinity && this.#timer?.start();
           this.#baseEl?.removeAttribute('hidden');
-          this.#emitEvent(EVT_ALERT_SHOW);
+          this.#emitEvent(EVENT_ALERT_SHOW);
           this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
-            this.#emitEvent(EVT_ALERT_AFTER_SHOW);
+            this.#emitEvent(EVENT_ALERT_AFTER_SHOW);
           });
         } else {
           this.duration !== Infinity && this.#timer?.reset();
-          this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
+          this.#emitEvent(EVENT_ALERT_HIDE, { reason: this.#closeReason });
           this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
             this.#baseEl?.setAttribute('hidden', '');
-            this.#emitEvent(EVT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
+            this.#emitEvent(EVENT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
             this.#closeReason = CLOSE_REASON_API;
           });
         }
@@ -536,8 +536,6 @@ class AlertElement extends HTMLElement {
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
-    this.#isConnected = true;
-
     this.#upgradeProperty('closable');
     this.#upgradeProperty('open');
     this.#upgradeProperty('duration');
@@ -810,7 +808,7 @@ class AlertElement extends HTMLElement {
     }
 
     this.open = true;
-    return this.#waitForEvent(this, EVT_ALERT_AFTER_SHOW);
+    return this.#waitForEvent(this, EVENT_ALERT_AFTER_SHOW);
   }
 
   /**
@@ -824,7 +822,7 @@ class AlertElement extends HTMLElement {
     }
 
     this.open = false;
-    return this.#waitForEvent(this, EVT_ALERT_AFTER_HIDE);
+    return this.#waitForEvent(this, EVENT_ALERT_AFTER_HIDE);
   }
 
   /**
@@ -862,7 +860,7 @@ class AlertElement extends HTMLElement {
       promise,
       resolve: resolveFn,
       cleanup: () => {
-        this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
+        this.removeEventListener(EVENT_ALERT_AFTER_HIDE, onAfterHide);
 
         if (this.parentNode === toastStack) {
           toastStack.removeChild(this);
@@ -888,7 +886,7 @@ class AlertElement extends HTMLElement {
     const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
     toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
 
-    this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
+    this.addEventListener(EVENT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
 
     return promise;
   }
@@ -928,10 +926,10 @@ class AlertElement extends HTMLElement {
 
 export {
   AlertElement,
-  EVT_ALERT_SHOW,
-  EVT_ALERT_AFTER_SHOW,
-  EVT_ALERT_HIDE,
-  EVT_ALERT_AFTER_HIDE,
+  EVENT_ALERT_SHOW,
+  EVENT_ALERT_AFTER_SHOW,
+  EVENT_ALERT_HIDE,
+  EVENT_ALERT_AFTER_HIDE,
   COMMAND_ALERT_SHOW,
   COMMAND_ALERT_HIDE,
   CLOSE_REASON_USER,

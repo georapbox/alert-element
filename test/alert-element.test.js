@@ -2,10 +2,10 @@ import { expect, fixture, fixtureCleanup, html, oneEvent } from '@open-wc/testin
 import sinon from 'sinon';
 import {
   AlertElement,
-  EVT_ALERT_SHOW,
-  EVT_ALERT_AFTER_SHOW,
-  EVT_ALERT_HIDE,
-  EVT_ALERT_AFTER_HIDE,
+  EVENT_ALERT_SHOW,
+  EVENT_ALERT_AFTER_SHOW,
+  EVENT_ALERT_HIDE,
+  EVENT_ALERT_AFTER_HIDE,
   COMMAND_ALERT_SHOW,
   COMMAND_ALERT_HIDE,
   CLOSE_REASON_USER,
@@ -291,10 +291,10 @@ describe('alert-element', () => {
   });
 
   describe('custom events', () => {
-    it(`fires "${EVT_ALERT_SHOW}" and "${EVT_ALERT_AFTER_SHOW}" with null detail`, async () => {
+    it(`fires "${EVENT_ALERT_SHOW}" and "${EVENT_ALERT_AFTER_SHOW}" with null detail`, async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      const showEvent = oneEvent(el, EVT_ALERT_SHOW);
-      const afterShowEvent = oneEvent(el, EVT_ALERT_AFTER_SHOW);
+      const showEvent = oneEvent(el, EVENT_ALERT_SHOW);
+      const afterShowEvent = oneEvent(el, EVENT_ALERT_AFTER_SHOW);
       el.setAttribute('open', '');
       expect(await showEvent).to.be.an.instanceOf(CustomEvent);
       expect((await showEvent).detail).to.be.null;
@@ -302,10 +302,10 @@ describe('alert-element', () => {
       expect((await afterShowEvent).detail).to.be.null;
     });
 
-    it(`fires "${EVT_ALERT_HIDE}" and "${EVT_ALERT_AFTER_HIDE}" with detail containing reason`, async () => {
+    it(`fires "${EVENT_ALERT_HIDE}" and "${EVENT_ALERT_AFTER_HIDE}" with detail containing reason`, async () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
-      const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
-      const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      const hideEvent = oneEvent(el, EVENT_ALERT_HIDE);
+      const afterHideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       el.removeAttribute('open');
       expect(await hideEvent).to.be.an.instanceOf(CustomEvent);
       expect((await hideEvent).detail).to.be.an('object');
@@ -316,8 +316,8 @@ describe('alert-element', () => {
     describe('close reason', () => {
       it(`should set reason to "${CLOSE_REASON_USER}" when alert closed by user clicking on close button`, async () => {
         const el = await fixture(html`<alert-element open closable></alert-element>`);
-        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
-        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        const hideEvent = oneEvent(el, EVENT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
         const closeButton = el.shadowRoot.querySelector('.alert__close');
         closeButton.click();
         expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_USER });
@@ -326,16 +326,16 @@ describe('alert-element', () => {
 
       it(`should set reason to "${CLOSE_REASON_TIMEOUT}" when alert closed by timeout`, async () => {
         const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
-        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
-        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        const hideEvent = oneEvent(el, EVENT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
         expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_TIMEOUT });
         expect((await afterHideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_TIMEOUT });
       });
 
       it(`should set reason to "${CLOSE_REASON_API}" when alert closed by API`, async () => {
         const el = await fixture(html`<alert-element open></alert-element>`);
-        const hideEvent = oneEvent(el, EVT_ALERT_HIDE);
-        const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+        const hideEvent = oneEvent(el, EVENT_ALERT_HIDE);
+        const afterHideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
         await el.hide();
         expect((await hideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_API });
         expect((await afterHideEvent).detail).to.deep.equal({ reason: CLOSE_REASON_API });
@@ -350,10 +350,10 @@ describe('alert-element', () => {
       expect(el.open).to.be.true;
     });
 
-    it(`should not fire "${EVT_ALERT_SHOW}" when alert is already open`, async () => {
+    it(`should not fire "${EVENT_ALERT_SHOW}" when alert is already open`, async () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
       const listener = sinon.spy();
-      el.addEventListener(EVT_ALERT_SHOW, listener);
+      el.addEventListener(EVENT_ALERT_SHOW, listener);
       await el.show(); // Call show() while alert is already open
       expect(listener).to.not.have.been.called;
     });
@@ -364,10 +364,10 @@ describe('alert-element', () => {
       expect(el.open).to.be.false;
     });
 
-    it(`should not fire "${EVT_ALERT_HIDE}" when alert is already closed`, async () => {
+    it(`should not fire "${EVENT_ALERT_HIDE}" when alert is already closed`, async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const listener = sinon.spy();
-      el.addEventListener(EVT_ALERT_HIDE, listener);
+      el.addEventListener(EVENT_ALERT_HIDE, listener);
       await el.hide(); // Call show() while alert is already open
       expect(listener).to.not.have.been.called;
     });
@@ -380,7 +380,7 @@ describe('alert-element', () => {
       el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); // Simulate mouseenter (pause auto-hide)
       await new Promise(resolve => setTimeout(resolve, DURATION + 50)); // Wait longer than the duration to verify it didn't auto-close
       expect(el.open).to.be.true;
-      const hideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      const hideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       el.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })); // Resume auto-hide by simulating mouseleave
       await hideEvent;
       expect(el.open).to.be.false;
@@ -392,7 +392,7 @@ describe('alert-element', () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
       expect(el.open).to.be.true;
       el.duration = 100;
-      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      await oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       expect(el.open).to.be.false;
     });
   });
@@ -423,7 +423,7 @@ describe('alert-element', () => {
       expect([...el.parentElement.classList]).to.include('alert-toast-stack');
       el.open = false;
       expect(el.open).to.be.false;
-      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      await oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       expect(document.querySelector('.alert-toast-stack')).to.be.null;
     });
 
@@ -432,7 +432,7 @@ describe('alert-element', () => {
       el.toast();
       expect(el.open).to.be.true;
       expect([...el.parentElement.classList]).to.include('alert-toast-stack');
-      await oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      await oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       expect(el.open).to.be.false;
       expect(document.querySelector('.alert-toast-stack')).to.be.null;
     });
@@ -441,7 +441,7 @@ describe('alert-element', () => {
   describe('command events', () => {
     it(`should open alert on "${COMMAND_ALERT_SHOW}" command`, async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      const afterShowEvent = oneEvent(el, EVT_ALERT_AFTER_SHOW);
+      const afterShowEvent = oneEvent(el, EVENT_ALERT_AFTER_SHOW);
       const commandEvent = new Event('command', { bubbles: true, composed: true });
       Object.defineProperty(commandEvent, 'command', { value: COMMAND_ALERT_SHOW });
       el.dispatchEvent(commandEvent);
@@ -451,7 +451,7 @@ describe('alert-element', () => {
 
     it(`should close alert on "${COMMAND_ALERT_HIDE}" command`, async () => {
       const el = await fixture(html`<alert-element open></alert-element>`);
-      const afterHideEvent = oneEvent(el, EVT_ALERT_AFTER_HIDE);
+      const afterHideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       const commandEvent = new Event('command', { bubbles: true, composed: true });
       Object.defineProperty(commandEvent, 'command', { value: COMMAND_ALERT_HIDE });
       el.dispatchEvent(commandEvent);
