@@ -596,6 +596,16 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Lifecycle method that is called when the element is moved to a different
+   * place in the DOM via `Element.moveBefore()`.
+   */
+  connectedMoveCallback() {
+    // No-op: Use this to avoid running initialization/cleanup code in the `connectedCallback()` and `disconnectedCallback()`
+    // callbacks when the element is not actually being added to or removed from the DOM
+    // but rather being moved within the DOM via `Element.moveBefore()`.
+  }
+
+  /**
    * Handles the timer running event.
    *
    * @param {Timer} timer - The timer instance.
