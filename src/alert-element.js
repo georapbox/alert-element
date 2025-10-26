@@ -304,7 +304,7 @@ template.innerHTML = html`
  */
 class AlertElement extends HTMLElement {
   /** @type {boolean} */
-  #isConnected = false;
+  #isInitialized = false;
 
   /** @type {Nullable<HTMLElement>} */
   #baseEl = null;
@@ -357,7 +357,7 @@ class AlertElement extends HTMLElement {
    * @param {string} newValue - The new value of the attribute.
    */
   attributeChangedCallback(name, oldValue, newValue) {
-    if (!this.#isConnected || oldValue === newValue) {
+    if (!this.#isInitialized || oldValue === newValue) {
       return;
     }
 
@@ -579,13 +579,15 @@ class AlertElement extends HTMLElement {
     }
 
     this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
+
+    this.#isInitialized = true;
   }
 
   /**
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    this.#isConnected = false;
+    this.#isInitialized = false;
     this.#timer?.reset();
     this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
