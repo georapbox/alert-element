@@ -48,11 +48,11 @@ function toastify(message, options = {}) {
   const button = document.querySelector('[data-example="closable"] > button');
   const alert = document.querySelector('[data-example="closable"] > alert-element');
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('disabled', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('disabled');
   });
 
@@ -66,11 +66,11 @@ function toastify(message, options = {}) {
   const button = document.querySelector('[data-example="custom-close-button"] > button');
   const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('hidden', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('hidden');
   });
 
@@ -85,11 +85,11 @@ function toastify(message, options = {}) {
   const button = document.querySelector('[data-example="duration"] > button');
   const alert = document.querySelector('[data-example="duration"] > alert-element');
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('disabled', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('disabled');
   });
 
@@ -103,11 +103,11 @@ function toastify(message, options = {}) {
   const button = document.querySelector('[data-example="countdown"] > button');
   const alert = document.querySelector('[data-example="countdown"] > alert-element');
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('disabled', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('disabled');
   });
 
@@ -125,11 +125,11 @@ function toastify(message, options = {}) {
     alert.open = true;
   });
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('hidden', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('hidden');
   });
 })();
@@ -177,7 +177,7 @@ function toastify(message, options = {}) {
     closable: true
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     document.body.removeAttribute('data-toast-stack-position');
   });
 
@@ -224,11 +224,11 @@ function toastify(message, options = {}) {
     }
   };
 
-  alert.addEventListener('alert-show', () => {
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
     button.setAttribute('hidden', '');
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     button.removeAttribute('hidden');
   });
 

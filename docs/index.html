@@ -737,62 +737,62 @@
   </div>
 
   <h3 id="example-invoker-commands">Invoker commands</h3>
-    <p>
-      With invoker commands you can toggle alert's visibility in a declarative way using
-      <code>command</code> and <code>commandfor</code> attributes on a button element, targeting the alert element element by its <code>id</code> attribute.
-    </p>
+  <p>
+    With invoker commands you can toggle alert's visibility in a declarative way using
+    <code>command</code> and <code>commandfor</code> attributes on a button element, targeting the alert element element by its <code>id</code> attribute.
+  </p>
 
-    <alert-element variant="info" open style="margin-block-end: 1rem; --alert-bg-color: var(--background); --alert-fg-color: var(--text-main);">
-      <span slot="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-        </svg>
-      </span>
-      The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API" target="_blank" rel="noopener noreferrer">Invoker Commands API</a>
-      is a new API that allows you to create declarative commands for HTML elements.
-      It is currently in the early stages and may not be supported by all browsers.
-      Check the <a href="https://caniuse.com/?search=HTML%20element%3A%20button%3A%20command%20HTML%20element%3A%20button%3A%20command" target="_blank" rel="noopener noreferrer">supported browsers</a>.
-    </alert-element>
+  <alert-element variant="info" open style="margin-block-end: 1rem; --alert-bg-color: var(--background); --alert-fg-color: var(--text-main);">
+    <span slot="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+      </svg>
+    </span>
+    The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API" target="_blank" rel="noopener noreferrer">Invoker Commands API</a>
+    is a new API that allows you to create declarative commands for HTML elements.
+    It is currently in the early stages and may not be supported by all browsers.
+    Check the <a href="https://caniuse.com/?search=HTML%20element%3A%20button%3A%20command%20HTML%20element%3A%20button%3A%20command" target="_blank" rel="noopener noreferrer">supported browsers</a>.
+  </alert-element>
 
-    <div class="card">
-      <browser-window url="https://github.com/georapbox/modal-element" icon>
-        <p style="margin-block-start: 0;">
-          Control the alert's visibility using invoker commands:
-        </p>
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/modal-element" icon>
+      <p style="margin-block-start: 0;">
+        Control the alert's visibility using invoker commands:
+      </p>
 
-        <ul>
-          <li><code>--alert-show</code> - shows the alert element</li>
-          <li><code>--alert-hide</code> - hides the alert element</li>
-        </ul>
+      <ul>
+        <li><code>--alert-show</code> - shows the alert element</li>
+        <li><code>--alert-hide</code> - hides the alert element</li>
+      </ul>
 
-        <button type="button" commandfor="myAlert" command="--alert-show">Show Alert</button>
-        <button type="button" commandfor="myAlert" command="--alert-hide">Hide Alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-show">Show Alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-hide">Hide Alert</button>
 
-        <alert-element variant="info" id="myAlert" style="margin-block-start: 1rem;">
-          <span slot="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-            </svg>
-          </span>
-          <strong>Alert with invoker commands</strong><br>
-          This alert uses invoker commands to toggle its visibility.
-        </alert-element>
-      </browser-window>
+      <alert-element variant="info" id="myAlert" style="margin-block-start: 1rem;">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+          </svg>
+        </span>
+        <strong>Alert with invoker commands</strong><br>
+        This alert uses invoker commands to toggle its visibility.
+      </alert-element>
+    </browser-window>
 
-      <details>
-        <summary>Source code</summary>
+    <details>
+      <summary>Source code</summary>
 
 <pre><code class="hljs language-xml">&lt;button type="button" commandfor="myAlert" command="--alert-show"&gt;Show Alert&lt;/button&gt;
 &lt;button type="button" commandfor="myAlert" command="--alert-hide"&gt;Hide Alert&lt;/button&gt;
 
 &lt;alert-element variant="info" id="myAlert"&gt;
-  &lt;strong&gt;Alert with invoker commands&lt;/strong&gt;&lt;br&gt;
-  This alert uses invoker commands to toggle its visibility.
+&lt;strong&gt;Alert with invoker commands&lt;/strong&gt;&lt;br&gt;
+This alert uses invoker commands to toggle its visibility.
 &lt;/alert-element&gt;</code></pre>
-      </details>
-    </div>
+    </details>
+  </div>
 
   <h2>License</h2>
   <p>Licensed under the <a href="https://github.com/georapbox/alert-element/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
