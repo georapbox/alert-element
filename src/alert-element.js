@@ -228,15 +228,17 @@ template.innerHTML = html`
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
  * @property {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @property {boolean} noAnimations - Disables animations when set to true.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @attribute {boolean} closable - Reflects the closable property.
  * @attribute {boolean} open - Reflects the open property.
  * @attribute {number} duration - Reflects the duration property.
  * @attribute {string} variant - Reflects the variant property.
+ * @attribute {string} close-label - Reflects the closeLabel property.
  * @attribute {string} announce - Reflects the announce property.
  * @attribute {boolean} countdown - Reflects the countdown property.
- * @attribute {string} close-label - Reflects the closeLabel property.
+ * @attribute {boolean} no-animations - Reflects the noAnimations property.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -489,6 +491,21 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Disables animations when set to true.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute no-animations - Reflects the noAnimations property.
+   */
+  get noAnimations() {
+    return this.hasAttribute('no-animations');
+  }
+
+  set noAnimations(value) {
+    this.toggleAttribute('no-animations', !!value);
+  }
+
+  /**
    * Custom animation keyframes and options for show/hide.
    *
    * @type {CustomAnimations | undefined}
@@ -513,6 +530,7 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('closeLabel');
     this.#upgradeProperty('announce');
     this.#upgradeProperty('countdown');
+    this.#upgradeProperty('noAnimations');
     this.#upgradeProperty('customAnimations');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
@@ -583,7 +601,7 @@ class AlertElement extends HTMLElement {
   #onTimerRunning = timer => {
     const { remaining } = timer.time();
 
-    if (this.#countdownElapsedEl != null) {
+    if (this.countdown && this.#countdownElapsedEl != null) {
       this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
     }
 
@@ -671,7 +689,6 @@ class AlertElement extends HTMLElement {
    */
   #getAnimations() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     const defaultAnimations = {
       show: {
         keyframes: [
@@ -694,8 +711,12 @@ class AlertElement extends HTMLElement {
         }
       }
     };
-
     const userAnimations = this.customAnimations || AlertElement.customAnimations || {};
+    const disableAnimations =
+      prefersReducedMotion ||
+      this.noAnimations ||
+      this.customAnimations === null ||
+      AlertElement.customAnimations === null;
 
     /** @type {(key: 'show' | 'hide') => KeyframeAnimationOptions} */
     const resolveOptions = key => {
@@ -704,10 +725,7 @@ class AlertElement extends HTMLElement {
       return {
         ...fallback,
         ...user,
-        duration:
-          prefersReducedMotion || this.customAnimations === null || AlertElement.customAnimations === null
-            ? 0
-            : (user.duration ?? fallback.duration)
+        duration: disableAnimations ? 0 : (user.duration ?? fallback.duration)
       };
     };
 
@@ -878,7 +896,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'customAnimations'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'noAnimations' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */

@@ -63,6 +63,7 @@ By default, the component comes with some basic default styling. However, you ca
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 | `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
 | `countdown` | ✓ | Boolean | - | `false` | Indicates whether to show a countdown displaying the remaining time before the alert automatically closes. |
+| `noAnimations`<br>*`no-animations`* | ✓ | Boolean | - | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
 | `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
 ### Slots
@@ -298,6 +299,10 @@ alert.customAnimations = customAnimations;
 > Animations respect the users' `prefers-reduced-motion` setting.
 > If the user has enabled the setting on their system, the animations will be disabled and the element will be shown/hidden instantly.
 > To disable animations for all users no matter their settings, you can set the `customAnimations` property to `null`.
+>
+> As of **version 1.2.0**, you can also disable animations using the `no-animations` attribute or `noAnimations` property.
+> This provides a more declarative way to disable animations without having to set custom animations to `null`,
+> although setting `customAnimations` to `null` will still work as before.
 
 ## Invoker Commands (Experimental)
 

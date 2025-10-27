@@ -217,6 +217,18 @@ describe('alert-element', () => {
       expect(el.countdown).to.be.true;
     });
 
+    // noAnimations
+    it('reflects property "noAnimations" to attribute "no-animations"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.noAnimations = true;
+      expect(el.hasAttribute('no-animations')).to.be.true;
+    });
+
+    it('reflects attribute "no-animations" to property "noAnimations"', async () => {
+      const el = await fixture(html`<alert-element no-animations></alert-element>`);
+      expect(el.noAnimations).to.be.true;
+    });
+
     // customAnimations
     it('does not reflect attribute "custom-animations" to property "customAnimations"', async () => {
       const el = await fixture(html`<alert-element custom-animations></alert-element>`);

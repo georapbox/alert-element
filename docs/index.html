@@ -44,6 +44,7 @@
     <li><a href="#example-imperative-toast-notifications">Creating toasts imperatively</a></li>
     <li><a href="#example-custom-toast-stack-position">Custom toast stack position</a></li>
     <li><a href="#example-custom-animations">Custom animations</a></li>
+    <li><a href="#example-no-animations">No animations</a></li>
     <li><a href="#example-invoker-commands">Invoker commands</a></li>
   </ol>
 
@@ -736,6 +737,40 @@
     </details>
   </div>
 
+  <h3 id="example-no-animations">No animations</h3>
+  <p>
+    You can disable animations by adding the <code>no-animations</code> attribute to the alert element.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="no-animations">
+      <button type="button" style="margin: 0;">Show Alert</button>
+
+      <alert-element variant="warning" closable no-animations>
+        This is an alert with no animations.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code>&lt;button type="button"&gt;Show Alert&lt;/button&gt;
+
+&lt;alert-element variant="warning" closable no-animations&gt;
+  This is an alert with no animations.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = document.querySelector('alert-element');
+
+  button.addEventListener('click', () =&gt; {
+    alert.show();
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
   <h3 id="example-invoker-commands">Invoker commands</h3>
   <p>
     With invoker commands you can toggle alert's visibility in a declarative way using
@@ -766,8 +801,8 @@
         <li><code>--alert-hide</code> - hides the alert element</li>
       </ul>
 
-      <button type="button" commandfor="myAlert" command="--alert-show">Show Alert</button>
-      <button type="button" commandfor="myAlert" command="--alert-hide">Hide Alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-show" style="margin: 0;">Show Alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-hide" style="margin: 0;">Hide Alert</button>
 
       <alert-element variant="info" id="myAlert" style="margin-block-start: 1rem;">
         <span slot="icon">

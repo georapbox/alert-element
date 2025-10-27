@@ -237,6 +237,24 @@ function toastify(message, options = {}) {
   });
 })();
 
+// No animations
+(function () {
+  const button = document.querySelector('[data-example="no-animations"] > button');
+  const alert = document.querySelector('[data-example="no-animations"] > alert-element');
+
+  alert.addEventListener(EVENT_ALERT_SHOW, () => {
+    button.setAttribute('hidden', '');
+  });
+
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
+    button.removeAttribute('hidden');
+  });
+
+  button.addEventListener('click', () => {
+    alert.show();
+  });
+})();
+
 // Events
 document.addEventListener(EVENT_ALERT_SHOW, evt => {
   console.log(EVENT_ALERT_SHOW, evt.target);
