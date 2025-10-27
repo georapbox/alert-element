@@ -305,26 +305,14 @@
       <summary>Source code</summary>
 
 <pre><code>&lt;style&gt;
-  alert-element {
-    --alert-custom-variant-color: #ec4899;
+  alert-element[variant="custom"] {
+    --alert-base-variant-color: #823ff2;
   }
 
   @media (prefers-color-scheme: dark) {
-    alert-element {
-      --alert-custom-variant-color: #fe94cd;
+    alert-element[variant="custom"] {
+      --alert-base-variant-color: #b5a1ff;
     }
-  }
-
-  alert-element[variant="custom"]::part(base) {
-    border-top-color: var(--alert-custom-variant-color);
-  }
-
-  alert-element[variant="custom"]::part(icon) {
-    color: var(--alert-custom-variant-color);
-  }
-
-  alert-element[variant="custom"]::part(countdown-elapsed) {
-    background-color: var(--alert-custom-variant-color);
   }
 &lt;/style&gt;
 

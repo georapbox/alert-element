@@ -84,26 +84,18 @@ browser-window alert-element:not(:last-child) {
 }
 
 /* Custom variant */
-alert-element {
-  --alert-custom-variant-color: #823ff2;
+alert-element[variant="custom"] {
+  --alert-base-variant-color: #823ff2;
 }
 
 @media (prefers-color-scheme: dark) {
-  alert-element {
-    --alert-custom-variant-color: #b5a1ff;
+  alert-element[variant="custom"] {
+    --alert-base-variant-color: #b5a1ff;
   }
 }
 
-alert-element[variant="custom"]::part(base) {
-  border-top-color: var(--alert-custom-variant-color);
-}
-
-alert-element[variant="custom"]::part(icon) {
-  color: var(--alert-custom-variant-color);
-}
-
 alert-element[variant="custom"]::part(countdown-elapsed) {
-  background-color: var(--alert-custom-variant-color);
+  background-color: red;
 }
 
 /* Custom alert styles */

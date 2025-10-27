@@ -94,6 +94,7 @@ By default, the component comes with some basic default styling. However, you ca
 | `--alert-fg-color` | The foreground color of the alert. | Light: `#3f3f46` - Dark: `#b6b6be` |
 | `--alert-bg-color` | The background color of the alert. | Light: `#ffffff` - Dark: `#252528` |
 | `--alert-border-color` | The border color of the alert. | Light: `#e4e4e7` - Dark: `#36363a` |
+| `--alert-base-variant-color` | The base color variant for alerts. | `var(--alert-fg-color)` |
 | `--alert-info-variant-color` | The color variant for info alerts. | Light: `#0584c7` - Dark: `#27bbfc` |
 | `--alert-success-variant-color` | The color variant for success alerts. | Light: `#16a34a` - Dark: `#3ae075` |
 | `--alert-neutral-variant-color` | The color variant for neutral alerts. | Light: `#52525b` - Dark: `#8e8e9a` |

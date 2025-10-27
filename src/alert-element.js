@@ -58,6 +58,7 @@ const styles = css`
     --alert-fg-color: #3f3f46;
     --alert-bg-color: #ffffff;
     --alert-border-color: #e4e4e7;
+    --alert-base-variant-color: var(--alert-fg-color);
     --alert-info-variant-color: #0584c7;
     --alert-success-variant-color: #16a34a;
     --alert-neutral-variant-color: #52525b;
@@ -80,6 +81,22 @@ const styles = css`
     }
   }
 
+  :host([variant='info']) {
+    --alert-base-variant-color: var(--alert-info-variant-color);
+  }
+  :host([variant='success']) {
+    --alert-base-variant-color: var(--alert-success-variant-color);
+  }
+  :host([variant='neutral']) {
+    --alert-base-variant-color: var(--alert-neutral-variant-color);
+  }
+  :host([variant='warning']) {
+    --alert-base-variant-color: var(--alert-warning-variant-color);
+  }
+  :host([variant='danger']) {
+    --alert-base-variant-color: var(--alert-danger-variant-color);
+  }
+
   :host *,
   :host *::before,
   :host *::after {
@@ -99,55 +116,23 @@ const styles = css`
     margin: inherit;
     border: 1px solid var(--alert-border-color);
     border-top-width: var(--alert-top-border-width);
-    border-top-color: var(--alert-fg-color);
+    border-top-color: var(--alert-base-variant-color);
     border-radius: var(--alert-border-radius);
     overflow: hidden;
     background-color: var(--alert-bg-color);
-  }
-
-  :host([variant='info']) .alert {
-    border-top-color: var(--alert-info-variant-color);
-  }
-  :host([variant='success']) .alert {
-    border-top-color: var(--alert-success-variant-color);
-  }
-  :host([variant='neutral']) .alert {
-    border-top-color: var(--alert-neutral-variant-color);
-  }
-  :host([variant='warning']) .alert {
-    border-top-color: var(--alert-warning-variant-color);
-  }
-  :host([variant='danger']) .alert {
-    border-top-color: var(--alert-danger-variant-color);
   }
 
   .alert__icon {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    color: var(--alert-fg-color);
+    color: var(--alert-base-variant-color);
     font-size: inherit;
     line-height: 0;
   }
 
   .alert__icon ::slotted(*) {
     margin-inline-start: 1rem;
-  }
-
-  :host([variant='info']) .alert__icon {
-    color: var(--alert-info-variant-color);
-  }
-  :host([variant='success']) .alert__icon {
-    color: var(--alert-success-variant-color);
-  }
-  :host([variant='neutral']) .alert__icon {
-    color: var(--alert-neutral-variant-color);
-  }
-  :host([variant='warning']) .alert__icon {
-    color: var(--alert-warning-variant-color);
-  }
-  :host([variant='danger']) .alert__icon {
-    color: var(--alert-danger-variant-color);
   }
 
   .alert__message {
@@ -191,23 +176,7 @@ const styles = css`
   .alert__countdown-elapsed {
     width: 0;
     height: 100%;
-    background-color: var(--alert-fg-color);
-  }
-
-  :host([variant='info']) .alert__countdown-elapsed {
-    background-color: var(--alert-info-variant-color);
-  }
-  :host([variant='success']) .alert__countdown-elapsed {
-    background-color: var(--alert-success-variant-color);
-  }
-  :host([variant='neutral']) .alert__countdown-elapsed {
-    background-color: var(--alert-neutral-variant-color);
-  }
-  :host([variant='warning']) .alert__countdown-elapsed {
-    background-color: var(--alert-warning-variant-color);
-  }
-  :host([variant='danger']) .alert__countdown-elapsed {
-    background-color: var(--alert-danger-variant-color);
+    background-color: var(--alert-base-variant-color);
   }
 `;
 
@@ -286,6 +255,7 @@ template.innerHTML = html`
  * @cssproperty --alert-fg-color - The foreground color of the alert.
  * @cssproperty --alert-bg-color - The background color of the alert.
  * @cssproperty --alert-border-color - The border color of the alert.
+ * @cssproperty --alert-base-variant-color - The base color variant for alerts.
  * @cssproperty --alert-info-variant-color - The color variant for info alerts.
  * @cssproperty --alert-success-variant-color - The color variant for success alerts.
  * @cssproperty --alert-neutral-variant-color - The color variant for neutral alerts.
