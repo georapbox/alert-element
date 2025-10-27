@@ -614,7 +614,7 @@ class AlertElement extends HTMLElement {
     const { remaining } = timer.time();
 
     if (this.#countdownElapsedEl != null) {
-      this.#countdownElapsedEl.style.width = `${(remaining / timer._duration) * 100}%`;
+      this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
     }
 
     if (remaining <= 0) {

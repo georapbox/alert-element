@@ -1,5 +1,27 @@
-import { AlertElement } from './alert-element.js';
+import {
+  AlertElement,
+  EVENT_ALERT_SHOW,
+  EVENT_ALERT_AFTER_SHOW,
+  EVENT_ALERT_HIDE,
+  EVENT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+} from './alert-element.js';
 
 AlertElement.defineCustomElement();
 
-export { AlertElement };
+export {
+  AlertElement,
+  EVENT_ALERT_SHOW,
+  EVENT_ALERT_AFTER_SHOW,
+  EVENT_ALERT_HIDE,
+  EVENT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+};
