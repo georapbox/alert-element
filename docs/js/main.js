@@ -202,24 +202,26 @@ function toastify(message, options = {}) {
   alert.customAnimations = {
     show: {
       keyframes: [
-        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)' },
-        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)' },
-        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)' },
-        { opacity: 1, transform: 'rotateX(0deg) scale(1)' }
+        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)', filter: 'blur(8px)' },
+        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)', filter: 'blur(2px)' },
+        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)', filter: 'blur(1px)' },
+        { opacity: 1, transform: 'rotateX(0deg) scale(1)', filter: 'blur(0)' }
       ],
       options: {
-        duration: 600,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+        duration: 700,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'forwards'
       }
     },
     hide: {
       keyframes: [
-        { opacity: 1, transform: 'scale(1)' },
-        { opacity: 0, transform: 'scale(0.8)' }
+        { opacity: 1, transform: 'scale(1)', filter: 'blur(0)' },
+        { opacity: 0, transform: 'scale(0.8)', filter: 'blur(6px)' }
       ],
       options: {
-        duration: 400,
-        easing: 'ease-in'
+        duration: 450,
+        easing: 'ease-in',
+        fill: 'forwards'
       }
     }
   };

@@ -113,10 +113,6 @@ alert-element[variant="custom"]::part(countdown-elapsed) {
   }
 }
 
-.custom-alert::part(base) {
-  border-width: 1px;
-}
-
 .custom-alert::part(close) {
   background-color: var(--alert-fg-color);
   color: var(--alert-bg-color);
