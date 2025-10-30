@@ -287,7 +287,7 @@ class AlertElement extends HTMLElement {
   /** @type {Nullable<HTMLSlotElement>} */
   #closeSlotEl = null;
 
-  /** @type {Nullable<{ promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void; }>} */
+  /** @type {Nullable<{promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void;}>} */
   #toastInProgress = null;
 
   /** @type {CustomAnimations | undefined} */
@@ -353,8 +353,10 @@ class AlertElement extends HTMLElement {
         }
         break;
       case 'duration':
-        this.#timer?.reset();
-        this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
+        this.#timer?.stop().off('tick', this.#handleTimerTick).off('finish', this.#handleTimerFinish);
+        this.#timer = new Timer({ duration: this.duration })
+          .on('tick', this.#handleTimerTick)
+          .on('finish', this.#handleTimerFinish);
         this.open && this.duration !== Infinity && this.#timer.start();
         break;
       case 'close-label':
@@ -545,7 +547,9 @@ class AlertElement extends HTMLElement {
     this.addEventListener('mouseleave', this.#handleMouseLeave);
     this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
 
-    this.#timer = new Timer(0, this.duration, this.#onTimerRunning);
+    this.#timer = new Timer({ duration: this.duration })
+      .on('tick', this.#handleTimerTick)
+      .on('finish', this.#handleTimerFinish);
 
     if (this.open) {
       this.duration !== Infinity && this.#timer?.start();
@@ -574,7 +578,7 @@ class AlertElement extends HTMLElement {
    */
   disconnectedCallback() {
     this.#isInitialized = false;
-    this.#timer?.reset();
+    this.#timer?.stop().off('tick', this.#handleTimerTick).off('finish', this.#handleTimerFinish);
     this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
@@ -594,21 +598,24 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Handles the timer running event.
+   * Handles timer tick events to update the countdown bar.
    *
-   * @param {Timer} timer - The timer instance.
+   * @param {Event} evt - The timer tick event.
    */
-  #onTimerRunning = timer => {
-    const { remaining } = timer.time();
-
-    if (this.countdown && this.#countdownElapsedEl != null) {
-      this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
+  #handleTimerTick = evt => {
+    if (!this.countdown || !this.#countdownElapsedEl) {
+      return;
     }
+    const { remaining } = /** @type Timer */ (evt.currentTarget);
+    this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
+  };
 
-    if (remaining <= 0) {
-      this.#closeReason = CLOSE_REASON_TIMEOUT;
-      this.open = false;
-    }
+  /**
+   * Handles timer finish events to close the alert.
+   */
+  #handleTimerFinish = () => {
+    this.#closeReason = CLOSE_REASON_TIMEOUT;
+    this.open = false;
   };
 
   /**
