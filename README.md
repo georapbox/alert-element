@@ -304,6 +304,21 @@ alert.customAnimations = customAnimations;
 > This provides a more declarative way to disable animations without having to set custom animations to `null`,
 > although setting `customAnimations` to `null` will still work as before.
 
+## User interaction
+
+The alert element reacts gracefully to user interactions, making sure it stays visible and accessible while the user is engaged with it.
+
+When an alert has a finite `duration`, it automatically closes after the specified time has elapsed. However, if the user interacts with the alert — for example, by hovering over it with the mouse or focusing it using the keyboard — the auto-dismiss timer temporarily pauses, ensuring that the alert does not close while the user is reading or interacting with it.
+
+Once the interaction ends (e.g., when the mouse leaves or focus moves away from the alert), the timer resumes from where it left off, continuing the countdown until the remaining time expires.
+
+This behavior applies to all focusable elements inside the alert (such as the close button or any custom slotted controls), ensuring that keyboard and assistive-technology users receive the same non-interruptive experience as pointer users.
+
+> [!NOTE]
+> The interaction handling is implemented using both `mouseenter`/`mouseleave` and `focusin`/`focusout` events.
+> In modern browsers, focus events from within the alert's shadow DOM are automatically retargeted to the host element,
+> so the component can pause and resume correctly even when the focus is inside shadow DOM content.
+
 ## Invoker Commands (Experimental)
 
 The element supports the Invoker Commands API, enabling a more declarative way to control alerts. Use the following commands:
@@ -323,9 +338,10 @@ To trigger these commands, add the `commandfor` and `command` attributes to a bu
 </alert-element>
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
-> The API is still in the early stages and might change in the future. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
+> The API is still in the early stages and might change in the future.
+> Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
 
 ## Changelog
 

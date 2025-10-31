@@ -174,7 +174,7 @@ const styles = css`
   }
 
   .alert__countdown-elapsed {
-    width: 0;
+    width: 100%;
     height: 100%;
     background-color: var(--alert-base-variant-color);
   }
@@ -338,6 +338,7 @@ class AlertElement extends HTMLElement {
         if (this.open) {
           this.duration !== Infinity && this.#timer?.start();
           this.#baseEl?.removeAttribute('hidden');
+          this.#countdownElapsedEl?.style.setProperty('width', '100%');
           this.#emitEvent(EVENT_ALERT_SHOW);
           this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
             this.#emitEvent(EVENT_ALERT_AFTER_SHOW);
@@ -357,7 +358,8 @@ class AlertElement extends HTMLElement {
         this.#timer = new Timer({ duration: this.duration })
           .on('tick', this.#handleTimerTick)
           .on('finish', this.#handleTimerFinish);
-        this.open && this.duration !== Infinity && this.#timer.start();
+        this.open && this.duration !== Infinity && !this.#isFocused() && this.#timer.start();
+        this.duration === Infinity && this.#countdownElapsedEl?.style.setProperty('width', '100%');
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -417,11 +419,16 @@ class AlertElement extends HTMLElement {
   get duration() {
     const attr = this.getAttribute('duration');
 
-    if (attr === null) {
+    if (attr === null || attr === '') {
       return Infinity;
     }
 
     const value = Number(attr);
+
+    if (value <= 0) {
+      return 10; // Minimum duration of 10ms to avoid immediate dismissal
+    }
+
     return Number.isNaN(value) ? Infinity : value;
   }
 
@@ -543,8 +550,10 @@ class AlertElement extends HTMLElement {
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
-    this.addEventListener('mouseenter', this.#handleMouseEnter);
-    this.addEventListener('mouseleave', this.#handleMouseLeave);
+    this.addEventListener('mouseenter', this.#handleInteractionStart);
+    this.addEventListener('mouseleave', this.#handleInteractionStop);
+    this.addEventListener('focusin', this.#handleInteractionStart);
+    this.addEventListener('focusout', this.#handleInteractionStop);
     this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
 
     this.#timer = new Timer({ duration: this.duration })
@@ -562,11 +571,9 @@ class AlertElement extends HTMLElement {
       this.#updateCloseLabel();
     }
 
-    if (this.announce !== 'none') {
-      this.#baseEl?.setAttribute('role', this.announce);
-    } else {
-      this.#baseEl?.removeAttribute('role');
-    }
+    this.announce !== 'none'
+      ? this.#baseEl?.setAttribute('role', this.announce)
+      : this.#baseEl?.removeAttribute('role');
 
     this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
 
@@ -582,8 +589,10 @@ class AlertElement extends HTMLElement {
     this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
-    this.removeEventListener('mouseenter', this.#handleMouseEnter);
-    this.removeEventListener('mouseleave', this.#handleMouseLeave);
+    this.removeEventListener('mouseenter', this.#handleInteractionStart);
+    this.removeEventListener('mouseleave', this.#handleInteractionStop);
+    this.removeEventListener('focusin', this.#handleInteractionStart);
+    this.removeEventListener('focusout', this.#handleInteractionStop);
     this.removeEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
   }
 
@@ -631,17 +640,29 @@ class AlertElement extends HTMLElement {
   };
 
   /**
-   * Handles the mouse enter event on the alert.
+   * Handles the start of a user interaction (e.g., mouse enter or focus in).
+   *
+   * When the user interacts with the alert — such as hovering or focusing —
+   * the auto-dismiss timer is paused to keep the alert visible.
    */
-  #handleMouseEnter = () => {
-    this.open && this.duration !== Infinity && this.#timer?.stop();
+  #handleInteractionStart = () => {
+    if (!this.open || this.duration === Infinity) {
+      return;
+    }
+    this.#timer?.stop();
   };
 
   /**
-   * Handles the mouse leave event on the alert.
+   * Handles the end of a user interaction (e.g., mouse leave or focus out).
+   *
+   * When the user stops interacting with the alert — such as moving the mouse away
+   * or blurring focus — the auto-dismiss timer resumes.
    */
-  #handleMouseLeave = () => {
-    this.open && this.duration !== Infinity && this.#timer?.start();
+  #handleInteractionStop = () => {
+    if (!this.open || this.duration === Infinity || this.#isFocused()) {
+      return;
+    }
+    this.#timer?.start();
   };
 
   /**
@@ -800,6 +821,15 @@ class AlertElement extends HTMLElement {
 
       element.addEventListener(eventName, done, { once: true });
     });
+  }
+
+  /**
+   * Checks if the alert element or any of its descendants are focused.
+   *
+   * @returns {boolean} - True if the alert element or any of its descendants are focused, false otherwise.
+   */
+  #isFocused() {
+    return this.matches(':focus-within');
   }
 
   /**

@@ -1,7 +1,7 @@
 {
   "name": "@georapbox/alert-element",
   "version": "1.2.0",
-  "description": "A custom HTML element for displaying dismissible alerts and toast notifications",
+  "description": "A custom HTML element for displaying dismissible alerts and toast notifications.",
   "main": "dist/alert-element.js",
   "module": "dist/alert-element.js",
   "unpkg": "dist/alert-element.js",
