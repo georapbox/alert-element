@@ -79,8 +79,12 @@ browser-window::part(main) {
   padding: 1.25rem;
 }
 
-browser-window alert-element:not(:last-child) {
-  margin-block-end: 1rem;
+browser-window > button {
+  margin: 0;
+}
+
+browser-window alert-element:not(:first-child) {
+  margin-block-start: 1rem;
 }
 
 /* Custom variant */
@@ -129,6 +133,10 @@ alert-element[variant="custom"]::part(countdown-elapsed) {
   --danger: #dc2626;
 }
 
+[data-example="toasts"] > button {
+  margin: 0 0.25rem 0.5rem 0;
+}
+
 [data-example="toasts"] button[data-variant],
 [data-example="toasts"] button[data-variant]:hover {
   color: #ffffff;
@@ -174,9 +182,9 @@ alert-element[variant="custom"]::part(countdown-elapsed) {
 }
 
 /* Custom toast stack poisiton */
-[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
-  top: 0;
-  right: 0;
+[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
 }
 
 [data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
@@ -184,9 +192,9 @@ alert-element[variant="custom"]::part(countdown-elapsed) {
   transform: translateX(50%);
 }
 
-[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
-  right: auto;
-  left: 0;
+[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+  top: 0;
+  right: 0;
 }
 
 [data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {

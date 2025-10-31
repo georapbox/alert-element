@@ -43,96 +43,15 @@ function toastify(message, options = {}) {
   return alert.toast();
 }
 
-// Closable Alert
-(function () {
-  const button = document.querySelector('[data-example="closable"] > button');
-  const alert = document.querySelector('[data-example="closable"] > alert-element');
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('disabled', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('disabled');
-  });
-
+document.querySelectorAll('button[data-action="show-alert"]').forEach(button => {
   button.addEventListener('click', () => {
-    alert.open = true;
+    const alert = button.nextElementSibling;
+    if (!(alert instanceof AlertElement) || alert.open) {
+      return;
+    }
+    alert.show();
   });
-})();
-
-// Custom close button
-(function () {
-  const button = document.querySelector('[data-example="custom-close-button"] > button');
-  const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('hidden');
-  });
-
-  button.addEventListener('click', () => {
-    const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
-    alert.open = true;
-  });
-})();
-
-// Alert with duration
-(function () {
-  const button = document.querySelector('[data-example="duration"] > button');
-  const alert = document.querySelector('[data-example="duration"] > alert-element');
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('disabled', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('disabled');
-  });
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-})();
-
-// Alert with countdown
-(function () {
-  const button = document.querySelector('[data-example="countdown"] > button');
-  const alert = document.querySelector('[data-example="countdown"] > alert-element');
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('disabled', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('disabled');
-  });
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-})();
-
-// Custom styling
-(function () {
-  const button = document.querySelector('[data-example="custom-styling"] > button');
-  const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('hidden');
-  });
-})();
+});
 
 // Toast alerts
 (function () {
@@ -196,7 +115,6 @@ function toastify(message, options = {}) {
 
 // Custom animations
 (function () {
-  const button = document.querySelector('[data-example="custom-animations"] > button');
   const alert = document.querySelector('[data-example="custom-animations"] > alert-element');
 
   alert.customAnimations = {
@@ -225,36 +143,6 @@ function toastify(message, options = {}) {
       }
     }
   };
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('hidden');
-  });
-
-  button.addEventListener('click', () => {
-    alert.show();
-  });
-})();
-
-// No animations
-(function () {
-  const button = document.querySelector('[data-example="no-animations"] > button');
-  const alert = document.querySelector('[data-example="no-animations"] > alert-element');
-
-  alert.addEventListener(EVENT_ALERT_SHOW, () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
-    button.removeAttribute('hidden');
-  });
-
-  button.addEventListener('click', () => {
-    alert.show();
-  });
 })();
 
 // Events
