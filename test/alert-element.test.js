@@ -72,6 +72,16 @@ describe('alert-element', () => {
       expect(base).to.have.attribute('role', 'alert');
     });
 
+    it('base element role attribute changes on the fly when announce attribute changes', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      const base = el.shadowRoot.querySelector('.alert');
+      expect(base).to.have.attribute('role', 'alert');
+      el.announce = 'status';
+      expect(base).to.have.attribute('role', 'status');
+      el.announce = 'none';
+      expect(base).to.not.have.attribute('role');
+    });
+
     it('close button has a default aria-label attribute', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
@@ -406,6 +416,14 @@ describe('alert-element', () => {
       el.duration = 100;
       await oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       expect(el.open).to.be.false;
+    });
+
+    it('ensure duration is 100ms when a negative or zero value is set', async () => {
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      el.duration = -100;
+      expect(el.duration).to.equal(10);
+      el.duration = 0;
+      expect(el.duration).to.equal(10);
     });
   });
 

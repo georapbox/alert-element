@@ -16,6 +16,16 @@ document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
 
+document.querySelectorAll('button[data-action="show-alert"]').forEach(button => {
+  button.addEventListener('click', () => {
+    const alert = button.closest('.card').querySelector('alert-element');
+    if (!(alert instanceof AlertElement) || alert.open) {
+      return;
+    }
+    alert.show();
+  });
+});
+
 function escapeHtml(html) {
   const div = document.createElement('div');
   div.textContent = html;
@@ -42,16 +52,6 @@ function toastify(message, options = {}) {
 
   return alert.toast();
 }
-
-document.querySelectorAll('button[data-action="show-alert"]').forEach(button => {
-  button.addEventListener('click', () => {
-    const alert = button.nextElementSibling;
-    if (!(alert instanceof AlertElement) || alert.open) {
-      return;
-    }
-    alert.show();
-  });
-});
 
 // Toast alerts
 (function () {

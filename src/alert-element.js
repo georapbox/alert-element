@@ -425,8 +425,11 @@ class AlertElement extends HTMLElement {
 
     const value = Number(attr);
 
+    // Avoid elapsed >= duration issues with Timer class when duration is
+    // 0 or negative numbers by defaulting to a duration greater than 0
+    // but small enough to be effectively immediate.
     if (value <= 0) {
-      return 10; // Minimum duration of 10ms to avoid immediate dismissal
+      return 10;
     }
 
     return Number.isNaN(value) ? Infinity : value;
