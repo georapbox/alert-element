@@ -16,15 +16,40 @@ document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
 
-document.querySelectorAll('button[data-action="show-alert"]').forEach(button => {
-  button.addEventListener('click', () => {
-    const alert = button.closest('.card').querySelector('alert-element');
-    if (!(alert instanceof AlertElement) || alert.open) {
-      return;
-    }
-    alert.show();
-  });
+document.querySelectorAll('button[data-action="toggle-alert"]').forEach(btn => {
+  btn.addEventListener(
+    'click',
+    throttle(() => {
+      const alert = btn.closest('.card')?.querySelector('alert-element');
+      if (alert instanceof AlertElement) {
+        alert.open ? alert.hide() : alert.show();
+      }
+    }, 300)
+  );
 });
+
+function throttle(fn, wait = 0) {
+  let timerId, lastRan;
+
+  return (...args) => {
+    if (!lastRan) {
+      fn(...args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(timerId);
+
+      timerId = setTimeout(
+        () => {
+          if (Date.now() - lastRan >= wait) {
+            fn(...args);
+            lastRan = Date.now();
+          }
+        },
+        wait - (Date.now() - lastRan) || 0
+      );
+    }
+  };
+}
 
 function escapeHtml(html) {
   const div = document.createElement('div');

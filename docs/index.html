@@ -156,18 +156,18 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
-      <alert-element variant="info" closable>
-        Click the close button to hide this alert.
+      <alert-element variant="info" open closable>
+        Click the close button (X) to hide this alert.
       </alert-element>
     </browser-window>
 
     <details>
       <summary>Source code</summary>
 
-<pre><code class="hljs language-xml">&lt;alert-element variant=&quot;info&quot; closable&gt;
-  Click the close button to hide this alert.
+<pre><code class="hljs language-xml">&lt;alert-element variant=&quot;info&quot; open closable&gt;
+  Click the close button (X) to hide this alert.
 &lt;/alert-element&gt;</code></pre>
     </details>
   </div>
@@ -180,7 +180,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" open closable>
         This is an alert with a custom close button.
@@ -207,7 +207,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" closable duration="3000">
         This alert will automatically hide itself after <strong>3 seconds</strong>, unless you interact with it.
@@ -232,7 +232,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" closable duration="10000" countdown>
         This alert will automatically hide itself after <strong>10 seconds</strong>, unless you interact with it.
@@ -303,7 +303,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element open closable class="custom-alert">
         <span slot="icon">
@@ -623,7 +623,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-animations">
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" closable>
         This alert has custom animations applied to it.
@@ -678,7 +678,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="warning" closable no-animations>
         This is an alert with no animations.
@@ -702,7 +702,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="show-alert">Show Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" closable countdown duration="10000">
         <strong>Auto-dismiss in 10s</strong><br>
