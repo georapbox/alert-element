@@ -79,27 +79,27 @@ browser-window::part(main) {
   padding: 1.25rem;
 }
 
-browser-window alert-element:not(:last-child) {
-  margin-block-end: 1rem;
+browser-window > button {
+  margin: 0;
+}
+
+browser-window alert-element:not(:first-child) {
+  margin-block-start: 1rem;
 }
 
 /* Custom variant */
-alert-element {
-  --alert-custom-variant-color: #823ff2;
+alert-element[variant="custom"] {
+  --alert-base-variant-color: #823ff2;
 }
 
 @media (prefers-color-scheme: dark) {
-  alert-element {
-    --alert-custom-variant-color: #b5a1ff;
+  alert-element[variant="custom"] {
+    --alert-base-variant-color: #b5a1ff;
   }
 }
 
-alert-element[variant="custom"]::part(base) {
-  border-top-color: var(--alert-custom-variant-color);
-}
-
-alert-element[variant="custom"]::part(icon) {
-  color: var(--alert-custom-variant-color);
+alert-element[variant="custom"]::part(countdown-elapsed) {
+  background-color: red;
 }
 
 /* Custom alert styles */
@@ -117,10 +117,6 @@ alert-element[variant="custom"]::part(icon) {
   }
 }
 
-.custom-alert::part(base) {
-  border-width: 1px;
-}
-
 .custom-alert::part(close) {
   background-color: var(--alert-fg-color);
   color: var(--alert-bg-color);
@@ -135,6 +131,10 @@ alert-element[variant="custom"]::part(icon) {
   --neutral: #52525b;
   --warning: #d87708;
   --danger: #dc2626;
+}
+
+[data-example="toasts"] > button {
+  margin: 0 0.25rem 0.5rem 0;
 }
 
 [data-example="toasts"] button[data-variant],
@@ -182,9 +182,9 @@ alert-element[variant="custom"]::part(icon) {
 }
 
 /* Custom toast stack poisiton */
-[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
-  top: 0;
-  right: 0;
+[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
 }
 
 [data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
@@ -192,9 +192,9 @@ alert-element[variant="custom"]::part(icon) {
   transform: translateX(50%);
 }
 
-[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
-  right: auto;
-  left: 0;
+[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+  top: 0;
+  right: 0;
 }
 
 [data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {

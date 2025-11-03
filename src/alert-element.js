@@ -1,19 +1,21 @@
 // @ts-check
 
 import { createToastStack } from './toast-stack.js';
-import {
-  COMPONENT_NAME,
-  EVT_ALERT_SHOW,
-  EVT_ALERT_AFTER_SHOW,
-  EVT_ALERT_HIDE,
-  EVT_ALERT_AFTER_HIDE,
-  COMMAND_ALERT_SHOW,
-  COMMAND_ALERT_HIDE,
-  CLOSE_REASON_USER,
-  CLOSE_REASON_TIMEOUT,
-  CLOSE_REASON_API
-} from './constants.js';
+import { Timer } from './timer.js';
 
+const COMPONENT_NAME = 'alert-element';
+const EVENT_ALERT_SHOW = 'alert-show';
+const EVENT_ALERT_AFTER_SHOW = 'alert-after-show';
+const EVENT_ALERT_HIDE = 'alert-hide';
+const EVENT_ALERT_AFTER_HIDE = 'alert-after-hide';
+const COMMAND_ALERT_SHOW = '--alert-show';
+const COMMAND_ALERT_HIDE = '--alert-hide';
+const CLOSE_REASON_USER = 'user';
+const CLOSE_REASON_TIMEOUT = 'timeout';
+const CLOSE_REASON_API = 'api';
+
+const html = String.raw;
+const css = String.raw;
 const toastStack = createToastStack();
 
 /**
@@ -48,20 +50,22 @@ const toastStack = createToastStack();
  * @typedef {'alert' | 'status' | 'none'} Announce
  */
 
-const styles = /* css */ `
+const styles = css`
   :host {
-    display: contents;
-    box-sizing: border-box;
-
     --alert-border-radius: 0.25rem;
+    --alert-top-border-width: 0.1875rem;
+    --alert-countdown-height: 0.1875rem;
     --alert-fg-color: #3f3f46;
     --alert-bg-color: #ffffff;
     --alert-border-color: #e4e4e7;
+    --alert-base-variant-color: var(--alert-fg-color);
     --alert-info-variant-color: #0584c7;
     --alert-success-variant-color: #16a34a;
     --alert-neutral-variant-color: #52525b;
     --alert-warning-variant-color: #d87708;
     --alert-danger-variant-color: #dc2626;
+    display: contents;
+    box-sizing: border-box;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -77,6 +81,22 @@ const styles = /* css */ `
     }
   }
 
+  :host([variant='info']) {
+    --alert-base-variant-color: var(--alert-info-variant-color);
+  }
+  :host([variant='success']) {
+    --alert-base-variant-color: var(--alert-success-variant-color);
+  }
+  :host([variant='neutral']) {
+    --alert-base-variant-color: var(--alert-neutral-variant-color);
+  }
+  :host([variant='warning']) {
+    --alert-base-variant-color: var(--alert-warning-variant-color);
+  }
+  :host([variant='danger']) {
+    --alert-base-variant-color: var(--alert-danger-variant-color);
+  }
+
   :host *,
   :host *::before,
   :host *::after {
@@ -90,66 +110,29 @@ const styles = /* css */ `
   }
 
   .alert {
+    position: relative;
     display: flex;
     align-items: center;
     margin: inherit;
     border: 1px solid var(--alert-border-color);
-    border-top-width: 3px;
+    border-top-width: var(--alert-top-border-width);
+    border-top-color: var(--alert-base-variant-color);
     border-radius: var(--alert-border-radius);
+    overflow: hidden;
     background-color: var(--alert-bg-color);
-  }
-
-  :host([variant='info']) .alert {
-    border-top-color: var(--alert-info-variant-color);
-  }
-
-  :host([variant='success']) .alert {
-    border-top-color: var(--alert-success-variant-color);
-  }
-
-  :host([variant='neutral']) .alert {
-    border-top-color: var(--alert-neutral-variant-color);
-  }
-
-  :host([variant='warning']) .alert {
-    border-top-color: var(--alert-warning-variant-color);
-  }
-
-  :host([variant='danger']) .alert {
-    border-top-color: var(--alert-danger-variant-color);
   }
 
   .alert__icon {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    color: var(--alert-fg-color);
+    color: var(--alert-base-variant-color);
     font-size: inherit;
     line-height: 0;
   }
 
   .alert__icon ::slotted(*) {
     margin-inline-start: 1rem;
-  }
-
-  :host([variant='info']) .alert__icon {
-    color: var(--alert-info-variant-color);
-  }
-
-  :host([variant='success']) .alert__icon {
-    color: var(--alert-success-variant-color);
-  }
-
-  :host([variant='neutral']) .alert__icon {
-    color: var(--alert-neutral-variant-color);
-  }
-
-  :host([variant='warning']) .alert__icon {
-    color: var(--alert-warning-variant-color);
-  }
-
-  :host([variant='danger']) .alert__icon {
-    color: var(--alert-danger-variant-color);
   }
 
   .alert__message {
@@ -160,10 +143,14 @@ const styles = /* css */ `
     line-height: 1.5;
   }
 
+  .alert:has(.alert__countdown:not([hidden])) .alert__message {
+    padding-bottom: calc(1.25rem + var(--alert-countdown-height));
+  }
+
   .alert__close {
     display: flex;
     align-items: center;
-    margin-inline-end:  1rem;
+    margin-inline-end: 1rem;
     padding: 0.5rem;
     border: none;
     line-height: 0;
@@ -176,23 +163,51 @@ const styles = /* css */ `
   :host(:not([closable])) .alert__close {
     display: none !important;
   }
+
+  .alert__countdown {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--alert-countdown-height);
+    background-color: var(--alert-border-color);
+  }
+
+  .alert__countdown-elapsed {
+    width: 100%;
+    height: 100%;
+    background-color: var(--alert-base-variant-color);
+  }
 `;
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */ `
-  <style>${styles}</style>
+template.innerHTML = html`
+  <style>
+    ${styles}
+  </style>
+
   <div class="alert" part="base" role="alert" hidden>
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
-    <div class="alert__message" part="message">
-      <slot></slot>
+    <div class="alert__message" part="message"><slot></slot></div>
+    <div class="alert__countdown" part="countdown" hidden>
+      <div class="alert__countdown-elapsed" part="countdown-elapsed"></div>
     </div>
     <button type="button" class="alert__close" part="close" aria-label="Close">
       <slot name="close">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+          />
         </svg>
       </slot>
     </button>
@@ -212,14 +227,18 @@ template.innerHTML = /* html */ `
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
+ * @property {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @property {boolean} noAnimations - Disables animations when set to true.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @attribute {boolean} closable - Reflects the closable property.
  * @attribute {boolean} open - Reflects the open property.
  * @attribute {number} duration - Reflects the duration property.
  * @attribute {string} variant - Reflects the variant property.
- * @attribute {string} announce - Reflects the announce property.
  * @attribute {string} close-label - Reflects the closeLabel property.
+ * @attribute {string} announce - Reflects the announce property.
+ * @attribute {boolean} countdown - Reflects the countdown property.
+ * @attribute {boolean} no-animations - Reflects the noAnimations property.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -229,11 +248,16 @@ template.innerHTML = /* html */ `
  * @csspart icon - The icon element of the alert.
  * @csspart message - The message element of the alert.
  * @csspart close - The close button element of the alert.
+ * @csspart countdown - The countdown bar element of the alert.
+ * @csspart countdown-elapsed - The elapsed portion of the countdown bar.
  *
  * @cssproperty --alert-border-radius - The border radius of the alert.
+ * @cssproperty --alert-top-border-width - The top border width of the alert.
+ * @cssproperty --alert-countdown-height - The height of the countdown bar.
  * @cssproperty --alert-fg-color - The foreground color of the alert.
  * @cssproperty --alert-bg-color - The background color of the alert.
  * @cssproperty --alert-border-color - The border color of the alert.
+ * @cssproperty --alert-base-variant-color - The base color variant for alerts.
  * @cssproperty --alert-info-variant-color - The color variant for info alerts.
  * @cssproperty --alert-success-variant-color - The color variant for success alerts.
  * @cssproperty --alert-neutral-variant-color - The color variant for neutral alerts.
@@ -251,6 +275,9 @@ template.innerHTML = /* html */ `
  * @event alert-after-hide - Emitted after the alert is hidden and all animations are complete.
  */
 class AlertElement extends HTMLElement {
+  /** @type {boolean} */
+  #isInitialized = false;
+
   /** @type {Nullable<HTMLElement>} */
   #baseEl = null;
 
@@ -260,10 +287,7 @@ class AlertElement extends HTMLElement {
   /** @type {Nullable<HTMLSlotElement>} */
   #closeSlotEl = null;
 
-  /** @type {number | undefined} */
-  #autoHideTimeout = undefined;
-
-  /** @type {Nullable<{ promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void; }>} */
+  /** @type {Nullable<{promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void;}>} */
   #toastInProgress = null;
 
   /** @type {CustomAnimations | undefined} */
@@ -275,6 +299,15 @@ class AlertElement extends HTMLElement {
   /** @type {CloseReason} */
   #closeReason = CLOSE_REASON_API;
 
+  /** @type {Nullable<Timer>} */
+  #timer = null;
+
+  /** @type {Nullable<HTMLElement>} */
+  #countdownEl = null;
+
+  /** @type {Nullable<HTMLElement>} */
+  #countdownElapsedEl = null;
+
   constructor() {
     super();
 
@@ -285,7 +318,7 @@ class AlertElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'duration', 'close-label', 'announce'];
+    return ['open', 'duration', 'close-label', 'announce', 'countdown'];
   }
 
   /**
@@ -296,17 +329,37 @@ class AlertElement extends HTMLElement {
    * @param {string} newValue - The new value of the attribute.
    */
   attributeChangedCallback(name, oldValue, newValue) {
-    if (!this.isConnected || oldValue === newValue) {
+    if (!this.#isInitialized || oldValue === newValue) {
       return;
     }
 
     switch (name) {
       case 'open':
-        this.#handleOpenAttributeChange();
+        if (this.open) {
+          this.duration !== Infinity && this.#timer?.start();
+          this.#baseEl?.removeAttribute('hidden');
+          this.#countdownElapsedEl?.style.setProperty('width', '100%');
+          this.#emitEvent(EVENT_ALERT_SHOW);
+          this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
+            this.#emitEvent(EVENT_ALERT_AFTER_SHOW);
+          });
+        } else {
+          this.duration !== Infinity && this.#timer?.reset();
+          this.#emitEvent(EVENT_ALERT_HIDE, { reason: this.#closeReason });
+          this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
+            this.#baseEl?.setAttribute('hidden', '');
+            this.#emitEvent(EVENT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
+            this.#closeReason = CLOSE_REASON_API;
+          });
+        }
         break;
       case 'duration':
-        this.#clearAutoHideTimer();
-        this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
+        this.#timer?.stop().off('tick', this.#handleTimerTick).off('finish', this.#handleTimerFinish);
+        this.#timer = new Timer({ duration: this.duration })
+          .on('tick', this.#handleTimerTick)
+          .on('finish', this.#handleTimerFinish);
+        this.open && this.duration !== Infinity && !this.#isFocused() && this.#timer.start();
+        this.duration === Infinity && this.#countdownElapsedEl?.style.setProperty('width', '100%');
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -317,6 +370,9 @@ class AlertElement extends HTMLElement {
         } else {
           this.#baseEl?.removeAttribute('role');
         }
+        break;
+      case 'countdown':
+        this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
         break;
       default:
         break;
@@ -363,11 +419,19 @@ class AlertElement extends HTMLElement {
   get duration() {
     const attr = this.getAttribute('duration');
 
-    if (attr === null) {
+    if (attr === null || attr === '') {
       return Infinity;
     }
 
     const value = Number(attr);
+
+    // Avoid elapsed >= duration issues with Timer class when duration is
+    // 0 or negative numbers by defaulting to a duration greater than 0
+    // but small enough to be effectively immediate.
+    if (value <= 0) {
+      return 10;
+    }
+
     return Number.isNaN(value) ? Infinity : value;
   }
 
@@ -424,6 +488,36 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute countdown - Reflects the countdown property.
+   */
+  get countdown() {
+    return this.hasAttribute('countdown');
+  }
+
+  set countdown(value) {
+    this.toggleAttribute('countdown', !!value);
+  }
+
+  /**
+   * Disables animations when set to true.
+   *
+   * @type {boolean}
+   * @default false
+   * @attribute no-animations - Reflects the noAnimations property.
+   */
+  get noAnimations() {
+    return this.hasAttribute('no-animations');
+  }
+
+  set noAnimations(value) {
+    this.toggleAttribute('no-animations', !!value);
+  }
+
+  /**
    * Custom animation keyframes and options for show/hide.
    *
    * @type {CustomAnimations | undefined}
@@ -447,21 +541,31 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('variant');
     this.#upgradeProperty('closeLabel');
     this.#upgradeProperty('announce');
+    this.#upgradeProperty('countdown');
+    this.#upgradeProperty('noAnimations');
     this.#upgradeProperty('customAnimations');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
     this.#closeBtn = this.shadowRoot?.querySelector('.alert__close') ?? null;
     this.#closeSlotEl = this.shadowRoot?.querySelector('slot[name="close"]') ?? null;
+    this.#countdownEl = this.shadowRoot?.querySelector('.alert__countdown') ?? null;
+    this.#countdownElapsedEl = this.shadowRoot?.querySelector('.alert__countdown-elapsed') ?? null;
 
     this.#closeBtn?.addEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.addEventListener('slotchange', this.#handleCloseSlotChange);
-    this.addEventListener('mouseenter', this.#handleMouseEnter);
-    this.addEventListener('mouseleave', this.#handleMouseLeave);
+    this.addEventListener('mouseenter', this.#handleInteractionStart);
+    this.addEventListener('mouseleave', this.#handleInteractionStop);
+    this.addEventListener('focusin', this.#handleInteractionStart);
+    this.addEventListener('focusout', this.#handleInteractionStop);
     this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
 
+    this.#timer = new Timer({ duration: this.duration })
+      .on('tick', this.#handleTimerTick)
+      .on('finish', this.#handleTimerFinish);
+
     if (this.open) {
+      this.duration !== Infinity && this.#timer?.start();
       this.#baseEl?.removeAttribute('hidden');
-      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
     } else {
       this.#baseEl?.setAttribute('hidden', '');
     }
@@ -470,81 +574,61 @@ class AlertElement extends HTMLElement {
       this.#updateCloseLabel();
     }
 
-    if (this.announce !== 'none') {
-      this.#baseEl?.setAttribute('role', this.announce);
-    } else {
-      this.#baseEl?.removeAttribute('role');
-    }
+    this.announce !== 'none'
+      ? this.#baseEl?.setAttribute('role', this.announce)
+      : this.#baseEl?.removeAttribute('role');
+
+    this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
+
+    this.#isInitialized = true;
   }
 
   /**
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    this.#clearAutoHideTimer();
+    this.#isInitialized = false;
+    this.#timer?.stop().off('tick', this.#handleTimerTick).off('finish', this.#handleTimerFinish);
+    this.#timer = null;
     this.#closeBtn?.removeEventListener('click', this.#handleCloseBtnClick);
     this.#closeSlotEl?.removeEventListener('slotchange', this.#handleCloseSlotChange);
-    this.removeEventListener('mouseenter', this.#handleMouseEnter);
-    this.removeEventListener('mouseleave', this.#handleMouseLeave);
+    this.removeEventListener('mouseenter', this.#handleInteractionStart);
+    this.removeEventListener('mouseleave', this.#handleInteractionStop);
+    this.removeEventListener('focusin', this.#handleInteractionStart);
+    this.removeEventListener('focusout', this.#handleInteractionStop);
     this.removeEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
   }
 
   /**
-   * Handles the change of the open attribute.
-   * If the open attribute is set to true, the alert is shown and an event is dispatched.
-   * If the open attribute is set to false, the alert is hidden and an event is dispatched.
+   * Lifecycle method that is called when the element is moved to a different
+   * place in the DOM via `Element.moveBefore()`.
    */
-  #handleOpenAttributeChange() {
-    this.#clearAutoHideTimer();
-
-    if (this.open) {
-      this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
-      this.#baseEl?.removeAttribute('hidden');
-      this.#emitEvent(EVT_ALERT_SHOW);
-      this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
-        this.#emitEvent(EVT_ALERT_AFTER_SHOW);
-      });
-    } else {
-      this.#emitEvent(EVT_ALERT_HIDE, { reason: this.#closeReason });
-      this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
-        this.#baseEl?.setAttribute('hidden', '');
-        this.#emitEvent(EVT_ALERT_AFTER_HIDE, { reason: this.#closeReason });
-        this.#closeReason = CLOSE_REASON_API;
-      });
-    }
+  connectedMoveCallback() {
+    // No-op: Use this to avoid running initialization/cleanup code in the `connectedCallback()` and `disconnectedCallback()`
+    // callbacks when the element is not actually being added to or removed from the DOM
+    // but rather being moved within the DOM via `Element.moveBefore()`.
   }
 
   /**
-   * Clears the auto-hide timer if it is set.
+   * Handles timer tick events to update the countdown bar.
+   *
+   * @param {Event} evt - The timer tick event.
    */
-  #clearAutoHideTimer() {
-    if (this.#autoHideTimeout === undefined) {
+  #handleTimerTick = evt => {
+    if (!this.countdown || !this.#countdownElapsedEl) {
       return;
     }
-
-    clearTimeout(this.#autoHideTimeout);
-    this.#autoHideTimeout = undefined;
-  }
-
-  /**
-   * Starts the auto-hide timer for the alert.
-   * This method sets a timeout to close the alert after the specified duration.
-   */
-  #startAutoHideTimer() {
-    this.#autoHideTimeout = window.setTimeout(() => {
-      this.#closeReason = CLOSE_REASON_TIMEOUT;
-      this.open = false;
-    }, this.duration);
-  }
+    const { remaining } = /** @type Timer */ (evt.currentTarget);
+    this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
+  };
 
   /**
-   * Determines if the auto-hide timer should be started.
-   *
-   * @returns {boolean} - Returns true if the auto-hide timer should be started; otherwise false.
+   * Handles timer finish events to close the alert.
    */
-  #shouldStartAutoHideTimer() {
-    return this.open && this.duration !== Infinity;
-  }
+  #handleTimerFinish = () => {
+    this.#closeReason = CLOSE_REASON_TIMEOUT;
+    this.open = false;
+  };
 
   /**
    * Handles the click event on the close button.
@@ -559,18 +643,29 @@ class AlertElement extends HTMLElement {
   };
 
   /**
-   * Handles the mouse enter event on the alert.
+   * Handles the start of a user interaction (e.g., mouse enter or focus in).
+   *
+   * When the user interacts with the alert — such as hovering or focusing —
+   * the auto-dismiss timer is paused to keep the alert visible.
    */
-  #handleMouseEnter = () => {
-    this.#clearAutoHideTimer();
+  #handleInteractionStart = () => {
+    if (!this.open || this.duration === Infinity) {
+      return;
+    }
+    this.#timer?.stop();
   };
 
   /**
-   * Handles the mouse leave event on the alert.
+   * Handles the end of a user interaction (e.g., mouse leave or focus out).
+   *
+   * When the user stops interacting with the alert — such as moving the mouse away
+   * or blurring focus — the auto-dismiss timer resumes.
    */
-  #handleMouseLeave = () => {
-    this.#clearAutoHideTimer();
-    this.#shouldStartAutoHideTimer() && this.#startAutoHideTimer();
+  #handleInteractionStop = () => {
+    if (!this.open || this.duration === Infinity || this.#isFocused()) {
+      return;
+    }
+    this.#timer?.start();
   };
 
   /**
@@ -625,7 +720,6 @@ class AlertElement extends HTMLElement {
    */
   #getAnimations() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     const defaultAnimations = {
       show: {
         keyframes: [
@@ -648,8 +742,12 @@ class AlertElement extends HTMLElement {
         }
       }
     };
-
     const userAnimations = this.customAnimations || AlertElement.customAnimations || {};
+    const disableAnimations =
+      prefersReducedMotion ||
+      this.noAnimations ||
+      this.customAnimations === null ||
+      AlertElement.customAnimations === null;
 
     /** @type {(key: 'show' | 'hide') => KeyframeAnimationOptions} */
     const resolveOptions = key => {
@@ -658,10 +756,7 @@ class AlertElement extends HTMLElement {
       return {
         ...fallback,
         ...user,
-        duration:
-          prefersReducedMotion || this.customAnimations === null || AlertElement.customAnimations === null
-            ? 0
-            : (user.duration ?? fallback.duration)
+        duration: disableAnimations ? 0 : (user.duration ?? fallback.duration)
       };
     };
 
@@ -732,6 +827,15 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Checks if the alert element or any of its descendants are focused.
+   *
+   * @returns {boolean} - True if the alert element or any of its descendants are focused, false otherwise.
+   */
+  #isFocused() {
+    return this.matches(':focus-within');
+  }
+
+  /**
    * Shows the alert element.
    *
    * @returns {Promise<void>} - A promise that resolves when the alert is shown, after the show animation is complete.
@@ -742,7 +846,7 @@ class AlertElement extends HTMLElement {
     }
 
     this.open = true;
-    return this.#waitForEvent(this, EVT_ALERT_AFTER_SHOW);
+    return this.#waitForEvent(this, EVENT_ALERT_AFTER_SHOW);
   }
 
   /**
@@ -756,7 +860,7 @@ class AlertElement extends HTMLElement {
     }
 
     this.open = false;
-    return this.#waitForEvent(this, EVT_ALERT_AFTER_HIDE);
+    return this.#waitForEvent(this, EVENT_ALERT_AFTER_HIDE);
   }
 
   /**
@@ -794,7 +898,7 @@ class AlertElement extends HTMLElement {
       promise,
       resolve: resolveFn,
       cleanup: () => {
-        this.removeEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide);
+        this.removeEventListener(EVENT_ALERT_AFTER_HIDE, onAfterHide);
 
         if (this.parentNode === toastStack) {
           toastStack.removeChild(this);
@@ -820,7 +924,7 @@ class AlertElement extends HTMLElement {
     const toastStackBaseEl = toastStack.shadowRoot?.querySelector('.stack');
     toastStackBaseEl?.scrollTo({ top: toastStackBaseEl.scrollHeight });
 
-    this.addEventListener(EVT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
+    this.addEventListener(EVENT_ALERT_AFTER_HIDE, onAfterHide, { once: true });
 
     return promise;
   }
@@ -832,7 +936,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'customAnimations'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'noAnimations' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */
@@ -858,4 +962,15 @@ class AlertElement extends HTMLElement {
   }
 }
 
-export { AlertElement };
+export {
+  AlertElement,
+  EVENT_ALERT_SHOW,
+  EVENT_ALERT_AFTER_SHOW,
+  EVENT_ALERT_HIDE,
+  EVENT_ALERT_AFTER_HIDE,
+  COMMAND_ALERT_SHOW,
+  COMMAND_ALERT_HIDE,
+  CLOSE_REASON_USER,
+  CLOSE_REASON_TIMEOUT,
+  CLOSE_REASON_API
+};

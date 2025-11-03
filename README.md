@@ -62,6 +62,8 @@ By default, the component comes with some basic default styling. However, you ca
 | `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 | `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
+| `countdown` | ✓ | Boolean | - | `false` | Indicates whether to show a countdown displaying the remaining time before the alert automatically closes. |
+| `noAnimations`<br>*`no-animations`* | ✓ | Boolean | - | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
 | `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
 ### Slots
@@ -80,15 +82,20 @@ By default, the component comes with some basic default styling. However, you ca
 | `icon` | The icon element of the alert. |
 | `message` | The message element of the alert. |
 | `close` | The close button element of the alert. |
+| `countdown` | The countdown bar element of the alert. |
+| `countdown-elapsed` | The elapsed portion of the countdown bar. |
 
 ### CSS Custom Properties
 
 | Name | Description | Default |
 | ---- | ----------- | ------- |
 | `--alert-border-radius` | The border radius of the alert. | `0.25rem` |
+| `--alert-top-border-width` | The width of the top border of the alert. | `0.1875rem` |
+| `--alert-countdown-height` | The height of the countdown bar. | `0.1875rem` |
 | `--alert-fg-color` | The foreground color of the alert. | Light: `#3f3f46` - Dark: `#b6b6be` |
 | `--alert-bg-color` | The background color of the alert. | Light: `#ffffff` - Dark: `#252528` |
 | `--alert-border-color` | The border color of the alert. | Light: `#e4e4e7` - Dark: `#36363a` |
+| `--alert-base-variant-color` | The base color variant for alerts. | `var(--alert-fg-color)` |
 | `--alert-info-variant-color` | The color variant for info alerts. | Light: `#0584c7` - Dark: `#27bbfc` |
 | `--alert-success-variant-color` | The color variant for success alerts. | Light: `#16a34a` - Dark: `#3ae075` |
 | `--alert-neutral-variant-color` | The color variant for neutral alerts. | Light: `#52525b` - Dark: `#8e8e9a` |
@@ -100,8 +107,8 @@ By default, the component comes with some basic default styling. However, you ca
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
 | `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | `elementName='alert-element'` |
-| `show`<sup>1</sup> | Instance | Shows the alert. | - |
-| `hide`<sup>1</sup> | Instance | Hides the alert. | - |
+| `show`<sup>1</sup> | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
+| `hide`<sup>1</sup> | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
 | `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('alert-element').then(() => { /* call methods here */ });`
@@ -292,6 +299,25 @@ alert.customAnimations = customAnimations;
 > Animations respect the users' `prefers-reduced-motion` setting.
 > If the user has enabled the setting on their system, the animations will be disabled and the element will be shown/hidden instantly.
 > To disable animations for all users no matter their settings, you can set the `customAnimations` property to `null`.
+>
+> As of **version 1.2.0**, you can also disable animations using the `no-animations` attribute or `noAnimations` property.
+> This provides a more declarative way to disable animations without having to set custom animations to `null`,
+> although setting `customAnimations` to `null` will still work as before.
+
+## User interaction
+
+The alert element reacts gracefully to user interactions, making sure it stays visible and accessible while the user is engaged with it.
+
+When an alert has a finite `duration`, it automatically closes after the specified time has elapsed. However, if the user interacts with the alert — for example, by hovering over it with the mouse or focusing it using the keyboard — the auto-dismiss timer temporarily pauses, ensuring that the alert does not close while the user is reading or interacting with it.
+
+Once the interaction ends (e.g., when the mouse leaves or focus moves away from the alert), the timer resumes from where it left off, continuing the countdown until the remaining time expires.
+
+This behavior applies to all focusable elements inside the alert (such as the close button or any custom slotted controls), ensuring that keyboard and assistive-technology users receive the same non-interruptive experience as pointer users.
+
+> [!NOTE]
+> The interaction handling is implemented using both `mouseenter`/`mouseleave` and `focusin`/`focusout` events.
+> In modern browsers, focus events from within the alert's shadow DOM are automatically retargeted to the host element,
+> so the component can pause and resume correctly even when the focus is inside shadow DOM content.
 
 ## Invoker Commands (Experimental)
 
@@ -312,9 +338,10 @@ To trigger these commands, add the `commandfor` and `command` attributes to a bu
 </alert-element>
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
-> The API is still in the early stages and might change in the future. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
+> The API is still in the early stages and might change in the future.
+> Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
 
 ## Changelog
 

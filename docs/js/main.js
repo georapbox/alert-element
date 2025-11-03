@@ -3,7 +3,8 @@ import '../lib/browser-window.js';
 const url = window.location.href;
 const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
 const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert-element.js';
-const { AlertElement } = await import(componentUrl);
+const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
+  await import(componentUrl);
 
 AlertElement.defineCustomElement();
 
@@ -14,6 +15,41 @@ document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
 document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
+
+document.querySelectorAll('button[data-action="toggle-alert"]').forEach(btn => {
+  btn.addEventListener(
+    'click',
+    throttle(() => {
+      const alert = btn.closest('.card')?.querySelector('alert-element');
+      if (alert instanceof AlertElement) {
+        alert.open ? alert.hide() : alert.show();
+      }
+    }, 300)
+  );
+});
+
+function throttle(fn, wait = 0) {
+  let timerId, lastRan;
+
+  return (...args) => {
+    if (!lastRan) {
+      fn(...args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(timerId);
+
+      timerId = setTimeout(
+        () => {
+          if (Date.now() - lastRan >= wait) {
+            fn(...args);
+            lastRan = Date.now();
+          }
+        },
+        wait - (Date.now() - lastRan) || 0
+      );
+    }
+  };
+}
 
 function escapeHtml(html) {
   const div = document.createElement('div');
@@ -41,79 +77,6 @@ function toastify(message, options = {}) {
 
   return alert.toast();
 }
-
-// Closable Alert
-(function () {
-  const button = document.querySelector('[data-example="closable"] > button');
-  const alert = document.querySelector('[data-example="closable"] > alert-element');
-
-  alert.addEventListener('alert-show', () => {
-    button.setAttribute('disabled', '');
-  });
-
-  alert.addEventListener('alert-after-hide', () => {
-    button.removeAttribute('disabled');
-  });
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-})();
-
-// Custom close button
-(function () {
-  const button = document.querySelector('[data-example="custom-close-button"] > button');
-  const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
-
-  alert.addEventListener('alert-show', () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener('alert-after-hide', () => {
-    button.removeAttribute('hidden');
-  });
-
-  button.addEventListener('click', () => {
-    const alert = document.querySelector('[data-example="custom-close-button"] > alert-element');
-    alert.open = true;
-  });
-})();
-
-// Alert with duration
-(function () {
-  const button = document.querySelector('[data-example="duration"] > button');
-  const alert = document.querySelector('[data-example="duration"] > alert-element');
-
-  alert.addEventListener('alert-show', () => {
-    button.setAttribute('disabled', '');
-  });
-
-  alert.addEventListener('alert-after-hide', () => {
-    button.removeAttribute('disabled');
-  });
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-})();
-
-// Custom styling
-(function () {
-  const button = document.querySelector('[data-example="custom-styling"] > button');
-  const alert = document.querySelector('[data-example="custom-styling"] > alert-element');
-
-  button.addEventListener('click', () => {
-    alert.open = true;
-  });
-
-  alert.addEventListener('alert-show', () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener('alert-after-hide', () => {
-    button.removeAttribute('hidden');
-  });
-})();
 
 // Toast alerts
 (function () {
@@ -158,7 +121,7 @@ function toastify(message, options = {}) {
     closable: true
   });
 
-  alert.addEventListener('alert-after-hide', () => {
+  alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
     document.body.removeAttribute('data-toast-stack-position');
   });
 
@@ -177,43 +140,46 @@ function toastify(message, options = {}) {
 
 // Custom animations
 (function () {
-  const button = document.querySelector('[data-example="custom-animations"] > button');
   const alert = document.querySelector('[data-example="custom-animations"] > alert-element');
 
   alert.customAnimations = {
     show: {
       keyframes: [
-        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)' },
-        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)' },
-        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)' },
-        { opacity: 1, transform: 'rotateX(0deg) scale(1)' }
+        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)', filter: 'blur(8px)' },
+        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)', filter: 'blur(2px)' },
+        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)', filter: 'blur(1px)' },
+        { opacity: 1, transform: 'rotateX(0deg) scale(1)', filter: 'blur(0)' }
       ],
       options: {
-        duration: 600,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+        duration: 700,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'forwards'
       }
     },
     hide: {
       keyframes: [
-        { opacity: 1, transform: 'scale(1)' },
-        { opacity: 0, transform: 'scale(0.8)' }
+        { opacity: 1, transform: 'scale(1)', filter: 'blur(0)' },
+        { opacity: 0, transform: 'scale(0.8)', filter: 'blur(6px)' }
       ],
       options: {
-        duration: 400,
-        easing: 'ease-in'
+        duration: 450,
+        easing: 'ease-in',
+        fill: 'forwards'
       }
     }
   };
-
-  alert.addEventListener('alert-show', () => {
-    button.setAttribute('hidden', '');
-  });
-
-  alert.addEventListener('alert-after-hide', () => {
-    button.removeAttribute('hidden');
-  });
-
-  button.addEventListener('click', () => {
-    alert.show();
-  });
 })();
+
+// Events
+document.addEventListener(EVENT_ALERT_SHOW, evt => {
+  console.log(EVENT_ALERT_SHOW, evt.target);
+});
+document.addEventListener(EVENT_ALERT_AFTER_SHOW, evt => {
+  console.log(EVENT_ALERT_AFTER_SHOW, evt.target);
+});
+document.addEventListener(EVENT_ALERT_HIDE, evt => {
+  console.log(EVENT_ALERT_HIDE, evt.target, evt.detail);
+});
+document.addEventListener(EVENT_ALERT_AFTER_HIDE, evt => {
+  console.log(EVENT_ALERT_AFTER_HIDE, evt.target, evt.detail);
+});
