@@ -122,6 +122,10 @@ const styles = css`
     background-color: var(--alert-bg-color);
   }
 
+  :host([countdown]) .alert {
+    padding-bottom: var(--alert-countdown-height);
+  }
+
   .alert__icon {
     flex: 0 0 auto;
     display: flex;
@@ -141,10 +145,6 @@ const styles = css`
     overflow: hidden;
     color: var(--alert-fg-color);
     line-height: 1.5;
-  }
-
-  .alert:has(.alert__countdown:not([hidden])) .alert__message {
-    padding-bottom: calc(1.25rem + var(--alert-countdown-height));
   }
 
   .alert__close {
@@ -168,6 +168,7 @@ const styles = css`
     position: absolute;
     bottom: 0;
     left: 0;
+    overflow: hidden;
     width: 100%;
     height: var(--alert-countdown-height);
     background-color: var(--alert-border-color);
@@ -192,9 +193,6 @@ template.innerHTML = html`
       <slot name="icon"></slot>
     </div>
     <div class="alert__message" part="message"><slot></slot></div>
-    <div class="alert__countdown" part="countdown" hidden>
-      <div class="alert__countdown-elapsed" part="countdown-elapsed"></div>
-    </div>
     <button type="button" class="alert__close" part="close" aria-label="Close">
       <slot name="close">
         <svg
@@ -211,6 +209,9 @@ template.innerHTML = html`
         </svg>
       </slot>
     </button>
+    <div class="alert__countdown" part="countdown" hidden>
+      <div class="alert__countdown-elapsed" part="countdown-elapsed"></div>
+    </div>
   </div>
 `;
 
