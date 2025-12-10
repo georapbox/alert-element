@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v1.2.1 (2025-12-10)
+
+### Fixed
+
+- Fixed a stling issue that would break the layout when adjusting the height of the countdown timer via the `--alert-countdown-height` CSS custom property. Increasing the height of the countdown timer now correctly adjusts the spacing of the alert content to accommodate the larger timer bar.
+
+### Changed
+
+- Updated development dependencies.
+
 ## v1.2.0 (2025-11-03)
 
 ### Fixed
