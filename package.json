@@ -1,6 +1,6 @@
 {
   "name": "@georapbox/alert-element",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A custom HTML element for displaying dismissible alerts and toast notifications.",
   "main": "dist/alert-element.js",
   "module": "dist/alert-element.js",
@@ -25,7 +25,7 @@
     "build:esbuild": "node ./scripts/build.mjs",
     "build": "npm-run-all clean build:esbuild",
     "clean": "rimraf dist",
-    "prepare": "npm-run-all clean lint test build types"
+    "prepublishOnly": "npm-run-all clean lint test build types"
   },
   "keywords": [
     "custom element",
@@ -48,19 +48,19 @@
   },
   "homepage": "https://github.com/georapbox/alert-element#readme",
   "devDependencies": {
-    "@eslint/js": "~9.38.0",
+    "@eslint/js": "~9.39.1",
     "@esm-bundle/chai": "~4.3.4-fix.0",
     "@open-wc/testing": "~4.0.0",
     "@web/dev-server": "~0.4.6",
     "@web/test-runner": "~0.20.2",
     "@web/test-runner-playwright": "~0.11.1",
-    "esbuild": "~0.25.11",
-    "eslint": "~9.38.0",
+    "esbuild": "~0.27.1",
+    "eslint": "~9.39.1",
     "eslint-plugin-wc": "~3.0.2",
-    "globals": "~16.4.0",
+    "globals": "~16.5.0",
     "npm-run-all": "~4.1.5",
-    "prettier": "~3.6.2",
-    "rimraf": "~6.0.1",
+    "prettier": "~3.7.4",
+    "rimraf": "~6.1.2",
     "sinon": "~21.0.0",
     "typescript": "~5.9.3"
   },
