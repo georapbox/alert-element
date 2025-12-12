@@ -170,6 +170,32 @@ function toastify(message, options = {}) {
   };
 })();
 
+// Directionality
+document.getElementById('directionality-form').addEventListener('change', evt => {
+  const alert = document.getElementById('dir-alert');
+
+  if (!alert) {
+    return;
+  }
+
+  const input = evt.target;
+
+  if (input.name === 'directionality') {
+    alert.setAttribute('dir', input.value);
+    alert.querySelector('.dir').textContent = input.value === 'rtl' ? 'right-to-left (RTL)' : 'left-to-right (LTR)';
+  }
+
+  if (input.name === 'with-countdown') {
+    if (input.checked) {
+      alert.setAttribute('countdown', '');
+      alert.setAttribute('duration', '10000');
+    } else {
+      alert.removeAttribute('countdown');
+      alert.removeAttribute('duration');
+    }
+  }
+});
+
 // Events
 document.addEventListener(EVENT_ALERT_SHOW, evt => {
   console.log(EVENT_ALERT_SHOW, evt.target);

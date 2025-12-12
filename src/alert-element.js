@@ -178,6 +178,12 @@ const styles = css`
     width: 100%;
     height: 100%;
     background-color: var(--alert-base-variant-color);
+    transform-origin: left center;
+    will-change: transform;
+  }
+
+  .alert__countdown-elapsed:dir(rtl) {
+    transform-origin: right center;
   }
 `;
 
@@ -339,7 +345,7 @@ class AlertElement extends HTMLElement {
         if (this.open) {
           this.duration !== Infinity && this.#timer?.start();
           this.#baseEl?.removeAttribute('hidden');
-          this.#countdownElapsedEl?.style.setProperty('width', '100%');
+          this.#countdownElapsedEl?.style.setProperty('transform', 'scaleX(1)');
           this.#emitEvent(EVENT_ALERT_SHOW);
           this.#playEntryAnimation(this.#baseEl)?.finished.finally(() => {
             this.#emitEvent(EVENT_ALERT_AFTER_SHOW);
@@ -360,7 +366,7 @@ class AlertElement extends HTMLElement {
           .on('tick', this.#handleTimerTick)
           .on('finish', this.#handleTimerFinish);
         this.open && this.duration !== Infinity && !this.#isFocused() && this.#timer.start();
-        this.duration === Infinity && this.#countdownElapsedEl?.style.setProperty('width', '100%');
+        this.duration === Infinity && this.#countdownElapsedEl?.style.setProperty('transform', 'scaleX(1)');
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -620,7 +626,8 @@ class AlertElement extends HTMLElement {
       return;
     }
     const { remaining } = /** @type Timer */ (evt.currentTarget);
-    this.#countdownElapsedEl.style.width = `${(remaining / this.duration) * 100}%`;
+    const fraction = remaining / this.duration;
+    this.#countdownElapsedEl.style.transform = `scaleX(${fraction})`;
   };
 
   /**
