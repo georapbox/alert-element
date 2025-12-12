@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v1.2.2 (2025-12-12)
+
+### Changed
+
+- Improved countdown progress animation by switching to `transform: scaleX()` for smoother performance and reduced layout work in contrast to animating `width`.
+- Added RTL support using directional `transform-origin`.
+
 ## v1.2.1 (2025-12-10)
 
 ### Fixed
