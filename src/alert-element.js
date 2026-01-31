@@ -238,14 +238,14 @@ template.innerHTML = html`
  * @property {boolean} noAnimations - Disables animations when set to true.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
- * @attribute {boolean} closable - Reflects the closable property.
- * @attribute {boolean} open - Reflects the open property.
- * @attribute {number} duration - Reflects the duration property.
- * @attribute {string} variant - Reflects the variant property.
- * @attribute {string} close-label - Reflects the closeLabel property.
- * @attribute {string} announce - Reflects the announce property.
- * @attribute {boolean} countdown - Reflects the countdown property.
- * @attribute {boolean} no-animations - Reflects the noAnimations property.
+ * @attribute {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
+ * @attribute {boolean} open - Indicates whether the alert is open or not.
+ * @attribute {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @attribute {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
+ * @attribute {string} close-label - The label of the default close button, used as the aria-label attribute of the close button.
+ * @attribute {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
+ * @attribute {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @attribute {boolean} no-animations - Disables animations when set to true.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -390,8 +390,8 @@ class AlertElement extends HTMLElement {
    * Indicates whether the alert element can be closed by the user.
    *
    * @type {boolean}
+   * @attribute closable
    * @default false
-   * @attribute closable - Reflects the closable property.
    */
   get closable() {
     return this.hasAttribute('closable');
@@ -405,8 +405,8 @@ class AlertElement extends HTMLElement {
    * Indicates whether the alert element is open.
    *
    * @type {boolean}
+   * @attribute open
    * @default false
-   * @attribute open - Reflects the open property.
    */
   get open() {
     return this.hasAttribute('open');
@@ -420,8 +420,8 @@ class AlertElement extends HTMLElement {
    * The duration in milliseconds for which the alert will be displayed before automatically closing.
    *
    * @type {number}
+   * @attribute duration
    * @default Infinity
-   * @attribute duration - Reflects the duration property.
    */
   get duration() {
     const attr = this.getAttribute('duration');
@@ -451,8 +451,8 @@ class AlertElement extends HTMLElement {
    * Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
    *
    * @type {string}
+   * @attribute variant
    * @default ''
-   * @attribute variant - Reflects the variant property.
    */
   get variant() {
     return this.getAttribute('variant') || '';
@@ -468,8 +468,8 @@ class AlertElement extends HTMLElement {
    * this property is ignored and the aria-label attribute is removed.
    *
    * @type {string}
+   * @attribute close-label
    * @default 'Close'
-   * @attribute close-label - Reflects the closeLabel property.
    */
   get closeLabel() {
     return this.getAttribute('close-label') || 'Close';
@@ -483,6 +483,7 @@ class AlertElement extends HTMLElement {
    * Defines how the alert should be announced to screen readers.
    *
    * @type {Announce}
+   * @attribute announce
    * @default 'alert'
    */
   get announce() {
@@ -498,8 +499,8 @@ class AlertElement extends HTMLElement {
    * Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
    *
    * @type {boolean}
+   * @attribute countdown
    * @default false
-   * @attribute countdown - Reflects the countdown property.
    */
   get countdown() {
     return this.hasAttribute('countdown');
@@ -513,8 +514,8 @@ class AlertElement extends HTMLElement {
    * Disables animations when set to true.
    *
    * @type {boolean}
+   * @attribute no-animations
    * @default false
-   * @attribute no-animations - Reflects the noAnimations property.
    */
   get noAnimations() {
     return this.hasAttribute('no-animations');
