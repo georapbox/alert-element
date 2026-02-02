@@ -2,7 +2,7 @@
  * @georapbox/alert-element
  * A custom HTML element for displaying dismissible alerts and toast notifications.
  *
- * @version 1.2.2
+ * @version 1.3.0
  * @homepage https://github.com/georapbox/alert-element#readme
  * @author George Raptis <georapbox@gmail.com>
  * @license MIT
