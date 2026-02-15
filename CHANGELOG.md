@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.3.1 (2026-02-15)
+
+### Fixed
+
+- Corrected an issue where the Custom Elements Manifest (CEM) incorrectly used the parameter name `elementName` instead of the actual tag name `alert-element`. Added a build-time plugin to ensure proper IDE IntelliSense and documentation generation.
+
 ## v1.3.0 (2026-02-02)
 
 ### Added

@@ -23,7 +23,18 @@ export default {
   /** Enable special handling for stencil */
   stencil: false,
   /** Provide custom plugins */
-  plugins: [],
+  plugins: [
+    {
+      name: 'fix-dynamic-tag-name',
+      moduleLinkPhase({ moduleDoc }) {
+        moduleDoc.exports?.forEach(ex => {
+          if (ex.kind === 'custom-element-definition' && ex.name === 'elementName') {
+            ex.name = 'alert-element'; // Force the manifest to show the default tag name
+          }
+        });
+      }
+    }
+  ],
   /**
    * Resolution options when using `dependencies: true`
    * For detailed information about each option, please refer to the [oxc-resolver documentation](https://github.com/oxc-project/oxc-resolver?tab=readme-ov-file#options).
