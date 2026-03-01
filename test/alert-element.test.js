@@ -40,6 +40,7 @@ describe('alert-element', () => {
   afterEach(() => {
     fixtureCleanup();
     matchMediaStub.restore();
+    sinon.restore();
   });
 
   describe('accessibility', () => {
@@ -377,7 +378,7 @@ describe('alert-element', () => {
       const listener = sinon.spy();
       el.addEventListener(EVENT_ALERT_SHOW, listener);
       await el.show(); // Call show() while alert is already open
-      expect(listener).to.not.have.been.called;
+      sinon.assert.notCalled(listener);
     });
 
     it('should hide alert when calling "hide()" method', async () => {
@@ -391,16 +392,15 @@ describe('alert-element', () => {
       const listener = sinon.spy();
       el.addEventListener(EVENT_ALERT_HIDE, listener);
       await el.hide(); // Call show() while alert is already open
-      expect(listener).to.not.have.been.called;
+      sinon.assert.notCalled(listener);
     });
   });
 
   describe('mouse events', () => {
     it('should prevent auto-hide on mouse enter and resume on mouse out', async () => {
-      const DURATION = 100;
-      const el = await fixture(html`<alert-element open duration="${DURATION}"></alert-element>`);
+      const el = await fixture(html`<alert-element open duration="100"></alert-element>`);
       el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); // Simulate mouseenter (pause auto-hide)
-      await new Promise(resolve => setTimeout(resolve, DURATION + 50)); // Wait longer than the duration to verify it didn't auto-close
+      await new Promise(resolve => setTimeout(resolve, 200)); // Wait longer than the duration to verify it didn't auto-close
       expect(el.open).to.be.true;
       const hideEvent = oneEvent(el, EVENT_ALERT_AFTER_HIDE);
       el.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })); // Resume auto-hide by simulating mouseleave
