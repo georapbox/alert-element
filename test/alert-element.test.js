@@ -13,7 +13,7 @@ import {
   CLOSE_REASON_API
 } from '../src/alert-element.js';
 
-AlertElement.defineCustomElement();
+AlertElement.define();
 
 function stubMatchMedia(reducedMotion) {
   return sinon.stub(window, 'matchMedia').callsFake(query => ({

@@ -33,7 +33,7 @@ By default, the package exports the element class without registering it. This l
 import { AlertElement } from '@georapbox/alert-element';
 
 // Define using the default tag name
-AlertElement.defineCustomElement();
+AlertElement.define();
 ```
 
 #### Auto-defined (convenience)
@@ -108,7 +108,7 @@ import '@georapbox/alert-element/define';
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | `elementName='alert-element'` |
+| `define` | Static | Defines/registers the custom element in the custom element registry. The method checks if the element is already defined, hence will skip trying to redefine it. | - |
 | `show`<sup>1</sup> | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
 | `hide`<sup>1</sup> | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
 | `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |

@@ -225,7 +225,7 @@ template.innerHTML = html`
  * @summary A custom HTML element for displaying dismissible alerts and toast notifications
  * @documentation https://github.com/georapbox/alert-element
  *
- * @tagname alert-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
+ * @tagname alert-element - The custom element tag name.
  * @extends HTMLElement
  *
  * @property {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
@@ -271,7 +271,7 @@ template.innerHTML = html`
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @method defineCustomElement - Static method. Defines a custom element with the given name.
+ * @method define - Static method. Defines/registers the custom element in the custom element registry.
  * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
  * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
  * @method toast - Instance method. Displays the alert as a toast notification.
@@ -959,14 +959,13 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Defines a custom element with the given name.
-   * The name must contain a dash (-).
-   *
-   * @param {string} [elementName] - The name of the custom element.
+   * Defines the custom element using the provided name. If no name is given,
+   * the default tag name is used. If the element is already registered,
+   * the method does nothing.
    */
-  static defineCustomElement(elementName = COMPONENT_NAME) {
-    if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
-      window.customElements.define(elementName, AlertElement);
+  static define() {
+    if (typeof window !== 'undefined' && !window.customElements.get(COMPONENT_NAME)) {
+      window.customElements.define(COMPONENT_NAME, AlertElement);
     }
   }
 }

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.0.0 (2026-MM-DD)
+
+### Breaking Changes
+
+- Added an explicit `exports` map to `package.json`. The package now defines its public entry points explicitly: `alert-element`, `alert-element/define`, and `alert-element/custom-elements.json`. Direct imports from internal package files, such as `alert-element/dist/...`, are not part of the supported public API and may fail in environments that respect package `exports`.
+- Renamed the static `defineCustomElement()` method to `define()`. Existing calls to `defineCustomElement(...)` should be updated to `define()`.
+- Removed the `customElementName` parameter from the static `define()` method, which now always registers the component as `alert-element`.
+
 ## v1.3.1 (2026-02-15)
 
 ### Fixed

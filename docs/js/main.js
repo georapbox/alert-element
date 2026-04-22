@@ -6,7 +6,7 @@ const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert
 const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
   await import(componentUrl);
 
-AlertElement.defineCustomElement();
+AlertElement.define();
 
 document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
   el.insertAdjacentHTML('afterbegin', `<a href="#${el.getAttribute('id')}">#</a> Example ${index + 1} - `);

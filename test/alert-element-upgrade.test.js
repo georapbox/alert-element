@@ -16,7 +16,7 @@ describe('alert-element upgrading', () => {
     el.noAnimations = true;
 
     // Upgrade custom element
-    AlertElement.defineCustomElement();
+    AlertElement.define();
 
     await elementUpdated(el);
 
