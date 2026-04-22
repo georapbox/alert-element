@@ -15,30 +15,36 @@ A custom HTML element for displaying dismissible alerts and toast notifications
 
 [API documentation](#api) &bull; [Demo][demo]
 
-## Install
+## Usage
+
+### Installation
 
 ```sh
 npm install --save @georapbox/alert-element
 ```
 
-## Usage
+### Importing the component
 
-### Script
+By default, the package exports the element class without registering it. This lets the application decide when the custom element is defined.
+
+#### Manual definition
 
 ```js
-import { AlertElement } from './node_modules/@georapbox/alert-element/dist/alert-element.js';
+import { AlertElement } from '@georapbox/alert-element';
 
-// Manually define the element.
+// Define using the default tag name
 AlertElement.defineCustomElement();
 ```
 
-Alternatively, you can import the automatically defined custom element.
+#### Auto-defined (convenience)
+
+If you don't need control over registration, you can import the pre-defined build which immediately registers `<alert-element>`.
 
 ```js
-import './node_modules/@georapbox/alert-element/dist/alert-element-defined.js';
+import '@georapbox/alert-element/define';
 ```
 
-### Markup
+### Using the component in your HTML
 
 ```html
 <alert-element variant="success" open closable>
@@ -46,10 +52,6 @@ import './node_modules/@georapbox/alert-element/dist/alert-element-defined.js';
   All changes have been saved and will take effect immediately.
 </alert-element>
 ```
-
-### Style
-
-By default, the component comes with some basic default styling. However, you can customise the styles of the various elements of the component using either [CSS Parts](#css-parts) or [CSS Custom Properties](#css-custom-properties).
 
 ## API
 
