@@ -271,7 +271,7 @@ template.innerHTML = html`
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @method define - Static method. Defines/registers the custom element in the custom element registry.
+ * @method define - Static method. Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already.
  * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
  * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
  * @method toast - Instance method. Displays the alert as a toast notification.
@@ -969,14 +969,14 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Defines the custom element using the provided name. If no name is given,
-   * the default tag name is used. If the element is already registered,
-   * the method does nothing.
+   * Defines the custom element by registering it with the browser's
+   * CustomElementRegistry if it hasn't been defined already.
    */
   static define() {
-    if (typeof window !== 'undefined' && !window.customElements.get(COMPONENT_NAME)) {
-      window.customElements.define(COMPONENT_NAME, AlertElement);
+    if (typeof window === 'undefined' || window.customElements.get(COMPONENT_NAME)) {
+      return;
     }
+    window.customElements.define(COMPONENT_NAME, AlertElement);
   }
 }
 
