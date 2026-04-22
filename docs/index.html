@@ -376,23 +376,23 @@
         </p>
       </div>
 
-      <alert-element variant="info" duration="3000" countdown closable>
+      <alert-element variant="info" duration="3000" announce="status" countdown closable>
         This is an info toast notification.
       </alert-element>
 
-      <alert-element variant="success" duration="3000" countdown closable>
+      <alert-element variant="success" duration="3000" announce="status" countdown closable>
         This is a success toast notification.
       </alert-element>
 
-      <alert-element variant="neutral" duration="3000" countdown closable>
+      <alert-element variant="neutral" duration="3000" announce="status" countdown closable>
         This is a neutral toast notification.
       </alert-element>
 
-      <alert-element variant="warning" duration="3000" countdown closable>
+      <alert-element variant="warning" duration="3000" announce="status" countdown closable>
         This is a warning toast notification.
       </alert-element>
 
-      <alert-element variant="danger" duration="3000" countdown closable>
+      <alert-element variant="danger" duration="3000" announce="status" countdown closable>
         This is a danger toast notification.
       </alert-element>
     </browser-window>
@@ -409,23 +409,23 @@
 &lt;input type="checkbox" id="forceRestart"&gt;
 &lt;label for="forceRestart"&gt;Force restart&lt;/label&gt;
 
-&lt;alert-element variant="info" duration="3000" closable&gt;
+&lt;alert-element variant="info" duration="3000" announce="status" closable&gt;
   This is an info toast notification.
 &lt;/alert-element&gt;
 
-&lt;alert-element variant="success" duration="3000" closable&gt;
+&lt;alert-element variant="success" duration="3000" announce="status" closable&gt;
   This is a success toast notification.
 &lt;/alert-element&gt;
 
-&lt;alert-element variant="neutral" duration="3000" closable&gt;
+&lt;alert-element variant="neutral" duration="3000" announce="status" closable&gt;
   This is a neutral toast notification.
 &lt;/alert-element&gt;
 
-&lt;alert-element variant="warning" duration="3000" closable&gt;
+&lt;alert-element variant="warning" duration="3000" announce="status" closable&gt;
   This is a warning toast notification.
 &lt;/alert-element&gt;
 
-&lt;alert-element variant="danger" duration="3000" closable&gt;
+&lt;alert-element variant="danger" duration="3000" announce="status" closable&gt;
   This is a danger toast notification.
 &lt;/alert-element&gt;
 
@@ -490,6 +490,7 @@
     const defaults = {
       duration: 3000,
       variant: 'neutral',
+      announce: 'status',
       icon: ''
     };
 
@@ -501,6 +502,7 @@
       closable: true,
       duration: options.duration,
       variant: options.variant,
+      announce: options.announce,
       innerHTML: `${icon}${escapeHtml(message)}`
     });
 
@@ -595,7 +597,8 @@
   const alert = Object.assign(document.createElement('alert-element'), {
     variant: 'info',
     duration: 3000,
-    closable: true
+    closable: true,
+    announce: 'status'
   });
 
   alert.addEventListener('alert-after-hide', () =&gt; {

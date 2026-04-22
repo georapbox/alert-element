@@ -61,6 +61,7 @@ function toastify(message, options = {}) {
   const defaults = {
     duration: 3000,
     variant: 'neutral',
+    announce: 'status',
     icon: ''
   };
 
@@ -72,6 +73,7 @@ function toastify(message, options = {}) {
     closable: true,
     duration: options.duration,
     variant: options.variant,
+    announce: options.announce,
     innerHTML: `${icon}${escapeHtml(message)}`
   });
 
@@ -118,7 +120,8 @@ function toastify(message, options = {}) {
   const alert = Object.assign(document.createElement('alert-element'), {
     variant: 'info',
     duration: 3000,
-    closable: true
+    closable: true,
+    announce: 'status'
   });
 
   alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {

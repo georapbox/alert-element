@@ -239,6 +239,7 @@ function toastify(message, options = {}) {
   const defaults = {
     duration: 3000,
     variant: 'neutral',
+    announce: 'status',
     icon: ''
   };
 
@@ -250,6 +251,7 @@ function toastify(message, options = {}) {
     closable: true, // Always provide a way to close the toast notification
     duration: options.duration,
     variant: options.variant,
+    announce: options.announce,
     innerHTML: `${icon}${escapeHtml(message)}` // Escape message to prevent XSS ig you don't control the content
   });
 

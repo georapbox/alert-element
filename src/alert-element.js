@@ -47,7 +47,7 @@ const toastStack = createToastStack();
 /**
  * Represents how the alert should be announced to screen readers.
  *
- * @typedef {'alert' | 'status' | 'none'} Announce
+ * @typedef {'none' | 'status' | 'alert' | 'alertdialog'} Announce
  */
 
 const styles = css`
@@ -194,7 +194,7 @@ template.innerHTML = html`
     ${styles}
   </style>
 
-  <div class="alert" part="base" role="alert" hidden>
+  <div class="alert" part="base" hidden>
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
@@ -487,8 +487,8 @@ class AlertElement extends HTMLElement {
    * @default 'alert'
    */
   get announce() {
-    const val = this.getAttribute('announce');
-    return val === 'alert' || val === 'status' || val === 'none' ? val : 'alert';
+    const value = this.getAttribute('announce') ?? '';
+    return this.#isValidAnnounce(value) ? value : 'none';
   }
 
   set announce(value) {
@@ -615,6 +615,16 @@ class AlertElement extends HTMLElement {
     // No-op: Use this to avoid running initialization/cleanup code in the `connectedCallback()` and `disconnectedCallback()`
     // callbacks when the element is not actually being added to or removed from the DOM
     // but rather being moved within the DOM via `Element.moveBefore()`.
+  }
+
+  /**
+   * Checks whether a value is a valid announce value.
+   *
+   * @param {string} value - The value to check.
+   * @returns {value is Announce} True if the value is a valid announce value, false otherwise.
+   */
+  #isValidAnnounce(value) {
+    return value === 'none' || value === 'status' || value === 'alert' || value === 'alertdialog';
   }
 
   /**

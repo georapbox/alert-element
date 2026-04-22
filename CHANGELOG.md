@@ -4,9 +4,19 @@
 
 ### Breaking Changes
 
-- Added an explicit `exports` map to `package.json`. The package now defines its public entry points explicitly: `alert-element`, `alert-element/define`, and `alert-element/custom-elements.json`. Direct imports from internal package files, such as `alert-element/dist/...`, are not part of the supported public API and may fail in environments that respect package `exports`.
-- Renamed the static `defineCustomElement()` method to `define()`. Existing calls to `defineCustomElement(...)` should be updated to `define()`.
-- Removed the `customElementName` parameter from the static `define()` method, which now always registers the component as `alert-element`.
+- **Explicit Package Exports**: Added a formal `exports` map to `package.json`.
+  - **Supported entry points**: `alert-element`, `alert-element/define`, and `alert-element/custom-elements.json`.
+  - **Impact**: Direct imports from internal paths (e.g., `alert-element/dist/...`) are no longer part of the supported public API and may fail in environments that enforce package exports.
+- **Method Renaming**: The static `defineCustomElement()` method has been renamed to `define()`.
+  - **Action Required**: Update all instances of `defineCustomElement(...)` to `define()`.
+- **Simplified Registration**: Removed the `customElementName` parameter from the static `define()` method.
+  - **Impact**: The component will now always be registered as `<alert-element>`.
+- **Updated Default Accessibility**: Changed the default value of `announce` from `"alert"` to `"none"`.
+  - **Impact**: The component no longer carries an implicit ARIA role. This provides developers more control to set the appropriate role manually based on specific context without overriding defaults.
+
+### Added
+
+- Added `"alertdialog"` as a supported value for the `announce` property, allowing the component to be announced as an alert dialog by assistive technologies when appropriate.
 
 ## v1.3.1 (2026-02-15)
 
