@@ -108,7 +108,7 @@ import '@georapbox/alert-element/define';
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `define` | Static | Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already. | - |
+| `define` | Static | Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already. | `tagName='alert-element'` |
 | `show`<sup>1</sup> | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
 | `hide`<sup>1</sup> | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
 | `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |

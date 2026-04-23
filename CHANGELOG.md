@@ -8,15 +8,17 @@
   - **Supported entry points**: `alert-element`, `alert-element/define`, and `alert-element/custom-elements.json`.
   - **Impact**: Direct imports from internal paths (e.g., `alert-element/dist/...`) are no longer part of the supported public API and may fail in environments that enforce package exports.
 - **Method Renaming**: The static `defineCustomElement()` method has been renamed to `define()`.
-  - **Action Required**: Update all instances of `defineCustomElement(...)` to `define()`.
-- **Simplified Registration**: Removed the `customElementName` parameter from the static `define()` method.
-  - **Impact**: The component will now always be registered as `<alert-element>`.
+  - **Action Required**: Update all instances of `defineCustomElement()` to `define()`.
 - **Updated Default Accessibility**: Changed the default value of `announce` from `"alert"` to `"none"`.
   - **Impact**: The component no longer carries an implicit ARIA role. This provides developers more control to set the appropriate role manually based on specific context without overriding defaults.
 
 ### Added
 
 - Added `"alertdialog"` as a supported value for the `announce` property, allowing the component to be announced as an alert dialog by assistive technologies when appropriate.
+
+### Fixed
+
+- Fixed toast stack cleanup logic to remove the container when no child elements remain, instead of checking for a specific custom element tag name.
 
 ## v1.3.1 (2026-02-15)
 

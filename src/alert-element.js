@@ -3,7 +3,6 @@
 import { createToastStack } from './toast-stack.js';
 import { Timer } from './timer.js';
 
-const COMPONENT_NAME = 'alert-element';
 const EVENT_ALERT_SHOW = 'alert-show';
 const EVENT_ALERT_AFTER_SHOW = 'alert-after-show';
 const EVENT_ALERT_HIDE = 'alert-hide';
@@ -225,7 +224,7 @@ template.innerHTML = html`
  * @summary A custom HTML element for displaying dismissible alerts and toast notifications
  * @documentation https://github.com/georapbox/alert-element
  *
- * @tagname alert-element - The custom element tag name.
+ * @tagname alert-element - The default custom element tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
  * @property {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
@@ -923,7 +922,7 @@ class AlertElement extends HTMLElement {
           toastStack.removeChild(this);
         }
 
-        if (!toastStack.querySelector(COMPONENT_NAME)) {
+        if (toastStack.childElementCount === 0) {
           toastStack.remove();
         }
 
@@ -971,12 +970,14 @@ class AlertElement extends HTMLElement {
   /**
    * Defines the custom element by registering it with the browser's
    * CustomElementRegistry if it hasn't been defined already.
+   *
+   * @param {string} [tagName='alert-element'] - The tag name to use for the custom element. Must include a hyphen.
    */
-  static define() {
-    if (typeof window === 'undefined' || window.customElements.get(COMPONENT_NAME)) {
+  static define(tagName = 'alert-element') {
+    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
       return;
     }
-    window.customElements.define(COMPONENT_NAME, AlertElement);
+    window.customElements.define(tagName, AlertElement);
   }
 }
 
