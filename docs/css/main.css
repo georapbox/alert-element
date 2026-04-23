@@ -10,7 +10,7 @@
   scroll-behavior: smooth;
 }
 
-:not(:defined),
+:not(:defined):not(browser-window),
 [hidden] {
   display: none !important;
 }

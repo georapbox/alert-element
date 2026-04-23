@@ -360,8 +360,8 @@
     For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#toast-notifications" target="_blank" rel="noreferrer noopener">documentation</a>.
   </p>
 
-  <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="toasts">
+  <div class="card" data-example="toasts">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
       <button type="button" data-variant="info">Info</button>
       <button type="button" data-variant="success">Success</button>
       <button type="button" data-variant="neutral">Neutral</button>
@@ -369,30 +369,30 @@
       <button type="button" data-variant="danger">Danger</button>
 
       <div style="margin-block-start: 1rem;">
-        <input type="checkbox" id="restartToastCheck">
+        <input type="checkbox" id="restartToastCheck" autocomplete="off">
         <label for="restartToastCheck">Force restart</label>
         <p style="margin: 0; text-wrap: pretty;">
           <small>When checked, immediately cancels the active toast and starts a new one. Otherwise, if a toast is still active, any subsequent calls to <code>toast()</code> will be ignored.</small>
         </p>
       </div>
 
-      <alert-element variant="info" duration="3000" announce="status" countdown closable>
+      <alert-element variant="info" duration="30000" announce="status" countdown closable>
         This is an info toast notification.
       </alert-element>
 
-      <alert-element variant="success" duration="3000" announce="status" countdown closable>
+      <alert-element variant="success" duration="30000" announce="status" countdown closable>
         This is a success toast notification.
       </alert-element>
 
-      <alert-element variant="neutral" duration="3000" announce="status" countdown closable>
+      <alert-element variant="neutral" duration="30000" announce="status" countdown closable>
         This is a neutral toast notification.
       </alert-element>
 
-      <alert-element variant="warning" duration="3000" announce="status" countdown closable>
+      <alert-element variant="warning" duration="30000" announce="status" countdown closable>
         This is a warning toast notification.
       </alert-element>
 
-      <alert-element variant="danger" duration="3000" announce="status" countdown closable>
+      <alert-element variant="danger" duration="30000" announce="status" countdown closable>
         This is a danger toast notification.
       </alert-element>
     </browser-window>
@@ -459,8 +459,8 @@
     For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#creating-toasts-imperatively" target="_blank" rel="noreferrer noopener">documentation</a>.
   </p>
 
-  <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="imperative-toasts">
+  <div class="card" data-example="imperative-toasts">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
       <button type="button">Create Toast</button>
     </browser-window>
 
@@ -529,17 +529,19 @@
     This example uses multiple positions for demonstration purposes only.
   </blockquote>
 
-  <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-toast-stack-position">
-      <fieldset style="display: flex; flex-wrap: wrap; column-gap: 1rem; margin-block-end: 1rem;">
-        <legend>Toast stack position</legend>
-          <label><input type="radio" value="top-left" name="toast-stack-poisiton" checked> Top left</label>
-          <label><input type="radio" value="top-center" name="toast-stack-poisiton"> Top center</label>
-          <label><input type="radio" value="top-right" name="toast-stack-poisiton"> Top right</label>
-          <label><input type="radio" value="bottom-left" name="toast-stack-poisiton"> Bottom left</label>
-          <label><input type="radio" value="bottom-center" name="toast-stack-poisiton"> Bottom center</label>
-          <label><input type="radio" value="bottom-right" name="toast-stack-poisiton"> Bottom right</label>
-      </fieldset>
+  <div class="card" data-example="custom-toast-stack-position">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <form autocomplete="off">
+        <fieldset style="display: flex; flex-wrap: wrap; column-gap: 1rem; margin-block-end: 1rem;">
+          <legend>Toast stack position</legend>
+            <label><input type="radio" value="top-left" name="toast-stack-poisiton" checked> Top left</label>
+            <label><input type="radio" value="top-center" name="toast-stack-poisiton"> Top center</label>
+            <label><input type="radio" value="top-right" name="toast-stack-poisiton"> Top right</label>
+            <label><input type="radio" value="bottom-left" name="toast-stack-poisiton"> Bottom left</label>
+            <label><input type="radio" value="bottom-center" name="toast-stack-poisiton"> Bottom center</label>
+            <label><input type="radio" value="bottom-right" name="toast-stack-poisiton"> Bottom right</label>
+        </fieldset>
+      </form>
 
       <button type="button">Create Toast</button>
     </browser-window>
@@ -625,8 +627,8 @@
     For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#animations" target="_blank" rel="noreferrer noopener">documentation</a>.
   </p>
 
-  <div class="card">
-    <browser-window url="https://github.com/georapbox/alert-element" icon data-example="custom-animations">
+  <div class="card" data-example="custom-animations">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
       <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
       <alert-element variant="info" closable>
@@ -737,7 +739,7 @@
     <browser-window url="https://github.com/georapbox/alert-element" icon>
       <button type="button" data-action="toggle-alert">Toggle Alert</button>
 
-      <form id="directionality-form" style="margin-top: 1rem;">
+      <form id="directionality-form" style="margin-top: 1rem;" autocomplete="off">
         <label><input type="radio" name="directionality" value="ltr">Left to right (LTR)</label>
         <label><input type="radio" name="directionality" value="rtl" checked>Right to left (RTL)</label>
         <br>

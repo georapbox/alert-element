@@ -86,8 +86,8 @@ function toastify(message, options = {}) {
   const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
 
   variants.forEach(variant => {
-    const button = document.querySelector(`[data-example="toasts"] > button[data-variant="${variant}"]`);
-    const alert = document.querySelector(`[data-example="toasts"] > alert-element[variant="${variant}"]`);
+    const button = document.querySelector(`[data-example="toasts"] button[data-variant="${variant}"]`);
+    const alert = document.querySelector(`[data-example="toasts"] alert-element[variant="${variant}"]`);
     button.addEventListener('click', () => alert.toast({ forceRestart }));
   });
 
@@ -98,7 +98,7 @@ function toastify(message, options = {}) {
 
 // Creating toasts imperatively
 (function () {
-  const button = document.querySelector('[data-example="imperative-toasts"] > button');
+  const button = document.querySelector('[data-example="imperative-toasts"] button');
   let count = 0;
 
   button.addEventListener('click', () => {
@@ -116,7 +116,7 @@ function toastify(message, options = {}) {
 
 // Custom toast stack position
 (function () {
-  const button = document.querySelector('[data-example="custom-toast-stack-position"] > button');
+  const button = document.querySelector('[data-example="custom-toast-stack-position"] button');
   const alert = Object.assign(document.createElement('alert-element'), {
     variant: 'info',
     duration: 3000,
@@ -143,7 +143,7 @@ function toastify(message, options = {}) {
 
 // Custom animations
 (function () {
-  const alert = document.querySelector('[data-example="custom-animations"] > alert-element');
+  const alert = document.querySelector('[data-example="custom-animations"] alert-element');
 
   alert.customAnimations = {
     show: {
