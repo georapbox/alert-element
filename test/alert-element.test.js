@@ -120,6 +120,12 @@ describe('alert-element', () => {
       const closeButton = el.shadowRoot.querySelector('.alert__close');
       expect(closeButton.getAttribute('aria-label')).to.equal('Close me');
     });
+
+    it('adds tabindex="0" to base element when focusable is true', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      const base = el.shadowRoot.querySelector('[part="base"]');
+      expect(base.getAttribute('tabindex')).to.equal('0');
+    });
   });
 
   describe('properties - attribures', () => {
@@ -238,6 +244,18 @@ describe('alert-element', () => {
     it('reflects attribute "no-animations" to property "noAnimations"', async () => {
       const el = await fixture(html`<alert-element no-animations></alert-element>`);
       expect(el.noAnimations).to.be.true;
+    });
+
+    // focusable
+    it('reflects property "focusable" to attribute "focusable"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.focusable = true;
+      expect(el.hasAttribute('focusable')).to.be.true;
+    });
+
+    it('reflects attribute "focusable" to property "focusable"', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      expect(el.focusable).to.be.true;
     });
 
     // customAnimations

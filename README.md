@@ -56,16 +56,18 @@ import '@georapbox/alert-element/define';
 ## API
 
 ### Properties
+
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `closable` | ✓ | Boolean | - | `false` | Indicates whether the alert can be closed by the user by providing a close button. |
-| `open` | ✓ | Boolean | - | `false` | Indicates whether the alert is open or not. |
+| `closable` | ✓ | Boolean | - | `false` | Shows a close button that allows the user to dismiss the alert. |
+| `open` | ✓ | Boolean | - | `false` | Controls whether the alert is currently shown. |
 | `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
 | `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
 | `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 | `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
-| `countdown` | ✓ | Boolean | - | `false` | Indicates whether to show a countdown displaying the remaining time before the alert automatically closes. |
+| `countdown` | ✓ | Boolean | - | `false` | Shows a countdown displaying the remaining time before the alert automatically closes. |
 | `noAnimations`<br>*`no-animations`* | ✓ | Boolean | - | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
+| `focusable` | - | Boolean | - | `false` | Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification. |
 | `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
 ### Slots

@@ -15,6 +15,7 @@
 ### Added
 
 - Added `"alertdialog"` as a supported value for the `announce` property, allowing the component to be announced as an alert dialog by assistive technologies when appropriate.
+- Added `focusable` property to control whether the alert base element should be focusable. By default, alerts will not be focusable, but setting `focusable` to `true` will add `tabindex="0"` to the alert base element, making it keyboard focusable and allowing assistive technologies to interact with it more effectively.
 
 ### Fixed
 

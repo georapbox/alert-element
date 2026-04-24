@@ -14,6 +14,7 @@ describe('alert-element upgrading', () => {
     el.announce = 'status';
     el.countdown = true;
     el.noAnimations = true;
+    el.focusable = true;
 
     // Upgrade custom element
     AlertElement.define();
@@ -28,6 +29,7 @@ describe('alert-element upgrading', () => {
     expect(el.getAttribute('announce')).to.equal('status');
     expect(el.getAttribute('countdown')).to.equal('');
     expect(el.getAttribute('no-animations')).to.equal('');
+    expect(el.getAttribute('focusable')).to.equal('');
   });
 
   afterEach(() => {

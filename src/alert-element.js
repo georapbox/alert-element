@@ -227,24 +227,26 @@ template.innerHTML = html`
  * @tagname alert-element - The default custom element tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
- * @property {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
- * @property {boolean} open - Indicates whether the alert is open or not.
+ * @property {boolean} closable - Shows a close button that allows the user to dismiss the alert.
+ * @property {boolean} open - Controls whether the alert is currently shown.
  * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @property {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @property {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
  * @property {boolean} noAnimations - Disables animations when set to true.
+ * @property {boolean} focusable - Adds tabindex="0" to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
- * @attribute {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
- * @attribute {boolean} open - Indicates whether the alert is open or not.
+ * @attribute {boolean} closable - Shows a close button that allows the user to dismiss the alert.
+ * @attribute {boolean} open - Controls whether the alert is currently shown.
  * @attribute {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
  * @attribute {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
  * @attribute {string} close-label - The label of the default close button, used as the aria-label attribute of the close button.
  * @attribute {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @attribute {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @attribute {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
  * @attribute {boolean} no-animations - Disables animations when set to true.
+ * @attribute {boolean} focusable - Adds tabindex="0" to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -324,7 +326,7 @@ class AlertElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'duration', 'close-label', 'announce', 'countdown'];
+    return ['open', 'duration', 'close-label', 'announce', 'countdown', 'focusable'];
   }
 
   /**
@@ -380,13 +382,20 @@ class AlertElement extends HTMLElement {
       case 'countdown':
         this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
         break;
+      case 'focusable':
+        if (this.focusable) {
+          this.#baseEl?.setAttribute('tabindex', '0');
+        } else {
+          this.#baseEl?.removeAttribute('tabindex');
+        }
+        break;
       default:
         break;
     }
   }
 
   /**
-   * Indicates whether the alert element can be closed by the user.
+   * Shows a close button that allows the user to dismiss the alert.
    *
    * @type {boolean}
    * @attribute closable
@@ -401,7 +410,7 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Indicates whether the alert element is open.
+   * Controls whether the alert is currently shown.
    *
    * @type {boolean}
    * @attribute open
@@ -495,7 +504,7 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+   * Shows a countdown displaying the remaining time before the alert automatically closes.
    *
    * @type {boolean}
    * @attribute countdown
@@ -525,6 +534,23 @@ class AlertElement extends HTMLElement {
   }
 
   /**
+   * Adds tabindex="0" to the internal alert container. Use this when the alert
+   * should be reachable in the tab order, such as a persistent or reviewable
+   * toast notification.
+   *
+   * @type {boolean}
+   * @attribute focusable
+   * @default false
+   */
+  get focusable() {
+    return this.hasAttribute('focusable');
+  }
+
+  set focusable(value) {
+    this.toggleAttribute('focusable', !!value);
+  }
+
+  /**
    * Custom animation keyframes and options for show/hide.
    *
    * @type {CustomAnimations | undefined}
@@ -550,6 +576,7 @@ class AlertElement extends HTMLElement {
     this.#upgradeProperty('announce');
     this.#upgradeProperty('countdown');
     this.#upgradeProperty('noAnimations');
+    this.#upgradeProperty('focusable');
     this.#upgradeProperty('customAnimations');
 
     this.#baseEl = this.shadowRoot?.querySelector('.alert') ?? null;
@@ -584,6 +611,8 @@ class AlertElement extends HTMLElement {
     this.announce !== 'none'
       ? this.#baseEl?.setAttribute('role', this.announce)
       : this.#baseEl?.removeAttribute('role');
+
+    this.focusable ? this.#baseEl?.setAttribute('tabindex', '0') : this.#baseEl?.removeAttribute('tabindex');
 
     this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
 
@@ -954,7 +983,7 @@ class AlertElement extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'noAnimations' | 'customAnimations'} prop - The property name to upgrade.
+   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'noAnimations' | 'focusable' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */
