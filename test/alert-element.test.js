@@ -126,9 +126,60 @@ describe('alert-element', () => {
       const base = el.shadowRoot.querySelector('[part="base"]');
       expect(base.getAttribute('tabindex')).to.equal('0');
     });
+
+    it('removes tabindex attribute from base element when focusable is false', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      const base = el.shadowRoot.querySelector('[part="base"]');
+      expect(base.getAttribute('tabindex')).to.equal('0');
+      el.focusable = false;
+      expect(base.hasAttribute('tabindex')).to.be.false;
+    });
   });
 
   describe('properties - attribures', () => {
+    // open
+    it('reflects property "open" to attribute "open"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.open = true;
+      expect(el.hasAttribute('open')).to.be.true;
+      el.open = false;
+      expect(el.hasAttribute('open')).to.be.false;
+    });
+
+    it('reflects attribute "open" to property "open"', async () => {
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      expect(el.open).to.be.true;
+    });
+
+    // variant
+    it('reflects property "variant" to attribute "variant"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.variant = 'info';
+      expect(el.getAttribute('variant')).to.equal('info');
+    });
+
+    it('reflects attribute "variant" to property "variant"', async () => {
+      const el = await fixture(html`<alert-element variant="info"></alert-element>`);
+      expect(el.variant).to.equal('info');
+    });
+
+    it('property variant returns empty string if not set', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      expect(el.variant).to.equal('');
+    });
+
+    // announce
+    it('reflects property "announce" to attribute "announce"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.announce = 'status';
+      expect(el.getAttribute('announce')).to.equal('status');
+    });
+
+    it('reflects attribute "announce" to property "announce"', async () => {
+      const el = await fixture(html`<alert-element announce="status"></alert-element>`);
+      expect(el.announce).to.equal('status');
+    });
+
     // closable
     it('reflects property "closable" to attribute "closable"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
@@ -143,18 +194,16 @@ describe('alert-element', () => {
       expect(el.closable).to.be.true;
     });
 
-    // open
-    it('reflects property "open" to attribute "open"', async () => {
+    // closeLabel
+    it('reflects property "closeLabel" to attribute "close-label"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.open = true;
-      expect(el.hasAttribute('open')).to.be.true;
-      el.open = false;
-      expect(el.hasAttribute('open')).to.be.false;
+      el.closeLabel = 'Close me';
+      expect(el.getAttribute('close-label')).to.equal('Close me');
     });
 
-    it('reflects attribute "open" to property "open"', async () => {
-      const el = await fixture(html`<alert-element open></alert-element>`);
-      expect(el.open).to.be.true;
+    it('reflects attribute "close-label" to property "closeLabel"', async () => {
+      const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
+      expect(el.closeLabel).to.equal('Close me');
     });
 
     // duration
@@ -181,47 +230,6 @@ describe('alert-element', () => {
       expect(el.duration).to.equal(Infinity);
     });
 
-    // variant
-    it('reflects property "variant" to attribute "variant"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.variant = 'info';
-      expect(el.getAttribute('variant')).to.equal('info');
-    });
-
-    it('reflects attribute "variant" to property "variant"', async () => {
-      const el = await fixture(html`<alert-element variant="info"></alert-element>`);
-      expect(el.variant).to.equal('info');
-    });
-
-    it('property variant returns empty string if not set', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      expect(el.variant).to.equal('');
-    });
-
-    // closeLabel
-    it('reflects property "closeLabel" to attribute "close-label"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.closeLabel = 'Close me';
-      expect(el.getAttribute('close-label')).to.equal('Close me');
-    });
-
-    it('reflects attribute "close-label" to property "closeLabel"', async () => {
-      const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
-      expect(el.closeLabel).to.equal('Close me');
-    });
-
-    // announce
-    it('reflects property "announce" to attribute "announce"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.announce = 'status';
-      expect(el.getAttribute('announce')).to.equal('status');
-    });
-
-    it('reflects attribute "announce" to property "announce"', async () => {
-      const el = await fixture(html`<alert-element announce="status"></alert-element>`);
-      expect(el.announce).to.equal('status');
-    });
-
     // countdown
     it('reflects property "countdown" to attribute "countdown"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
@@ -234,18 +242,6 @@ describe('alert-element', () => {
       expect(el.countdown).to.be.true;
     });
 
-    // noAnimations
-    it('reflects property "noAnimations" to attribute "no-animations"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.noAnimations = true;
-      expect(el.hasAttribute('no-animations')).to.be.true;
-    });
-
-    it('reflects attribute "no-animations" to property "noAnimations"', async () => {
-      const el = await fixture(html`<alert-element no-animations></alert-element>`);
-      expect(el.noAnimations).to.be.true;
-    });
-
     // focusable
     it('reflects property "focusable" to attribute "focusable"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
@@ -256,6 +252,18 @@ describe('alert-element', () => {
     it('reflects attribute "focusable" to property "focusable"', async () => {
       const el = await fixture(html`<alert-element focusable></alert-element>`);
       expect(el.focusable).to.be.true;
+    });
+
+    // noAnimations
+    it('reflects property "noAnimations" to attribute "no-animations"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.noAnimations = true;
+      expect(el.hasAttribute('no-animations')).to.be.true;
+    });
+
+    it('reflects attribute "no-animations" to property "noAnimations"', async () => {
+      const el = await fixture(html`<alert-element no-animations></alert-element>`);
+      expect(el.noAnimations).to.be.true;
     });
 
     // customAnimations
