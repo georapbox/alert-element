@@ -2,6 +2,10 @@ import { elementUpdated, expect, fixture, fixtureCleanup, html } from '@open-wc/
 import { AlertElement } from '../src/alert-element.js';
 
 describe('alert-element upgrading', () => {
+  afterEach(() => {
+    fixtureCleanup();
+  });
+
   it('default properties', async () => {
     const el = await fixture(html`<alert-element></alert-element>`);
 
@@ -30,9 +34,5 @@ describe('alert-element upgrading', () => {
     expect(el.getAttribute('countdown')).to.equal('');
     expect(el.getAttribute('focusable')).to.equal('');
     expect(el.getAttribute('no-animations')).to.equal('');
-  });
-
-  afterEach(() => {
-    fixtureCleanup();
   });
 });

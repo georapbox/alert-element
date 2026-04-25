@@ -27,20 +27,25 @@ function stubMatchMedia(reducedMotion) {
 }
 
 describe('alert-element', () => {
-  let matchMediaStub;
-
   beforeEach(() => {
     document.querySelector('.alert-toast-stack')?.remove();
 
     // Emulate prefers-reduced-motion: reduce
     // to avoid waiting for animations to complete
-    matchMediaStub = stubMatchMedia('reduce');
+    stubMatchMedia('reduce');
   });
 
   afterEach(() => {
     fixtureCleanup();
-    matchMediaStub.restore();
     sinon.restore();
+  });
+
+  describe('definition', () => {
+    it('does not redefine the custom element when it is already registered', () => {
+      const defineSpy = sinon.spy(window.customElements, 'define');
+      expect(() => AlertElement.define()).to.not.throw();
+      sinon.assert.notCalled(defineSpy);
+    });
   });
 
   describe('accessibility', () => {
@@ -136,7 +141,7 @@ describe('alert-element', () => {
     });
   });
 
-  describe('properties - attribures', () => {
+  describe('properties - attributes', () => {
     // open
     it('reflects property "open" to attribute "open"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
