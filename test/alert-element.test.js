@@ -13,7 +13,7 @@ import {
   CLOSE_REASON_API
 } from '../src/alert-element.js';
 
-AlertElement.defineCustomElement();
+AlertElement.define();
 
 function stubMatchMedia(reducedMotion) {
   return sinon.stub(window, 'matchMedia').callsFake(query => ({
@@ -27,20 +27,25 @@ function stubMatchMedia(reducedMotion) {
 }
 
 describe('alert-element', () => {
-  let matchMediaStub;
-
   beforeEach(() => {
     document.querySelector('.alert-toast-stack')?.remove();
 
     // Emulate prefers-reduced-motion: reduce
     // to avoid waiting for animations to complete
-    matchMediaStub = stubMatchMedia('reduce');
+    stubMatchMedia('reduce');
   });
 
   afterEach(() => {
     fixtureCleanup();
-    matchMediaStub.restore();
     sinon.restore();
+  });
+
+  describe('definition', () => {
+    it('does not redefine the custom element when it is already registered', () => {
+      const defineSpy = sinon.spy(window.customElements, 'define');
+      expect(() => AlertElement.define()).to.not.throw();
+      sinon.assert.notCalled(defineSpy);
+    });
   });
 
   describe('accessibility', () => {
@@ -49,56 +54,56 @@ describe('alert-element', () => {
       await expect(el).to.be.accessible();
     });
 
-    it('base element has a default role="alert" attribute if announce is not set', async () => {
+    it('base element does not have role attribute if announce is not set', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const base = el.shadowRoot.querySelector('.alert');
-      expect(base).to.have.attribute('role', 'alert');
+      expect(base.getAttribute('role')).to.be.null;
     });
 
     it('base element has role="status" attribute if announce="status"', async () => {
       const el = await fixture(html`<alert-element announce="status"></alert-element>`);
       const base = el.shadowRoot.querySelector('.alert');
-      expect(base).to.have.attribute('role', 'status');
+      expect(base.getAttribute('role')).to.equal('status');
     });
 
     it('base element does not have role attribute if announce="none"', async () => {
       const el = await fixture(html`<alert-element announce="none"></alert-element>`);
       const base = el.shadowRoot.querySelector('.alert');
-      expect(base).to.not.have.attribute('role');
+      expect(base.hasAttribute('role')).to.be.false;
     });
 
-    it('base element has role="alert" if announce has an invalid value', async () => {
+    it('base element does not have role attribute if announce has an invalid value', async () => {
       const el = await fixture(html`<alert-element announce="invalid"></alert-element>`);
       const base = el.shadowRoot.querySelector('.alert');
-      expect(base).to.have.attribute('role', 'alert');
+      expect(base.hasAttribute('role')).to.be.false;
     });
 
     it('base element role attribute changes on the fly when announce attribute changes', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const base = el.shadowRoot.querySelector('.alert');
-      expect(base).to.have.attribute('role', 'alert');
+      expect(base.hasAttribute('role')).to.be.false;
       el.announce = 'status';
-      expect(base).to.have.attribute('role', 'status');
+      expect(base.getAttribute('role')).to.equal('status');
       el.announce = 'none';
-      expect(base).to.not.have.attribute('role');
+      expect(base.hasAttribute('role')).to.be.false;
     });
 
     it('close button has a default aria-label attribute', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
-      expect(closeButton).to.have.attribute('aria-label', 'Close');
+      expect(closeButton.getAttribute('aria-label')).to.equal('Close');
     });
 
     it('close button has a custom aria-label attribute', async () => {
       const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
-      expect(closeButton).to.have.attribute('aria-label', 'Close me');
+      expect(closeButton.getAttribute('aria-label')).to.equal('Close me');
     });
 
     it('close button does not have aria-label attribute if user provides text content for the button', async () => {
       const el = await fixture(html`<alert-element><span slot="close">Close me</span></alert-element>`);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
-      expect(closeButton).to.not.have.attribute('aria-label');
+      expect(closeButton.hasAttribute('aria-label')).to.be.false;
     });
 
     it('close button has default aria-label attribute if user provides non-text content for the button', async () => {
@@ -108,7 +113,7 @@ describe('alert-element', () => {
         </alert-element>
       `);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
-      expect(closeButton).to.have.attribute('aria-label', 'Close');
+      expect(closeButton.getAttribute('aria-label')).to.equal('Close');
     });
 
     it('close button has custom aria-label attribute if user provides non-text content for the button and close-label attribute', async () => {
@@ -118,11 +123,68 @@ describe('alert-element', () => {
         </alert-element>
       `);
       const closeButton = el.shadowRoot.querySelector('.alert__close');
-      expect(closeButton).to.have.attribute('aria-label', 'Close me');
+      expect(closeButton.getAttribute('aria-label')).to.equal('Close me');
+    });
+
+    it('adds tabindex="0" to base element when focusable is true', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      const base = el.shadowRoot.querySelector('[part="base"]');
+      expect(base.getAttribute('tabindex')).to.equal('0');
+    });
+
+    it('removes tabindex attribute from base element when focusable is false', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      const base = el.shadowRoot.querySelector('[part="base"]');
+      expect(base.getAttribute('tabindex')).to.equal('0');
+      el.focusable = false;
+      expect(base.hasAttribute('tabindex')).to.be.false;
     });
   });
 
-  describe('properties - attribures', () => {
+  describe('properties - attributes', () => {
+    // open
+    it('reflects property "open" to attribute "open"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.open = true;
+      expect(el.hasAttribute('open')).to.be.true;
+      el.open = false;
+      expect(el.hasAttribute('open')).to.be.false;
+    });
+
+    it('reflects attribute "open" to property "open"', async () => {
+      const el = await fixture(html`<alert-element open></alert-element>`);
+      expect(el.open).to.be.true;
+    });
+
+    // variant
+    it('reflects property "variant" to attribute "variant"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.variant = 'info';
+      expect(el.getAttribute('variant')).to.equal('info');
+    });
+
+    it('reflects attribute "variant" to property "variant"', async () => {
+      const el = await fixture(html`<alert-element variant="info"></alert-element>`);
+      expect(el.variant).to.equal('info');
+    });
+
+    it('property variant returns empty string if not set', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      expect(el.variant).to.equal('');
+    });
+
+    // announce
+    it('reflects property "announce" to attribute "announce"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.announce = 'status';
+      expect(el.getAttribute('announce')).to.equal('status');
+    });
+
+    it('reflects attribute "announce" to property "announce"', async () => {
+      const el = await fixture(html`<alert-element announce="status"></alert-element>`);
+      expect(el.announce).to.equal('status');
+    });
+
     // closable
     it('reflects property "closable" to attribute "closable"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
@@ -137,18 +199,16 @@ describe('alert-element', () => {
       expect(el.closable).to.be.true;
     });
 
-    // open
-    it('reflects property "open" to attribute "open"', async () => {
+    // closeLabel
+    it('reflects property "closeLabel" to attribute "close-label"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
-      el.open = true;
-      expect(el.hasAttribute('open')).to.be.true;
-      el.open = false;
-      expect(el.hasAttribute('open')).to.be.false;
+      el.closeLabel = 'Close me';
+      expect(el.getAttribute('close-label')).to.equal('Close me');
     });
 
-    it('reflects attribute "open" to property "open"', async () => {
-      const el = await fixture(html`<alert-element open></alert-element>`);
-      expect(el.open).to.be.true;
+    it('reflects attribute "close-label" to property "closeLabel"', async () => {
+      const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
+      expect(el.closeLabel).to.equal('Close me');
     });
 
     // duration
@@ -175,47 +235,6 @@ describe('alert-element', () => {
       expect(el.duration).to.equal(Infinity);
     });
 
-    // variant
-    it('reflects property "variant" to attribute "variant"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.variant = 'info';
-      expect(el.getAttribute('variant')).to.equal('info');
-    });
-
-    it('reflects attribute "variant" to property "variant"', async () => {
-      const el = await fixture(html`<alert-element variant="info"></alert-element>`);
-      expect(el.variant).to.equal('info');
-    });
-
-    it('property variant returns empty string if not set', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      expect(el.variant).to.equal('');
-    });
-
-    // closeLabel
-    it('reflects property "closeLabel" to attribute "close-label"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.closeLabel = 'Close me';
-      expect(el.getAttribute('close-label')).to.equal('Close me');
-    });
-
-    it('reflects attribute "close-label" to property "closeLabel"', async () => {
-      const el = await fixture(html`<alert-element close-label="Close me"></alert-element>`);
-      expect(el.closeLabel).to.equal('Close me');
-    });
-
-    // announce
-    it('reflects property "announce" to attribute "announce"', async () => {
-      const el = await fixture(html`<alert-element></alert-element>`);
-      el.announce = 'status';
-      expect(el.getAttribute('announce')).to.equal('status');
-    });
-
-    it('reflects attribute "announce" to property "announce"', async () => {
-      const el = await fixture(html`<alert-element announce="status"></alert-element>`);
-      expect(el.announce).to.equal('status');
-    });
-
     // countdown
     it('reflects property "countdown" to attribute "countdown"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
@@ -226,6 +245,18 @@ describe('alert-element', () => {
     it('reflects attribute "countdown" to property "countdown"', async () => {
       const el = await fixture(html`<alert-element countdown></alert-element>`);
       expect(el.countdown).to.be.true;
+    });
+
+    // focusable
+    it('reflects property "focusable" to attribute "focusable"', async () => {
+      const el = await fixture(html`<alert-element></alert-element>`);
+      el.focusable = true;
+      expect(el.hasAttribute('focusable')).to.be.true;
+    });
+
+    it('reflects attribute "focusable" to property "focusable"', async () => {
+      const el = await fixture(html`<alert-element focusable></alert-element>`);
+      expect(el.focusable).to.be.true;
     });
 
     // noAnimations
@@ -249,7 +280,7 @@ describe('alert-element', () => {
     it('does not reflect property "customAnimations" to attribute "custom-animations"', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
       el.customAnimations = { show: null, hide: null };
-      expect(el.getAttribute('custom-animations')).to.be.null;
+      expect(el.hasAttribute('custom-animations')).to.be.false;
     });
   });
 

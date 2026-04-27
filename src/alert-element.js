@@ -3,7 +3,6 @@
 import { createToastStack } from './toast-stack.js';
 import { Timer } from './timer.js';
 
-const COMPONENT_NAME = 'alert-element';
 const EVENT_ALERT_SHOW = 'alert-show';
 const EVENT_ALERT_AFTER_SHOW = 'alert-after-show';
 const EVENT_ALERT_HIDE = 'alert-hide';
@@ -47,7 +46,7 @@ const toastStack = createToastStack();
 /**
  * Represents how the alert should be announced to screen readers.
  *
- * @typedef {'alert' | 'status' | 'none'} Announce
+ * @typedef {'none' | 'status' | 'alert' | 'alertdialog'} Announce
  */
 
 const styles = css`
@@ -194,7 +193,7 @@ template.innerHTML = html`
     ${styles}
   </style>
 
-  <div class="alert" part="base" role="alert" hidden>
+  <div class="alert" part="base" hidden>
     <div class="alert__icon" part="icon">
       <slot name="icon"></slot>
     </div>
@@ -225,27 +224,30 @@ template.innerHTML = html`
  * @summary A custom HTML element for displaying dismissible alerts and toast notifications
  * @documentation https://github.com/georapbox/alert-element
  *
- * @tagname alert-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
+ * @tagname alert-element - The default custom element tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
- * @property {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
- * @property {boolean} open - Indicates whether the alert is open or not.
- * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @property {boolean} open - Controls whether the alert is currently shown.
  * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
- * @property {string} closeLabel - The label of the default close button, used as the aria-label attribute of the close button.
  * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @property {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+ * @property {boolean} closable - Shows a close button that allows the user to dismiss the alert.
+ * @property {string} closeLabel - The label of the default close button, used as the `aria-label` attribute of the close button.
+ * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @property {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
+ * @property {boolean} focusable - Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
  * @property {boolean} noAnimations - Disables animations when set to true.
  * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
- * @attribute {boolean} closable - Indicates whether the alert can be closed by the user by providing a close button.
- * @attribute {boolean} open - Indicates whether the alert is open or not.
- * @attribute {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @attribute {boolean} open - Controls whether the alert is currently shown.
  * @attribute {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
- * @attribute {string} close-label - The label of the default close button, used as the aria-label attribute of the close button.
  * @attribute {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @attribute {boolean} countdown - Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
- * @attribute {boolean} no-animations - Disables animations when set to true.
+ * @attribute {boolean} closable - Shows a close button that allows the user to dismiss the alert.
+ * @attribute {string} closeLabel - The label of the default close button, used as the `aria-label` attribute of the close button.
+ * @attribute {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
+ * @attribute {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
+ * @attribute {boolean} focusable - Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
+ * @attribute {boolean} noAnimations - Disables animations when set to true.
+ * @attribute {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -271,7 +273,7 @@ template.innerHTML = html`
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @method defineCustomElement - Static method. Defines a custom element with the given name.
+ * @method define - Static method. Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already.
  * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
  * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
  * @method toast - Instance method. Displays the alert as a toast notification.
@@ -325,7 +327,7 @@ class AlertElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'duration', 'close-label', 'announce', 'countdown'];
+    return ['open', 'duration', 'announce', 'close-label', 'countdown', 'focusable'];
   }
 
   /**
@@ -381,13 +383,67 @@ class AlertElement extends HTMLElement {
       case 'countdown':
         this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
         break;
+      case 'focusable':
+        if (this.focusable) {
+          this.#baseEl?.setAttribute('tabindex', '0');
+        } else {
+          this.#baseEl?.removeAttribute('tabindex');
+        }
+        break;
       default:
         break;
     }
   }
 
   /**
-   * Indicates whether the alert element can be closed by the user.
+   * Controls whether the alert is currently shown.
+   *
+   * @type {boolean}
+   * @attribute open
+   * @default false
+   */
+  get open() {
+    return this.hasAttribute('open');
+  }
+
+  set open(value) {
+    this.toggleAttribute('open', !!value);
+  }
+
+  /**
+   * The alert's theme variant.
+   * Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
+   *
+   * @type {string}
+   * @attribute variant
+   * @default ''
+   */
+  get variant() {
+    return this.getAttribute('variant') || '';
+  }
+
+  set variant(value) {
+    this.setAttribute('variant', value);
+  }
+
+  /**
+   * Defines how the alert should be announced to screen readers.
+   *
+   * @type {Announce}
+   * @attribute announce
+   * @default 'alert'
+   */
+  get announce() {
+    const value = this.getAttribute('announce') ?? '';
+    return this.#isValidAnnounce(value) ? value : 'none';
+  }
+
+  set announce(value) {
+    this.setAttribute('announce', value != null ? value.toString() : value);
+  }
+
+  /**
+   * Shows a close button that allows the user to dismiss the alert.
    *
    * @type {boolean}
    * @attribute closable
@@ -402,18 +458,20 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Indicates whether the alert element is open.
+   * The label of the default close button, used as the aria-label attribute of the close button.
+   * If user provides text content for the close button using the `close` slot,
+   * this property is ignored and the aria-label attribute is removed.
    *
-   * @type {boolean}
-   * @attribute open
-   * @default false
+   * @type {string}
+   * @attribute close-label
+   * @default 'Close'
    */
-  get open() {
-    return this.hasAttribute('open');
+  get closeLabel() {
+    return this.getAttribute('close-label') || 'Close';
   }
 
-  set open(value) {
-    this.toggleAttribute('open', !!value);
+  set closeLabel(value) {
+    this.setAttribute('close-label', value != null ? value.toString() : value);
   }
 
   /**
@@ -447,56 +505,7 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * The alert's theme variant.
-   * Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
-   *
-   * @type {string}
-   * @attribute variant
-   * @default ''
-   */
-  get variant() {
-    return this.getAttribute('variant') || '';
-  }
-
-  set variant(value) {
-    this.setAttribute('variant', value);
-  }
-
-  /**
-   * The label of the default close button, used as the aria-label attribute of the close button.
-   * If user provides text content for the close button using the `close` slot,
-   * this property is ignored and the aria-label attribute is removed.
-   *
-   * @type {string}
-   * @attribute close-label
-   * @default 'Close'
-   */
-  get closeLabel() {
-    return this.getAttribute('close-label') || 'Close';
-  }
-
-  set closeLabel(value) {
-    this.setAttribute('close-label', value != null ? value.toString() : value);
-  }
-
-  /**
-   * Defines how the alert should be announced to screen readers.
-   *
-   * @type {Announce}
-   * @attribute announce
-   * @default 'alert'
-   */
-  get announce() {
-    const val = this.getAttribute('announce');
-    return val === 'alert' || val === 'status' || val === 'none' ? val : 'alert';
-  }
-
-  set announce(value) {
-    this.setAttribute('announce', value != null ? value.toString() : value);
-  }
-
-  /**
-   * Indicates whether to show a countdown displaying the remaining time before the alert automatically closes.
+   * Shows a countdown displaying the remaining time before the alert automatically closes.
    *
    * @type {boolean}
    * @attribute countdown
@@ -508,6 +517,23 @@ class AlertElement extends HTMLElement {
 
   set countdown(value) {
     this.toggleAttribute('countdown', !!value);
+  }
+
+  /**
+   * Adds tabindex="0" to the internal alert container. Use this when the alert
+   * should be reachable in the tab order, such as a persistent or reviewable
+   * toast notification.
+   *
+   * @type {boolean}
+   * @attribute focusable
+   * @default false
+   */
+  get focusable() {
+    return this.hasAttribute('focusable');
+  }
+
+  set focusable(value) {
+    this.toggleAttribute('focusable', !!value);
   }
 
   /**
@@ -543,13 +569,14 @@ class AlertElement extends HTMLElement {
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
-    this.#upgradeProperty('closable');
     this.#upgradeProperty('open');
-    this.#upgradeProperty('duration');
     this.#upgradeProperty('variant');
-    this.#upgradeProperty('closeLabel');
     this.#upgradeProperty('announce');
+    this.#upgradeProperty('closable');
+    this.#upgradeProperty('closeLabel');
+    this.#upgradeProperty('duration');
     this.#upgradeProperty('countdown');
+    this.#upgradeProperty('focusable');
     this.#upgradeProperty('noAnimations');
     this.#upgradeProperty('customAnimations');
 
@@ -586,6 +613,8 @@ class AlertElement extends HTMLElement {
       ? this.#baseEl?.setAttribute('role', this.announce)
       : this.#baseEl?.removeAttribute('role');
 
+    this.focusable ? this.#baseEl?.setAttribute('tabindex', '0') : this.#baseEl?.removeAttribute('tabindex');
+
     this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
 
     this.#isInitialized = true;
@@ -615,6 +644,16 @@ class AlertElement extends HTMLElement {
     // No-op: Use this to avoid running initialization/cleanup code in the `connectedCallback()` and `disconnectedCallback()`
     // callbacks when the element is not actually being added to or removed from the DOM
     // but rather being moved within the DOM via `Element.moveBefore()`.
+  }
+
+  /**
+   * Checks whether a value is a valid announce value.
+   *
+   * @param {string} value - The value to check.
+   * @returns {value is Announce} True if the value is a valid announce value, false otherwise.
+   */
+  #isValidAnnounce(value) {
+    return value === 'none' || value === 'status' || value === 'alert' || value === 'alertdialog';
   }
 
   /**
@@ -913,7 +952,7 @@ class AlertElement extends HTMLElement {
           toastStack.removeChild(this);
         }
 
-        if (!toastStack.querySelector(COMPONENT_NAME)) {
+        if (toastStack.childElementCount === 0) {
           toastStack.remove();
         }
 
@@ -939,17 +978,20 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * This is to safe guard against cases where, for instance, a framework may have added the element to the page and set a
-   * value on one of its properties, but lazy loaded its definition. Without this guard, the upgraded element would miss that
-   * property and the instance property would prevent the class property setter from ever being called.
+   * Re-applies a property value that may have been set on the element
+   * instance before the custom element was defined.
    *
-   * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
+   * This handles cases where a framework sets a property on the element
+   * before its definition is loaded. Without this step, the own property
+   * on the instance would shadow the class setter and prevent it from
+   * running after upgrade.
    *
-   * @param {'closable' | 'open' | 'duration' | 'variant' | 'closeLabel' | 'announce' | 'countdown' | 'noAnimations' | 'customAnimations'} prop - The property name to upgrade.
+   * @see https://web.dev/articles/custom-elements-best-practices#make_properties_lazy
+   *
+   * @param {'open' | 'variant' | 'announce' | 'closable' | 'closeLabel' | 'duration' | 'countdown' | 'focusable' | 'noAnimations' | 'customAnimations'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
-    /** @type {any} */
-    const instance = this;
+    const instance = /** @type {HTMLElement & Record<string, unknown>} */ (this);
 
     if (Object.prototype.hasOwnProperty.call(instance, prop)) {
       const value = instance[prop];
@@ -959,15 +1001,16 @@ class AlertElement extends HTMLElement {
   }
 
   /**
-   * Defines a custom element with the given name.
-   * The name must contain a dash (-).
+   * Defines the custom element by registering it with the browser's
+   * CustomElementRegistry if it hasn't been defined already.
    *
-   * @param {string} [elementName] - The name of the custom element.
+   * @param {string} [tagName='alert-element'] - The tag name to use for the custom element. Must include a hyphen.
    */
-  static defineCustomElement(elementName = COMPONENT_NAME) {
-    if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
-      window.customElements.define(elementName, AlertElement);
+  static define(tagName = 'alert-element') {
+    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
+      return;
     }
+    window.customElements.define(tagName, AlertElement);
   }
 }
 

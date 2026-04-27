@@ -15,30 +15,36 @@ A custom HTML element for displaying dismissible alerts and toast notifications
 
 [API documentation](#api) &bull; [Demo][demo]
 
-## Install
+## Usage
+
+### Installation
 
 ```sh
 npm install --save @georapbox/alert-element
 ```
 
-## Usage
+### Importing the component
 
-### Script
+By default, the package exports the element class without registering it. This lets the application decide when the custom element is defined.
 
-```js
-import { AlertElement } from './node_modules/@georapbox/alert-element/dist/alert-element.js';
-
-// Manually define the element.
-AlertElement.defineCustomElement();
-```
-
-Alternatively, you can import the automatically defined custom element.
+#### Manual definition
 
 ```js
-import './node_modules/@georapbox/alert-element/dist/alert-element-defined.js';
+import { AlertElement } from '@georapbox/alert-element';
+
+// Define using the default tag name
+AlertElement.define();
 ```
 
-### Markup
+#### Auto-defined (convenience)
+
+If you don't need control over registration, you can import the pre-defined build which immediately registers `<alert-element>`.
+
+```js
+import '@georapbox/alert-element/define';
+```
+
+### Using the component in your HTML
 
 ```html
 <alert-element variant="success" open closable>
@@ -47,22 +53,20 @@ import './node_modules/@georapbox/alert-element/dist/alert-element-defined.js';
 </alert-element>
 ```
 
-### Style
-
-By default, the component comes with some basic default styling. However, you can customise the styles of the various elements of the component using either [CSS Parts](#css-parts) or [CSS Custom Properties](#css-custom-properties).
-
 ## API
 
 ### Properties
+
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `closable` | ✓ | Boolean | - | `false` | Indicates whether the alert can be closed by the user by providing a close button. |
-| `open` | ✓ | Boolean | - | `false` | Indicates whether the alert is open or not. |
-| `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
+| `open` | ✓ | Boolean | - | `false` | Controls whether the alert is currently shown. |
 | `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
-| `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
 | `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
-| `countdown` | ✓ | Boolean | - | `false` | Indicates whether to show a countdown displaying the remaining time before the alert automatically closes. |
+| `closable` | ✓ | Boolean | - | `false` | Shows a close button that allows the user to dismiss the alert. |
+| `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
+| `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
+| `countdown` | ✓ | Boolean | - | `false` | Shows a countdown displaying the remaining time before the alert automatically closes. |
+| `focusable` | - | Boolean | - | `false` | Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification. |
 | `noAnimations`<br>*`no-animations`* | ✓ | Boolean | - | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
 | `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
 
@@ -106,7 +110,7 @@ By default, the component comes with some basic default styling. However, you ca
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | `elementName='alert-element'` |
+| `define` | Static | Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already. | `tagName='alert-element'` |
 | `show`<sup>1</sup> | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
 | `hide`<sup>1</sup> | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
 | `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |
@@ -237,6 +241,7 @@ function toastify(message, options = {}) {
   const defaults = {
     duration: 3000,
     variant: 'neutral',
+    announce: 'status',
     icon: ''
   };
 
@@ -248,6 +253,7 @@ function toastify(message, options = {}) {
     closable: true, // Always provide a way to close the toast notification
     duration: options.duration,
     variant: options.variant,
+    announce: options.announce,
     innerHTML: `${icon}${escapeHtml(message)}` // Escape message to prevent XSS ig you don't control the content
   });
 

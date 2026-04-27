@@ -6,7 +6,7 @@ const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert
 const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
   await import(componentUrl);
 
-AlertElement.defineCustomElement();
+AlertElement.define();
 
 document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
   el.insertAdjacentHTML('afterbegin', `<a href="#${el.getAttribute('id')}">#</a> Example ${index + 1} - `);
@@ -59,19 +59,26 @@ function escapeHtml(html) {
 
 function toastify(message, options = {}) {
   const defaults = {
-    duration: 3000,
     variant: 'neutral',
+    announce: 'status',
+    duration: 5000,
+    countdown: true,
+    focusable: true,
     icon: ''
   };
 
   options = { ...defaults, ...options };
 
+  const { duration, variant, announce, countdown, focusable } = options;
   const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
 
   const alert = Object.assign(document.createElement('alert-element'), {
+    variant,
+    announce,
+    duration,
+    countdown,
     closable: true,
-    duration: options.duration,
-    variant: options.variant,
+    focusable,
     innerHTML: `${icon}${escapeHtml(message)}`
   });
 
@@ -84,8 +91,8 @@ function toastify(message, options = {}) {
   const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
 
   variants.forEach(variant => {
-    const button = document.querySelector(`[data-example="toasts"] > button[data-variant="${variant}"]`);
-    const alert = document.querySelector(`[data-example="toasts"] > alert-element[variant="${variant}"]`);
+    const button = document.querySelector(`[data-example="toasts"] button[data-variant="${variant}"]`);
+    const alert = document.querySelector(`[data-example="toasts"] alert-element[variant="${variant}"]`);
     button.addEventListener('click', () => alert.toast({ forceRestart }));
   });
 
@@ -96,7 +103,7 @@ function toastify(message, options = {}) {
 
 // Creating toasts imperatively
 (function () {
-  const button = document.querySelector('[data-example="imperative-toasts"] > button');
+  const button = document.querySelector('[data-example="imperative-toasts"] button');
   let count = 0;
 
   button.addEventListener('click', () => {
@@ -114,11 +121,12 @@ function toastify(message, options = {}) {
 
 // Custom toast stack position
 (function () {
-  const button = document.querySelector('[data-example="custom-toast-stack-position"] > button');
+  const button = document.querySelector('[data-example="custom-toast-stack-position"] button');
   const alert = Object.assign(document.createElement('alert-element'), {
     variant: 'info',
     duration: 3000,
-    closable: true
+    closable: true,
+    announce: 'alert'
   });
 
   alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
@@ -140,7 +148,7 @@ function toastify(message, options = {}) {
 
 // Custom animations
 (function () {
-  const alert = document.querySelector('[data-example="custom-animations"] > alert-element');
+  const alert = document.querySelector('[data-example="custom-animations"] alert-element');
 
   alert.customAnimations = {
     show: {

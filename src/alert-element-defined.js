@@ -11,7 +11,7 @@ import {
   CLOSE_REASON_API
 } from './alert-element.js';
 
-AlertElement.defineCustomElement();
+AlertElement.define();
 
 export {
   AlertElement,
