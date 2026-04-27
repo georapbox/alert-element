@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v2.0.0 (2026-MM-DD)
+## v2.0.0 (2026-04-27)
 
 ### Breaking Changes
 
