@@ -5,7 +5,6 @@
 }
 
 :root {
-  --body-max-width: 1024px;
   --card-bg-color: #ffffff;
   scroll-behavior: smooth;
 }

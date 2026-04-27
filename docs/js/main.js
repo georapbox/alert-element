@@ -59,21 +59,26 @@ function escapeHtml(html) {
 
 function toastify(message, options = {}) {
   const defaults = {
-    duration: 3000,
     variant: 'neutral',
     announce: 'status',
+    duration: 5000,
+    countdown: true,
+    focusable: true,
     icon: ''
   };
 
   options = { ...defaults, ...options };
 
+  const { duration, variant, announce, countdown, focusable } = options;
   const icon = options.icon ? `<span slot="icon">${options.icon}</span>` : '';
 
   const alert = Object.assign(document.createElement('alert-element'), {
+    variant,
+    announce,
+    duration,
+    countdown,
     closable: true,
-    duration: options.duration,
-    variant: options.variant,
-    announce: options.announce,
+    focusable,
     innerHTML: `${icon}${escapeHtml(message)}`
   });
 
@@ -121,7 +126,7 @@ function toastify(message, options = {}) {
     variant: 'info',
     duration: 3000,
     closable: true,
-    announce: 'status'
+    announce: 'alert'
   });
 
   alert.addEventListener(EVENT_ALERT_AFTER_HIDE, () => {
