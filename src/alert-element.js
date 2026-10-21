@@ -345,7 +345,9 @@ class AlertElement extends HTMLElement {
     switch (name) {
       case 'open':
         if (this.open) {
-          this.duration !== Infinity && this.#timer?.start();
+          if (this.duration !== Infinity) {
+            this.#timer?.start();
+          }
           this.#baseEl?.removeAttribute('hidden');
           this.#countdownElapsedEl?.style.setProperty('transform', 'scaleX(1)');
           this.#emitEvent(EVENT_ALERT_SHOW);
@@ -353,7 +355,9 @@ class AlertElement extends HTMLElement {
             this.#emitEvent(EVENT_ALERT_AFTER_SHOW);
           });
         } else {
-          this.duration !== Infinity && this.#timer?.reset();
+          if (this.duration !== Infinity) {
+            this.#timer?.reset();
+          }
           this.#emitEvent(EVENT_ALERT_HIDE, { reason: this.#closeReason });
           this.#playExitAnimation(this.#baseEl)?.finished.finally(() => {
             this.#baseEl?.setAttribute('hidden', '');
@@ -367,8 +371,12 @@ class AlertElement extends HTMLElement {
         this.#timer = new Timer({ duration: this.duration })
           .on('tick', this.#handleTimerTick)
           .on('finish', this.#handleTimerFinish);
-        this.open && this.duration !== Infinity && !this.#isFocused() && this.#timer.start();
-        this.duration === Infinity && this.#countdownElapsedEl?.style.setProperty('transform', 'scaleX(1)');
+        if (this.open && this.duration !== Infinity && !this.#isFocused()) {
+          this.#timer.start();
+        }
+        if (this.duration === Infinity) {
+          this.#countdownElapsedEl?.style.setProperty('transform', 'scaleX(1)');
+        }
         break;
       case 'close-label':
         this.#updateCloseLabel();
@@ -599,7 +607,9 @@ class AlertElement extends HTMLElement {
       .on('finish', this.#handleTimerFinish);
 
     if (this.open) {
-      this.duration !== Infinity && this.#timer?.start();
+      if (this.duration !== Infinity) {
+        this.#timer?.start();
+      }
       this.#baseEl?.removeAttribute('hidden');
     } else {
       this.#baseEl?.setAttribute('hidden', '');
@@ -609,11 +619,17 @@ class AlertElement extends HTMLElement {
       this.#updateCloseLabel();
     }
 
-    this.announce !== 'none'
-      ? this.#baseEl?.setAttribute('role', this.announce)
-      : this.#baseEl?.removeAttribute('role');
+    if (this.announce !== 'none') {
+      this.#baseEl?.setAttribute('role', this.announce);
+    } else {
+      this.#baseEl?.removeAttribute('role');
+    }
 
-    this.focusable ? this.#baseEl?.setAttribute('tabindex', '0') : this.#baseEl?.removeAttribute('tabindex');
+    if (this.focusable) {
+      this.#baseEl?.setAttribute('tabindex', '0');
+    } else {
+      this.#baseEl?.removeAttribute('tabindex');
+    }
 
     this.#countdownEl?.toggleAttribute('hidden', !this.countdown);
 
@@ -755,9 +771,11 @@ class AlertElement extends HTMLElement {
     const assignedElements = this.#closeSlotEl?.assignedElements() || [];
     const hasTextContent = assignedElements?.some(el => el.textContent?.replace(/\s/g, '') !== '');
 
-    hasTextContent
-      ? this.#closeBtn.removeAttribute('aria-label')
-      : this.#closeBtn.setAttribute('aria-label', this.closeLabel);
+    if (hasTextContent) {
+      this.#closeBtn.removeAttribute('aria-label');
+    } else {
+      this.#closeBtn.setAttribute('aria-label', this.closeLabel);
+    }
   }
 
   /**

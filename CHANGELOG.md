@@ -1,6 +1,13 @@
 # CHANGELOG
 
-## v2.0.0 (2026-04-27)
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [2.0.0] - 2026-04-27
 
 ### Breaking Changes
 
@@ -21,13 +28,13 @@
 
 - Fixed toast stack cleanup logic to remove the container when no child elements remain, instead of checking for a specific custom element tag name.
 
-## v1.3.1 (2026-02-15)
+## [1.3.1] - 2026-02-15
 
 ### Fixed
 
 - Corrected an issue where the Custom Elements Manifest (CEM) incorrectly used the parameter name `elementName` instead of the actual tag name `alert-element`. Added a build-time plugin to ensure proper IDE IntelliSense and documentation generation.
 
-## v1.3.0 (2026-02-02)
+## [1.3.0] - 2026-02-02
 
 ### Added
 
@@ -42,14 +49,14 @@
 - Updated `.nvmrc` to Node.js 24
 - Refined JSDoc attribute documentation in `src/alert-element.js` for improved tooling and editor support
 
-## v1.2.2 (2025-12-12)
+## [1.2.2] - 2025-12-12
 
 ### Changed
 
 - Improved countdown progress animation by switching to `transform: scaleX()` for smoother performance and reduced layout work in contrast to animating `width`.
 - Added RTL support using directional `transform-origin`.
 
-## v1.2.1 (2025-12-10)
+## [1.2.1] - 2025-12-10
 
 ### Fixed
 
@@ -59,7 +66,7 @@
 
 - Updated development dependencies.
 
-## v1.2.0 (2025-11-03)
+## [1.2.0] - 2025-11-03
 
 ### Fixed
 
@@ -87,7 +94,7 @@
 - Added support to disable animations via the `no-animations` attribute. Previously, animations could only be disabled by setting the `customAnimations` property to `null`.
 - Added support for pausing and resuming the timer not only on hover, but also when the alert gains or loses focus. This ensures that keyboard and assistive-technology users receive the same non-interruptive behavior — the timer now pauses while any focusable element inside the alert is focused, resuming once focus leaves the alert.
 
-## v1.1.0 (2025-10-15)
+## [1.1.0] - 2025-10-15
 
 ### Added
 
@@ -97,12 +104,23 @@
 
 - Updated development dependencies.
 
-## v1.0.1 (2025-05-26)
+## [1.0.1] - 2025-05-26
 
 ### Fixed
 
 - Fixed typo in documentation.
 
-## v1.0.0 (2025-05-26)
+## 1.0.0 - 2025-05-26
 
 - Initial release.
+
+
+[unreleased]: https://github.com/georapbox/alert-element/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/georapbox/alert-element/compare/v1.3.1...v2.0.0
+[1.3.1]: https://github.com/georapbox/alert-element/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/georapbox/alert-element/compare/v1.2.2...v1.3.0
+[1.2.2]: https://github.com/georapbox/alert-element/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/georapbox/alert-element/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/georapbox/alert-element/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/georapbox/alert-element/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/georapbox/alert-element/releases/tag/v1.0.1
