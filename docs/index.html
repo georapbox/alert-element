@@ -157,7 +157,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" open closable>
         Click the close button (X) to hide this alert.
@@ -181,7 +181,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" open closable>
         This is an alert with a custom close button.
@@ -208,7 +208,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" closable duration="3000">
         This alert will automatically hide itself after <strong>3 seconds</strong>, unless you interact with it.
@@ -233,7 +233,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" closable duration="10000" countdown>
         This alert will automatically hide itself after <strong>10 seconds</strong>, unless you interact with it.
@@ -304,7 +304,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element open closable class="custom-alert">
         <span slot="icon">
@@ -461,13 +461,13 @@
 
   <div class="card" data-example="imperative-toasts">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button">Create Toast</button>
+      <button type="button">Create toast</button>
     </browser-window>
 
     <details>
       <summary>Source code</summary>
 
-<pre><code code class="hljs language-xml">&lt;button type="button"&gt;Create Toast&lt;/button&gt;
+<pre><code code class="hljs language-xml">&lt;button type="button"&gt;Create toast&lt;/button&gt;
 
 &lt;script&gt;
   const button = document.querySelector('button');
@@ -548,7 +548,7 @@
         </fieldset>
       </form>
 
-      <button type="button">Create Toast</button>
+      <button type="button">Create toast</button>
     </browser-window>
 
     <details>
@@ -597,7 +597,7 @@
 &lt;label&gt;&lt;input type="radio" value="bottom-center" name="toast-stack-poisiton"&gt; Bottom center&lt;/label&gt;
 &lt;label&gt;&lt;input type="radio" value="bottom-right" name="toast-stack-poisiton"&gt; Bottom right&lt;/label&gt;
 
-&lt;button type="button"&gt;Create Toast&lt;/button&gt;
+&lt;button type="button"&gt;Create toast&lt;/button&gt;
 
 &lt;script&gt;
   const button = document.querySelector('button');
@@ -634,7 +634,7 @@
 
   <div class="card" data-example="custom-animations">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" closable>
         This alert has custom animations applied to it.
@@ -689,7 +689,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="warning" closable no-animations>
         This is an alert with no animations.
@@ -713,7 +713,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <alert-element variant="info" closable countdown duration="10000">
         <strong>Auto-dismiss in 10s</strong><br>
@@ -742,7 +742,7 @@
 
   <div class="card">
     <browser-window url="https://github.com/georapbox/alert-element" icon>
-      <button type="button" data-action="toggle-alert">Toggle Alert</button>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
 
       <form id="directionality-form" style="margin-top: 1rem;" autocomplete="off">
         <label><input type="radio" name="directionality" value="ltr">Left to right (LTR)</label>
@@ -806,8 +806,8 @@
         <li><code>--alert-hide</code> - hides the alert element</li>
       </ul>
 
-      <button type="button" commandfor="myAlert" command="--alert-show">Show Alert</button>
-      <button type="button" commandfor="myAlert" command="--alert-hide">Hide Alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-show">Show alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-hide">Hide alert</button>
 
       <alert-element variant="info" id="myAlert">
         <span slot="icon">
@@ -824,8 +824,8 @@
     <details>
       <summary>Source code</summary>
 
-<pre><code class="hljs language-xml">&lt;button type="button" commandfor="myAlert" command="--alert-show"&gt;Show Alert&lt;/button&gt;
-&lt;button type="button" commandfor="myAlert" command="--alert-hide"&gt;Hide Alert&lt;/button&gt;
+<pre><code class="hljs language-xml">&lt;button type="button" commandfor="myAlert" command="--alert-show"&gt;Show alert&lt;/button&gt;
+&lt;button type="button" commandfor="myAlert" command="--alert-hide"&gt;Hide alert&lt;/button&gt;
 
 &lt;alert-element variant="info" id="myAlert"&gt;
 &lt;strong&gt;Alert with invoker commands&lt;/strong&gt;&lt;br&gt;
