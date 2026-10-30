@@ -6,7 +6,6 @@
 
 :root {
   --card-bg-color: #ffffff;
-  scroll-behavior: smooth;
 }
 
 :not(:defined):not(browser-window),
@@ -35,7 +34,7 @@
 }
 
 .table-of-contents {
-  columns: 18.75rem 2;
+  columns: 15.625rem 3;
 }
 
 .card {
