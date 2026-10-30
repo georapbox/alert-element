@@ -1,4 +1,4 @@
-import { elementUpdated, expect, fixture, fixtureCleanup, html } from '@open-wc/testing';
+import { expect, fixture, fixtureCleanup, html } from '@open-wc/testing';
 import { AlertElement } from '../src/alert-element.js';
 
 describe('alert-element upgrading', () => {
@@ -7,7 +7,8 @@ describe('alert-element upgrading', () => {
   });
 
   it('default properties', async () => {
-    const el = await fixture(html`<alert-element></alert-element>`);
+    const container = await fixture(html`<div></div>`);
+    const el = document.createElement('alert-element');
 
     // Update properties before upgrading
     el.open = true;
@@ -20,10 +21,12 @@ describe('alert-element upgrading', () => {
     el.focusable = true;
     el.noAnimations = true;
 
-    // Upgrade custom element
+    // Define and explicitly upgrade the custom element
     AlertElement.define();
+    customElements.upgrade(el);
 
-    await elementUpdated(el);
+    // Connect the element so connectedCallback runs
+    container.appendChild(el);
 
     expect(el.getAttribute('open')).to.equal('');
     expect(el.getAttribute('variant')).to.equal('info');

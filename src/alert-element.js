@@ -32,12 +32,6 @@ const toastStack = createToastStack();
  */
 
 /**
- * Represents a command event.
- *
- * @typedef {Event & { command: string }} CommandEvent
- */
-
-/**
  * Represents the close reason for the alert.
  *
  * @typedef {'user' | 'timeout' | 'api'} CloseReason
@@ -600,7 +594,7 @@ class AlertElement extends HTMLElement {
     this.addEventListener('mouseleave', this.#handleInteractionStop);
     this.addEventListener('focusin', this.#handleInteractionStart);
     this.addEventListener('focusout', this.#handleInteractionStop);
-    this.addEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
+    this.addEventListener('command', this.#handleCommandEvent);
 
     this.#timer = new Timer({ duration: this.duration })
       .on('tick', this.#handleTimerTick)
@@ -649,7 +643,7 @@ class AlertElement extends HTMLElement {
     this.removeEventListener('mouseleave', this.#handleInteractionStop);
     this.removeEventListener('focusin', this.#handleInteractionStart);
     this.removeEventListener('focusout', this.#handleInteractionStop);
-    this.removeEventListener('command', /** @type {EventListener} */ (this.#handleCommandEvent));
+    this.removeEventListener('command', this.#handleCommandEvent);
   }
 
   /**
@@ -742,10 +736,12 @@ class AlertElement extends HTMLElement {
   /**
    * Handles the command event.
    *
-   * @param {CommandEvent} evt - The command event.
+   * @param {Event} evt - The command event.
    */
   #handleCommandEvent = evt => {
-    switch (evt.command) {
+    const event = /** @type {CommandEvent} */ (evt);
+
+    switch (event.command) {
       case COMMAND_ALERT_SHOW:
         this.open = true;
         break;
