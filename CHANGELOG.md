@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Changes
 
 - **Explicit Package Exports**: Added a formal `exports` map to `package.json`.
-  - **Supported entry points**: `alert-element`, `alert-element/define`, and `alert-element/custom-elements.json`.
-  - **Impact**: Direct imports from internal paths (e.g., `alert-element/dist/...`) are no longer part of the supported public API and may fail in environments that enforce package exports.
+  - **Supported entry points**: `@georapbox/alert-element`, `@georapbox/alert-element/define`, and `@georapbox/alert-element/custom-elements.json`.
+  - **Impact**: Direct imports from internal paths (e.g., `@georapbox/alert-element/dist/...`) are no longer part of the supported public API and may fail in environments that enforce package exports.
 - **Method Renaming**: The static `defineCustomElement()` method has been renamed to `define()`.
   - **Action Required**: Update all instances of `defineCustomElement()` to `define()`.
 - **Updated Default Accessibility**: Changed the default value of `announce` from `"alert"` to `"none"`.
