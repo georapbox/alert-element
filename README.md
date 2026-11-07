@@ -119,12 +119,12 @@ import '@georapbox/alert-element/define';
 
 ### Events
 
-| Name | Description | Event Detail |
-| ---- | ----------- | ------------ |
-| `alert-show` | Emitted when the alert is shown. | `null` |
-| `alert-after-show` | Emitted after the alert is shown and all animations are complete. | `null` |
-| `alert-hide` | Emitted when the alert is hidden. | `{ reason: 'user' \| 'timeout' \| 'api' }` |
-| `alert-after-hide` | Emitted after the alert is hidden and all animations are complete. | `{ reason: 'user' \| 'timeout' \| 'api' }` |
+| Name | Type | Description | Event Detail |
+| ---- | ---- | ----------- | ------------ |
+| `alert-show` | CustomEvent | Emitted when the alert is shown. | `null` |
+| `alert-after-show` | CustomEvent | Emitted after the alert is shown and all animations are complete. | `null` |
+| `alert-hide` | CustomEvent | Emitted when the alert is hidden. | `{ reason: 'user' \| 'timeout' \| 'api' }` |
+| `alert-after-hide` | CustomEvent | Emitted after the alert is hidden and all animations are complete. | `{ reason: 'user' \| 'timeout' \| 'api' }` |
 
 The events `alert-hide` and `alert-after-hide` have a `reason` property in the event detail that indicates how the alert was hidden. The possible values are:
 - `user` - The alert was closed by the user using the close button.

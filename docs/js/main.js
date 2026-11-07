@@ -206,6 +206,7 @@ document.getElementById('directionality-form').addEventListener('change', evt =>
 
 // Events
 document.addEventListener(EVENT_ALERT_SHOW, evt => {
+  console.log(evt.detail);
   console.log(EVENT_ALERT_SHOW, evt.target);
 });
 document.addEventListener(EVENT_ALERT_AFTER_SHOW, evt => {
