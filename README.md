@@ -115,11 +115,11 @@ All properties except `customAnimations` are reflected through their correspondi
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
 | `define` | Static | Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already. | `tagName='alert-element'` |
-| `show`<sup>1</sup> | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
-| `hide`<sup>1</sup> | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
-| `toast`<sup>1</sup> | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |
+| `show` | Instance | Shows the alert. Returns a promise that resolves when the alert is fully shown and all animations are complete. | - |
+| `hide` | Instance | Hides the alert. Returns a promise that resolves when the alert is fully hidden and all animations are complete. | - |
+| `toast` | Instance | Displays the alert as a toast notification. See [Toast notifications](#toast-notifications) for more details. | `{ forceRestart: false }` |
 
-<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('alert-element').then(() => { /* call methods here */ });`
+Instance methods are only available after the custom element has been defined. Use [`customElements.whenDefined()`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/whenDefined) to ensure the element is registered before calling these methods.
 
 ### Events
 
