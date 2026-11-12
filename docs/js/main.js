@@ -3,9 +3,9 @@ import '../lib/browser-window.js';
 const url = window.location.href;
 const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
 const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert-element.js';
+
 const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
   await import(componentUrl);
-
 AlertElement.define();
 
 document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
