@@ -78,7 +78,7 @@ All properties except `customAnimations` are reflected through their correspondi
 
 | Name | Description |
 | ---- | ----------- |
-| default/unnamed | The default slot for the alert message. |
+| (default) | The default slot for the alert message. |
 | `icon` | Slot to display an icon before the alert message. |
 | `close` | Slot to display custom content for the close button. |
 
