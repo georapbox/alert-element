@@ -189,10 +189,10 @@ describe('alert-element', () => {
       expect(el.variant).to.equal('info');
     });
 
-    it('property variant returns empty string if not set', async () => {
+    it('property variant returns "neutral" string if not set', async () => {
       const el = await fixture(html`<alert-element></alert-element>`);
 
-      expect(el.variant).to.equal('');
+      expect(el.variant).to.equal('neutral');
     });
 
     // announce

@@ -15,36 +15,38 @@ A custom HTML element for displaying dismissible alerts and toast notifications
 
 [API documentation](#api) &bull; [Demo][demo]
 
-## Usage
-
-### Installation
+## Installation
 
 ```sh
 npm install --save @georapbox/alert-element
 ```
 
-### Importing the component
+## Registration
 
-By default, the package exports the element class without registering it. This lets the application decide when the custom element is defined.
+By default, the package exports the element class without registering it.
+This lets the application decide when the custom element is defined.
 
-#### Manual definition
+### Manual registration
+
+Import the `AlertElement` class and call its static `define()` method:
 
 ```js
 import { AlertElement } from '@georapbox/alert-element';
 
-// Define using the default tag name
 AlertElement.define();
 ```
 
-#### Auto-defined (convenience)
+### Automatic registration
 
-If you don't need control over registration, you can import the pre-defined build which immediately registers `<alert-element>`.
+If you don't need control over registration, import the convenience entry point:
 
 ```js
 import '@georapbox/alert-element/define';
 ```
 
-### Using the component in your HTML
+## Usage
+
+Once registered, use the custom element in your HTML:
 
 ```html
 <alert-element variant="success" open closable>
@@ -55,20 +57,22 @@ import '@georapbox/alert-element/define';
 
 ## API
 
-### Properties
+### Properties and attributes
 
-| Name | Reflects | Type | Required | Default | Description |
-| ---- | -------- | ---- | -------- | ------- | ----------- |
-| `open` | ✓ | Boolean | - | `false` | Controls whether the alert is currently shown. |
-| `variant` | ✓ | String | - | `""` | The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`. |
-| `announce` | ✓ | String | - | `"alert"` | Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. |
-| `closable` | ✓ | Boolean | - | `false` | Shows a close button that allows the user to dismiss the alert. |
-| `closeLabel`<br>*`close-label`* | ✓ | String | - | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
-| `duration` | ✓ | Number | - | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
-| `countdown` | ✓ | Boolean | - | `false` | Shows a countdown displaying the remaining time before the alert automatically closes. |
-| `focusable` | ✓ | Boolean | - | `false` | Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification. |
-| `noAnimations`<br>*`no-animations`* | ✓ | Boolean | - | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
-| `customAnimations` | - | Object | - | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
+| Property / Attribute | Type | Default | Description |
+| -------------------- | ---- | ------- | ----------- |
+| `open` | Boolean | `false` | Controls whether the alert is currently shown. |
+| `variant` | `'info' \| 'success' \| 'neutral' \| 'warning' \| 'danger'` | `'neutral'` | The alert's theme variant. |
+| `announce` | `'none' \| 'status' \| 'alert' \| 'alertdialog'` | `'none'` | Defines how the alert should be announced to screen readers. |
+| `closable` | Boolean | `false` | Shows a close button that allows the user to dismiss the alert. |
+| `closeLabel` / `close-label` | String | `"Close"` | The label for the default close button. It is used as the `aria-label` attribute of the close button. If user provides text content for the close button using the `close` slot, this property is ignored and the `aria-label` attribute is removed. |
+| `duration` | Number | `Infinity` | The duration in milliseconds for which the alert will be displayed before automatically closing. If the user interacts with the alert before it closes, the duration is reset. Defaults to `Infinity`, which means the alert will not close on its own. |
+| `countdown` | Boolean | `false` | Shows a countdown displaying the remaining time before the alert automatically closes. |
+| `focusable` | Boolean | `false` | Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification. |
+| `noAnimations` / `no-animations` | Boolean | `false` | Disables all animations (default or custom) for showing and hiding the alert. |
+| `customAnimations` | Object | `undefined` | Custom animation keyframes and options for show/hide. The object should contain two properties: `show` and `hide`, each containing an object with `keyframes` and `options` properties. See [Animations](#animations) for more details. Set to `null` to disable animations altogether. |
+
+All properties except `customAnimations` are reflected through their corresponding HTML attributes. For these properties, when only one name is listed, the property and attribute share the same name.
 
 ### Slots
 
@@ -78,7 +82,7 @@ import '@georapbox/alert-element/define';
 | `icon` | Slot to display an icon before the alert message. |
 | `close` | Slot to display custom content for the close button. |
 
-### CSS Parts
+### CSS parts
 
 | Name | Description |
 | ---- | ----------- |
@@ -89,7 +93,7 @@ import '@georapbox/alert-element/define';
 | `countdown` | The countdown bar element of the alert. |
 | `countdown-elapsed` | The elapsed portion of the countdown bar. |
 
-### CSS Custom Properties
+### CSS custom properties
 
 | Name | Description | Default |
 | ---- | ----------- | ------- |
@@ -209,13 +213,13 @@ For convenience, you can create a utility function that creates a toast notifica
 instead of creating the alert elements in your markup. To do this, you can generate the alert element
 using JavaScript and call the `toast()` method on it.
 
-#### HTML
+### HTML
 
 ```html
 <button type="button">Create toast</button>
 ```
 
-#### JavaScript
+### JavaScript
 
 ```js
 const button = document.querySelector('button');
@@ -325,7 +329,7 @@ This behavior applies to all focusable elements inside the alert (such as the cl
 > In modern browsers, focus events from within the alert's shadow DOM are automatically retargeted to the host element,
 > so the component can pause and resume correctly even when the focus is inside shadow DOM content.
 
-## Invoker Commands (Experimental)
+## Invoker commands
 
 The element supports the Invoker Commands API, enabling a more declarative way to control alerts. Use the following commands:
 
@@ -344,10 +348,8 @@ To trigger these commands, add the `commandfor` and `command` attributes to a bu
 </alert-element>
 ```
 
-> [!IMPORTANT]
-> This is an experimental feature based on the [Invoker Commands API](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API).
-> The API is still in the early stages and might change in the future.
-> Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) before using it in production.
+> [!NOTE]
+> The Invoker Commands API is [Baseline Newly Available](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API) since December 2025 and is supported in the latest versions of all major browsers. Older browser versions may not support this feature. Check [browser compatibility](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API#browser_compatibility) for more details.
 
 ## Changelog
 
@@ -398,6 +400,24 @@ Create a production build by running the following command.
 
 ```sh
 npm run build
+```
+
+### Git hooks
+
+This repository includes a pre-commit hook that runs linting and formatting checks before each commit.
+
+To enable the hook, run the following command from the repository root:
+
+```sh
+git config --local core.hooksPath .githooks
+```
+
+This configuration only needs to be applied once per clone and does not affect other repositories.
+
+To disable the hook, run:
+
+```sh
+git config --local --unset core.hooksPath
 ```
 
 ## License

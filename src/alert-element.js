@@ -18,29 +18,33 @@ const css = String.raw;
 const toastStack = createToastStack();
 
 /**
- * Represents a value that may be of type T, or null.
+ * Defines the keyframes and options for an animation.
  *
- * @template T
- * @typedef {T | null} Nullable
+ * @typedef {{ keyframes: Keyframe[]; options?: KeyframeAnimationOptions }} AnimationDefinition
  */
 
 /**
- * Represents the keyframe animation options.
+ * Defines the custom animations used to show and hide the alert.
  *
- * @typedef {{ keyframes: Keyframe[]; options?: KeyframeAnimationOptions }} AnimationDefinition
  * @typedef {{ show?: AnimationDefinition; hide?: AnimationDefinition }} CustomAnimations
  */
 
 /**
- * Represents the close reason for the alert.
+ * Identifies the reason the alert was closed.
  *
  * @typedef {'user' | 'timeout' | 'api'} CloseReason
  */
 
 /**
- * Represents how the alert should be announced to screen readers.
+ * Defines how the alert is announced to assistive technologies.
  *
  * @typedef {'none' | 'status' | 'alert' | 'alertdialog'} Announce
+ */
+
+/**
+ * Defines the visual appearance of the alert.
+ *
+ * @typedef {'info' | 'success' | 'neutral' | 'warning' | 'danger'} Variant
  */
 
 const styles = css`
@@ -215,33 +219,12 @@ template.innerHTML = html`
 `;
 
 /**
- * @summary A custom HTML element for displaying dismissible alerts and toast notifications
+ * A custom HTML element for displaying dismissible alerts and toast notifications.
+ *
  * @documentation https://github.com/georapbox/alert-element
  *
- * @tagname alert-element - The default custom element tag name, unless overridden by the `define` method.
+ * @tagname alert-element
  * @extends HTMLElement
- *
- * @property {boolean} open - Controls whether the alert is currently shown.
- * @property {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
- * @property {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @property {boolean} closable - Shows a close button that allows the user to dismiss the alert.
- * @property {string} closeLabel - The label of the default close button, used as the `aria-label` attribute of the close button.
- * @property {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
- * @property {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
- * @property {boolean} focusable - Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
- * @property {boolean} noAnimations - Disables animations when set to true.
- * @property {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
- *
- * @attribute {boolean} open - Controls whether the alert is currently shown.
- * @attribute {string} variant - The alert's theme variant. Can be one of `info`, `success`, `neutral`, `warning`, or `danger`.
- * @attribute {string} announce - Defines how the alert should be announced to screen readers. Can be one of `alert`, `status`, or `none`. Default is `alert`.
- * @attribute {boolean} closable - Shows a close button that allows the user to dismiss the alert.
- * @attribute {string} closeLabel - The label of the default close button, used as the `aria-label` attribute of the close button.
- * @attribute {number} duration - The duration in milliseconds for which the alert will be displayed before automatically closing. Default is `Infinity`.
- * @attribute {boolean} countdown - Shows a countdown displaying the remaining time before the alert automatically closes.
- * @attribute {boolean} focusable - Adds `tabindex="0"` to the internal alert container. Use this when the alert should be reachable in the tab order, such as a persistent or reviewable toast notification.
- * @attribute {boolean} noAnimations - Disables animations when set to true.
- * @attribute {Animations | undefined} customAnimations - Custom animation keyframes and options for show/hide.
  *
  * @slot - The default slot for the alert message.
  * @slot icon - Slot to display an icon before the alert message.
@@ -267,11 +250,6 @@ template.innerHTML = html`
  * @cssproperty --alert-warning-variant-color - The color variant for warning alerts.
  * @cssproperty --alert-danger-variant-color - The color variant for danger alerts.
  *
- * @method define - Static method. Defines the custom element by registering it with the browser's CustomElementRegistry if it hasn't been defined already.
- * @method show - Instance method. Shows the alert; similar to setting the `open` attribute to true.
- * @method hide - Instance method. Hides the alert; similar to setting the `open` attribute to false.
- * @method toast - Instance method. Displays the alert as a toast notification.
- *
  * @event alert-show - Emitted when the alert is shown.
  * @event alert-after-show - Emitted after the alert is shown and all animations are complete.
  * @event alert-hide - Emitted when the alert is hidden.
@@ -281,16 +259,16 @@ class AlertElement extends HTMLElement {
   /** @type {boolean} */
   #isInitialized = false;
 
-  /** @type {Nullable<HTMLElement>} */
+  /** @type {HTMLElement | null} */
   #baseEl = null;
 
-  /** @type {Nullable<HTMLButtonElement>} */
+  /** @type {HTMLButtonElement | null} */
   #closeBtn = null;
 
-  /** @type {Nullable<HTMLSlotElement>} */
+  /** @type {HTMLSlotElement | null} */
   #closeSlotEl = null;
 
-  /** @type {Nullable<{promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void;}>} */
+  /** @type {{promise: Promise<any>; resolve: (value?: any) => void; cleanup: () => void;} | null} */
   #toastInProgress = null;
 
   /** @type {CustomAnimations | undefined} */
@@ -302,13 +280,13 @@ class AlertElement extends HTMLElement {
   /** @type {CloseReason} */
   #closeReason = CLOSE_REASON_API;
 
-  /** @type {Nullable<Timer>} */
+  /** @type {Timer | null} */
   #timer = null;
 
-  /** @type {Nullable<HTMLElement>} */
+  /** @type {HTMLElement | null} */
   #countdownEl = null;
 
-  /** @type {Nullable<HTMLElement>} */
+  /** @type {HTMLElement | null} */
   #countdownElapsedEl = null;
 
   constructor() {
@@ -402,6 +380,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {boolean}
    * @attribute open
+   * @reflect
    * @default false
    */
   get open() {
@@ -418,10 +397,12 @@ class AlertElement extends HTMLElement {
    *
    * @type {string}
    * @attribute variant
-   * @default ''
+   * @reflect
+   * @default 'neutral'
    */
   get variant() {
-    return this.getAttribute('variant') || '';
+    const value = this.getAttribute('variant') ?? '';
+    return this.#isValidVariant(value) ? value : 'neutral';
   }
 
   set variant(value) {
@@ -433,7 +414,8 @@ class AlertElement extends HTMLElement {
    *
    * @type {Announce}
    * @attribute announce
-   * @default 'alert'
+   * @reflect
+   * @default 'none'
    */
   get announce() {
     const value = this.getAttribute('announce') ?? '';
@@ -449,6 +431,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {boolean}
    * @attribute closable
+   * @reflect
    * @default false
    */
   get closable() {
@@ -466,6 +449,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {string}
    * @attribute close-label
+   * @reflect
    * @default 'Close'
    */
   get closeLabel() {
@@ -481,6 +465,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {number}
    * @attribute duration
+   * @reflect
    * @default Infinity
    */
   get duration() {
@@ -511,6 +496,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {boolean}
    * @attribute countdown
+   * @reflect
    * @default false
    */
   get countdown() {
@@ -528,6 +514,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {boolean}
    * @attribute focusable
+   * @reflect
    * @default false
    */
   get focusable() {
@@ -543,6 +530,7 @@ class AlertElement extends HTMLElement {
    *
    * @type {boolean}
    * @attribute no-animations
+   * @reflect
    * @default false
    */
   get noAnimations() {
@@ -654,6 +642,16 @@ class AlertElement extends HTMLElement {
     // No-op: Use this to avoid running initialization/cleanup code in the `connectedCallback()` and `disconnectedCallback()`
     // callbacks when the element is not actually being added to or removed from the DOM
     // but rather being moved within the DOM via `Element.moveBefore()`.
+  }
+
+  /**
+   * Checks whether a value is a valid variant value.
+   *
+   * @param {string} value - The value to check.
+   * @returns {value is Variant} True if the value is a valid variant value, false otherwise.
+   */
+  #isValidVariant(value) {
+    return value === 'info' || value === 'success' || value === 'neutral' || value === 'warning' || value === 'danger';
   }
 
   /**
@@ -837,7 +835,7 @@ class AlertElement extends HTMLElement {
   /**
    * Plays the entry animation for the alert element.
    *
-   * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @param {HTMLElement | null} element - The element to animate.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
   #playEntryAnimation(element) {
@@ -848,7 +846,7 @@ class AlertElement extends HTMLElement {
   /**
    * Plays the exit animation for the alert element.
    *
-   * @param {Nullable<HTMLElement>} element - The element to animate.
+   * @param {HTMLElement | null} element - The element to animate.
    * @returns {Animation | undefined} - The animation object or undefined if the element is not provided.
    */
   #playExitAnimation(element) {
@@ -860,7 +858,7 @@ class AlertElement extends HTMLElement {
    * Dispatches a custom event with the given name.
    *
    * @param {string} eventName - The name of the event to dispatch.
-   * @param {Nullable<any>} detail - The detail object to include with the event.
+   * @param {any | null} detail - The detail object to include with the event.
    */
   #emitEvent(eventName, detail = null) {
     const options = { bubbles: true, composed: true, detail };
@@ -1007,7 +1005,7 @@ class AlertElement extends HTMLElement {
   #upgradeProperty(prop) {
     const instance = /** @type {HTMLElement & Record<string, unknown>} */ (this);
 
-    if (Object.prototype.hasOwnProperty.call(instance, prop)) {
+    if (Object.hasOwn(instance, prop)) {
       const value = instance[prop];
       delete instance[prop];
       instance[prop] = value;
@@ -1018,13 +1016,16 @@ class AlertElement extends HTMLElement {
    * Defines the custom element by registering it with the browser's
    * CustomElementRegistry if it hasn't been defined already.
    *
-   * @param {string} [tagName='alert-element'] - The tag name to use for the custom element. Must include a hyphen.
+   * @param {string} [tagName='alert-element'] - The tag name to use for the custom element.
    */
   static define(tagName = 'alert-element') {
-    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
+    const registry = globalThis.customElements;
+
+    if (!registry || registry.get(tagName)) {
       return;
     }
-    window.customElements.define(tagName, AlertElement);
+
+    registry.define(tagName, AlertElement);
   }
 }
 
