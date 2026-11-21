@@ -1,0 +1,211 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --card-bg-color: #ffffff;
+}
+
+:not(:defined):not(browser-window),
+[hidden] {
+  display: none !important;
+}
+
+.noscript-banner {
+  width: 100%;
+  padding: 1.5rem;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border);
+  border-top: 3px solid #fe5c5c;
+  max-width: var(--container-max-width);
+  background-color: var(--card-bg-color);
+  text-wrap: pretty;
+}
+
+.component-description p {
+  margin: 0 0 0.5rem 0;
+}
+
+.component-description p:last-child {
+  margin-bottom: 0;
+}
+
+.table-of-contents {
+  columns: 15.625rem 3;
+}
+
+.card {
+  background-color: var(--card-bg-color);
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.card > details {
+  margin-bottom: 0;
+}
+
+.card details summary {
+  font-weight: 500;
+}
+
+.back-top {
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg-color: #283647;
+  }
+}
+
+browser-window {
+  --bw-background: var(--background-alt);
+  display: block;
+}
+
+browser-window::part(base) {
+  border-color: var(--border);
+}
+
+browser-window::part(main) {
+  padding: 1.25rem;
+}
+
+browser-window > button {
+  margin: 0;
+}
+
+browser-window alert-element:not(:first-child) {
+  margin-block-start: 1rem;
+}
+
+/* Custom variant */
+alert-element[variant="custom"] {
+  --alert-base-variant-color: #823ff2;
+}
+
+@media (prefers-color-scheme: dark) {
+  alert-element[variant="custom"] {
+    --alert-base-variant-color: #b5a1ff;
+  }
+}
+
+/* Custom alert styles */
+.custom-alert {
+  --alert-bg-color: #cfe2ff;
+  --alert-fg-color: #072c65;
+  --alert-border-color: #9ec5fe;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-alert {
+    --alert-bg-color: #061633;
+    --alert-fg-color: #6ea8fe;
+    --alert-border-color: #0a4298;
+  }
+}
+
+.custom-alert::part(close) {
+  background-color: var(--alert-fg-color);
+  color: var(--alert-bg-color);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+}
+
+/* Toast alerts */
+[data-example="toasts"] {
+  --info: #0584c7;
+  --success: #16a34a;
+  --neutral: #52525b;
+  --warning: #d87708;
+  --danger: #dc2626;
+}
+
+[data-example="toasts"] button[data-variant] {
+  margin: 0 0.25rem 0.5rem 0;
+}
+
+[data-example="toasts"] button[data-variant],
+[data-example="toasts"] button[data-variant]:hover {
+  color: #ffffff;
+}
+
+[data-example="toasts"] button[data-variant="info"] {
+  background-color: var(--info);
+}
+
+[data-example="toasts"] button[data-variant="success"] {
+  background-color: var(--success);
+}
+
+[data-example="toasts"] button[data-variant="neutral"] {
+  background-color: var(--neutral);
+}
+
+[data-example="toasts"] button[data-variant="warning"] {
+  background-color: var(--warning);
+}
+
+[data-example="toasts"] button[data-variant="danger"] {
+  background-color: var(--danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-example="toasts"] {
+    --info: #27bbfc;
+    --success: #3ae075;
+    --neutral: #8e8e9a;
+    --warning: #ffbd11;
+    --danger: #fe5c5c;
+  }
+
+  [data-example="toasts"] button[data-variant],
+  [data-example="toasts"] button[data-variant]:hover {
+    color: #000000;
+  }
+}
+
+.alert-toast-stack alert-element {
+  font-size: 90%;
+}
+
+/* Custom toast stack poisiton */
+[data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+}
+
+[data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+[data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+  top: 0;
+  right: 0;
+}
+
+[data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {
+  right: auto;
+  left: 0;
+  top: auto;
+  bottom: 0;
+}
+
+[data-toast-stack-position="bottom-center"] .alert-toast-stack::part(base) {
+  right: 50%;
+  transform: translateX(50%);
+  top: auto;
+  bottom: 0;
+}
+
+[data-toast-stack-position="bottom-right"] .alert-toast-stack::part(base) {
+  top: auto;
+  bottom: 0;
+}

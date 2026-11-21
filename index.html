@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>&lt;alert-element&gt;</title>
+  <meta name="description" content="A custom HTML element for displaying dismissible alerts and toast notifications">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="stylesheet" href="lib/highlight/highlight-github.css">
+  <link rel="stylesheet" href="css/water.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="lib/highlight/highlight.min.js" defer></script>
+  <script src="js/main.js" type="module"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => window.hljs.highlightAll());</script>
+</head>
+<body>
+  <noscript>
+    <div class="noscript-banner">
+      <strong>JavaScript is disabled</strong><br>
+      Some features may not work as expected. Please enable JavaScript in your browser settings.
+    </div>
+  </noscript>
+
+  <h1>&lt;alert-element&gt;</h1>
+  <div class="component-description">
+    <p>A custom HTML element for displaying dismissible alerts and toast notifications</p>
+    <p><a href="https://github.com/georapbox/alert-element" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
+  </div>
+
+  <h2>Examples</h2>
+
+  <details open>
+    <summary>Table of contents</summary>
+    <ol class="table-of-contents">
+      <li><a href="#example-variants">Variants</a></li>
+      <li><a href="#example-icons">Icons</a></li>
+      <li><a href="#example-closable">Closable</a></li>
+      <li><a href="#example-custom-close-button">Custom close button</a></li>
+      <li><a href="#example-duration">Duration</a></li>
+      <li><a href="#example-countdown">Countdown</a></li>
+      <li><a href="#example-custom-variant">Custom variant</a></li>
+      <li><a href="#example-custom-styling">Custom styling</a></li>
+      <li><a href="#example-toast-notifications">Toast notifications</a></li>
+      <li><a href="#example-imperative-toast-notifications">Creating toasts imperatively</a></li>
+      <li><a href="#example-custom-toast-stack-position">Custom toast stack position</a></li>
+      <li><a href="#example-custom-animations">Custom animations</a></li>
+      <li><a href="#example-no-animations">No animations</a></li>
+      <li><a href="#example-user-interaction">User interaction</a></li>
+      <li><a href="#example-directionality">Directionality</a></li>
+      <li><a href="#example-invoker-commands">Invoker commands</a></li>
+    </ol>
+  </details>
+
+  <!-- ✦✦✦ 🧩 DEMO: Variants ✦✦✦ -->
+  <h3 id="example-variants">Variants</h3>
+  <p>
+    Set the <code>variant</code> attribute to change the alert’s variant.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="info">
+        <strong>New feature available!</strong><br>
+        You can now schedule reports to be sent automatically to your inbox every week.
+      </alert-element>
+
+      <alert-element open variant="success">
+        <strong>Your profile has been updated</strong><br>
+        All changes have been saved and will take effect immediately.
+      </alert-element>
+
+      <alert-element open variant="neutral">
+        <strong>Scheduled maintenance</strong><br>
+        Our servers will be undergoing maintenance this Saturday from 2 AM to 4 AM UTC.
+      </alert-element>
+
+      <alert-element open variant="warning">
+        <strong>Password expires soon</strong><br>
+        Your current password will expire in 5 days. Please update it to avoid losing access.
+      </alert-element>
+
+      <alert-element open variant="danger">
+        <strong>Failed to connect to database</strong><br>
+        Please check your configuration settings and try again. Contact support if the issue persists.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element open variant=&quot;info&quot;&gt;
+  &lt;strong&gt;New feature available!&lt;/strong&gt;&lt;br&gt;
+  You can now schedule reports to be sent automatically to your inbox every week.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;success&quot;&gt;
+  &lt;strong&gt;Your profile has been updated&lt;/strong&gt;&lt;br&gt;
+  All changes have been saved and will take effect immediately.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;neutral&quot;&gt;
+  &lt;strong&gt;Scheduled maintenance&lt;/strong&gt;&lt;br&gt;
+  Our servers will be undergoing maintenance this Saturday from 2 AM to 4 AM UTC.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;warning&quot;&gt;
+  &lt;strong&gt;Password expires soon&lt;/strong&gt;&lt;br&gt;
+  Your current password will expire in 5 days. Please update it to avoid losing access.
+&lt;/alert-element&gt;
+
+&lt;alert-element open variant=&quot;danger&quot;&gt;
+  &lt;strong&gt;Failed to connect to database&lt;/strong&gt;&lt;br&gt;
+  Please check your configuration settings and try again. Contact support if the issue persists.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Icons ✦✦✦ -->
+  <h3 id="example-icons">Icons</h3>
+  <p>
+    Use the <code>icon</code> slot to display an icon next to the alert message.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="success">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+          </svg>
+        </span>
+        <strong>Your profile has been updated!</strong><br>
+        All changes have been saved and will take effect immediately.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element open variant="success"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
+      &lt;path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;strong&gt;Your profile has been updated!&lt;/strong&gt;&lt;br&gt;
+  All changes have been saved and will take effect immediately.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Closable ✦✦✦ -->
+  <h3 id="example-closable">Closable</h3>
+  <p>
+    Set the <code>closable</code> attribute to display a close button that hides the alert when clicked.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" open closable>
+        Click the close button (X) to hide this alert.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant=&quot;info&quot; open closable&gt;
+  Click the close button (X) to hide this alert.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Custom close button ✦✦✦ -->
+  <h3 id="example-custom-close-button">Custom close button</h3>
+  <p>
+    Use the <code>close</code> slot to provide a custom close button.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" open closable>
+        This is an alert with a custom close button.
+        <span slot="close">Close</span>
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant="info" open closable&gt;
+  This is an alert with a custom close button.
+  &lt;span slot="close"&gt;Close&lt;/span&gt;
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Duration ✦✦✦ -->
+  <h3 id="example-duration">Duration</h3>
+  <p>
+    Set the <code>duration</code> attribute to automatically hide the alert after a specified period of time,
+    unless you interact with it while still open.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" closable duration="3000">
+        This alert will automatically hide itself after <strong>3 seconds</strong>, unless you interact with it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant=&quot;info&quot; closable duration="3000"&gt;
+  This alert will automatically hide itself after 3 seconds, unless you interact with it.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Countdown ✦✦✦ -->
+  <h3 id="example-countdown">Countdown</h3>
+  <p>
+    Set the <code>countdown</code> attribute to display a countdown bar that indicates the remaining time
+    before the alert automatically hides itself.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" closable duration="10000" countdown>
+        This alert will automatically hide itself after <strong>10 seconds</strong>, unless you interact with it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant=&quot;info&quot; closable duration="10000" countdown&gt;
+  This alert will automatically hide itself after 3 seconds, unless you interact with it.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Custom variant ✦✦✦ -->
+  <h3 id="example-custom-variant">Custom variant</h3>
+  <p>
+    You can create custom variants by using the <code>variant</code> attribute with a custom value
+    and applying your own CSS styles.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <alert-element open variant="custom">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/>
+          </svg>
+        </span>
+        <strong>Custom variant alert</strong><br>
+        This alert uses a custom variant and style.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;style&gt;
+  alert-element[variant="custom"] {
+    --alert-base-variant-color: #823ff2;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    alert-element[variant="custom"] {
+      --alert-base-variant-color: #b5a1ff;
+    }
+  }
+&lt;/style&gt;
+
+&lt;alert-element open variant="custom"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;strong&gt;Custom variant alert&lt;/strong&gt;&lt;br&gt;
+  This alert uses a custom variant and style.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Custom styling ✦✦✦ -->
+  <h3 id="example-custom-styling">Custom styling</h3>
+  <p>
+    You can apply custom styles to the alert element using CSS custom properties and the <code>::part()</code> pseudo-element.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element open closable class="custom-alert">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+          </svg>
+        </span>
+        This alert has custom styling applied to it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;style&gt;
+  .custom-alert {
+    --alert-bg-color: #cfe2ff;
+    --alert-fg-color: #072c65;
+    --alert-border-color: #9ec5fe;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .custom-alert {
+      --alert-bg-color: #061633;
+      --alert-fg-color: #6ea8fe;
+      --alert-border-color: #0a4298;
+    }
+  }
+
+  .custom-alert::part(close) {
+    background-color: var(--alert-fg-color);
+    color: var(--alert-bg-color);
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+  }
+&lt;/style&gt;
+
+&lt;alert-element open closable class="custom-alert"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  This alert has custom styling applied to it.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Toast notifications ✦✦✦ -->
+  <h3 id="example-toast-notifications">Toast notifications</h3>
+  <p>
+    To display an alert as a toast notification, create the alert element and call its <code>toast()</code> method.
+    For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#toast-notifications" target="_blank" rel="noreferrer noopener">documentation</a>.
+  </p>
+
+  <div class="card" data-example="toasts">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-variant="info">Info</button>
+      <button type="button" data-variant="success">Success</button>
+      <button type="button" data-variant="neutral">Neutral</button>
+      <button type="button" data-variant="warning">Warning</button>
+      <button type="button" data-variant="danger">Danger</button>
+
+      <div style="margin-block-start: 1rem;">
+        <input type="checkbox" id="restartToastCheck" autocomplete="off">
+        <label for="restartToastCheck">Force restart</label>
+        <p style="margin: 0; text-wrap: pretty;">
+          <small>When checked, immediately cancels the active toast and starts a new one. Otherwise, if a toast is still active, any subsequent calls to <code>toast()</code> will be ignored.</small>
+        </p>
+      </div>
+
+      <alert-element variant="info" duration="5000" announce="status" countdown closable>
+        This is an info toast notification.
+      </alert-element>
+
+      <alert-element variant="success" duration="5000" announce="status" countdown closable>
+        This is a success toast notification.
+      </alert-element>
+
+      <alert-element variant="neutral" duration="5000" announce="status" countdown closable>
+        This is a neutral toast notification.
+      </alert-element>
+
+      <alert-element variant="warning" duration="5000" announce="alert" countdown closable>
+        This is a warning toast notification.
+      </alert-element>
+
+      <alert-element variant="danger" duration="5000" announce="alert" countdown closable>
+        This is a danger toast notification.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code code class="hljs language-xml">&lt;button type="button" data-variant="info"&gt;Info&lt;/button&gt;
+&lt;button type="button" data-variant="success"&gt;Success&lt;/button&gt;
+&lt;button type="button" data-variant="neutral"&gt;Neutral&lt;/button&gt;
+&lt;button type="button" data-variant="warning"&gt;Warning&lt;/button&gt;
+&lt;button type="button" data-variant="danger"&gt;Danger&lt;/button&gt;
+
+&lt;input type="checkbox" id="forceRestart"&gt;
+&lt;label for="forceRestart"&gt;Force restart&lt;/label&gt;
+
+&lt;alert-element variant="info" duration="5000" announce="status" closable&gt;
+  This is an info toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="success" duration="5000" announce="status" closable&gt;
+  This is a success toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="neutral" duration="5000" announce="status" closable&gt;
+  This is a neutral toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="warning" duration="5000" announce="alert" closable&gt;
+  This is a warning toast notification.
+&lt;/alert-element&gt;
+
+&lt;alert-element variant="danger" duration="5000" announce="alert" closable&gt;
+  This is a danger toast notification.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const variants = ['info', 'success', 'neutral', 'warning', 'danger'];
+
+  variants.forEach(variant =&gt; {
+    const button = document.querySelector(`button[data-variant="${variant}"]`);
+    const alert = document.querySelector(`alert-element[variant="${variant}"]`);
+
+    button.addEventListener('click', () =&gt; {
+      alert.toast({ forceRestart });
+    });
+  });
+
+  let forceRestart = false;
+  const restartCheckbox = document.querySelector('input[type="checkbox"]');
+
+  restartCheckbox.addEventListener('change', evt =&gt; {
+    forceRestart = evt.target.checked;
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Imperative toast notifications ✦✦✦ -->
+  <h3 id="example-imperative-toast-notifications">Creating toasts imperatively</h3>
+  <p>
+    For convenience, you can create a utility function that creates a toast notification imperatively, instead of creating the alert elements in your markup.
+    To do this, you can generate the alert element using JavaScript and call the <code>toast()</code> method on it.
+    For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#creating-toasts-imperatively" target="_blank" rel="noreferrer noopener">documentation</a>.
+  </p>
+
+  <div class="card" data-example="imperative-toasts">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button">Create toast</button>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code code class="hljs language-xml">&lt;button type="button"&gt;Create toast&lt;/button&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+
+  let count = 0;
+
+  button.addEventListener('click', () =&gt; {
+    toastify(`This is a custom toast alert #${++count}`, {
+      icon: `
+        &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+          &lt;path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/&gt;
+          &lt;path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/&gt;
+        &lt;/svg&gt;
+      `,
+      variant: 'info'
+    });
+  });
+
+  function toastify(message, options = {}) {
+    const defaults = {
+      variant: 'neutral',
+      announce: 'status',
+      duration: 5000,
+      countdown: true,
+      focusable: true,
+      icon: ''
+    };
+
+    options = { ...defaults, ...options };
+
+    const { duration, variant, announce, countdown, focusable } = options;
+    const icon = options.icon ? `&lt;span slot="icon"&gt;${options.icon}&lt;/span&gt;` : '';
+
+    const alert = Object.assign(document.createElement('alert-element'), {
+      variant,
+      announce,
+      duration,
+      countdown,
+      closable: true,
+      focusable,
+      innerHTML: `${icon}${escapeHtml(message)}`
+    });
+
+    return alert.toast();
+  }
+
+  function escapeHtml(html) {
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Custom toast stack position ✦✦✦ -->
+  <h3 id="example-custom-toast-stack-position">Custom toast stack position</h3>
+  <p>
+    You can customize the position of the toast stack by targeting the <code>.alert-toast-stack</code> class in your stylesheet.
+  </p>
+  <blockquote>
+    <strong style="color: var(--links);">NOTE</strong><br>
+    In real-world applications, toast alerts should be displayed in a single position on the screen for better user experience.
+    This example uses multiple positions for demonstration purposes only.
+  </blockquote>
+
+  <div class="card" data-example="custom-toast-stack-position">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <form autocomplete="off">
+        <fieldset style="display: flex; flex-wrap: wrap; column-gap: 1rem; margin-block-end: 1rem;">
+          <legend>Toast stack position</legend>
+            <label><input type="radio" value="top-left" name="toast-stack-poisiton" checked> Top left</label>
+            <label><input type="radio" value="top-center" name="toast-stack-poisiton"> Top center</label>
+            <label><input type="radio" value="top-right" name="toast-stack-poisiton"> Top right</label>
+            <label><input type="radio" value="bottom-left" name="toast-stack-poisiton"> Bottom left</label>
+            <label><input type="radio" value="bottom-center" name="toast-stack-poisiton"> Bottom center</label>
+            <label><input type="radio" value="bottom-right" name="toast-stack-poisiton"> Bottom right</label>
+        </fieldset>
+      </form>
+
+      <button type="button">Create toast</button>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code code class="hljs language-xml">&lt;style&gt;
+  [data-toast-stack-position="top-left"] .alert-toast-stack::part(base) {
+    right: auto;
+    left: 0;
+  }
+
+  [data-toast-stack-position="top-center"] .alert-toast-stack::part(base) {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  [data-toast-stack-position="top-right"] .alert-toast-stack::part(base) {
+    top: 0;
+    right: 0;
+  }
+
+  [data-toast-stack-position="bottom-left"] .alert-toast-stack::part(base) {
+    right: auto;
+    left: 0;
+    top: auto;
+    bottom: 0;
+  }
+
+  [data-toast-stack-position="bottom-center"] .alert-toast-stack::part(base) {
+    right: 50%;
+    transform: translateX(50%);
+    top: auto;
+    bottom: 0;
+  }
+
+  [data-toast-stack-position="bottom-right"] .alert-toast-stack::part(base) {
+    top: auto;
+    bottom: 0;
+  }
+&lt;/style&gt;
+
+&lt;label&gt;&lt;input type="radio" value="top-left" name="toast-stack-poisiton" checked&gt; Top left&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" value="top-center" name="toast-stack-poisiton"&gt; Top center&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" value="top-right" name="toast-stack-poisiton"&gt; Top right&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" value="bottom-left" name="toast-stack-poisiton"&gt; Bottom left&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" value="bottom-center" name="toast-stack-poisiton"&gt; Bottom center&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" value="bottom-right" name="toast-stack-poisiton"&gt; Bottom right&lt;/label&gt;
+
+&lt;button type="button"&gt;Create toast&lt;/button&gt;
+
+&lt;script&gt;
+  const button = document.querySelector('button');
+  const alert = Object.assign(document.createElement('alert-element'), {
+    variant: 'info',
+    duration: 3000,
+    closable: true,
+    announce: 'alert'
+  });
+
+  alert.addEventListener('alert-after-hide', () =&gt; {
+    document.body.removeAttribute('data-toast-stack-position');
+  });
+
+  button.addEventListener('click', () =&gt; {
+    const checkedRadio = document.querySelector('input[type="radio"]:checked');
+    const position = checkedRadio ? checkedRadio.value : 'top-right';
+
+    alert.textContent = `This alert is currently positioned at ${position}.`;
+    alert.toast({ forceRestart: true });
+
+    document.body.setAttribute('data-toast-stack-position', position);
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Custom animations ✦✦✦ -->
+  <h3 id="example-custom-animations">Custom animations</h3>
+  <p>
+    You can customize the animations of the alert element using the <code>customAnimations</code> property.
+    For more information, check the <a href="https://github.com/georapbox/alert-element?tab=readme-ov-file#animations" target="_blank" rel="noreferrer noopener">documentation</a>.
+  </p>
+
+  <div class="card" data-example="custom-animations">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" closable>
+        This alert has custom animations applied to it.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant="info" closable&gt;
+  This alert has custom animations applied to it.
+&lt;/alert-element&gt;
+
+&lt;script&gt;
+  const alert = document.querySelector('alert-element');
+
+  alert.customAnimations = {
+    show: {
+      keyframes: [
+        { opacity: 0, transform: 'rotateX(90deg) scale(0.8)', filter: 'blur(8px)' },
+        { opacity: 1, transform: 'rotateX(-10deg) scale(1.05)', filter: 'blur(2px)' },
+        { opacity: 1, transform: 'rotateX(5deg) scale(0.97)', filter: 'blur(1px)' },
+        { opacity: 1, transform: 'rotateX(0deg) scale(1)', filter: 'blur(0)' }
+      ],
+      options: {
+        duration: 700,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'forwards'
+      }
+    },
+    hide: {
+      keyframes: [
+        { opacity: 1, transform: 'scale(1)', filter: 'blur(0)' },
+        { opacity: 0, transform: 'scale(0.8)', filter: 'blur(6px)' }
+      ],
+      options: {
+        duration: 450,
+        easing: 'ease-in',
+        fill: 'forwards'
+      }
+    }
+  };
+&lt;/script&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: No animations ✦✦✦ -->
+  <h3 id="example-no-animations">No animations</h3>
+  <p>
+    You can disable animations by adding the <code>no-animations</code> attribute to the alert element.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="warning" closable no-animations>
+        This is an alert with no animations.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element variant="warning" closable no-animations&gt;
+  This is an alert with no animations.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="example-user-interaction">User interaction</h3>
+  <p>
+    When the user interacts with the alert (e.g., hovers over it or focuses it), the auto-hide countdown is paused.
+    Once the user stops interacting with the alert, the countdown resumes.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <alert-element variant="info" closable countdown duration="10000">
+        <strong>Auto-dismiss in 10s</strong><br>
+        Interact to pause the timer — try tabbing to this
+        <a href="#" onclick="event.preventDefault()">focusable link</a> or hovering over the alert.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element closable countdown duration="10000"&gt;
+  &lt;strong&gt;Auto-dismiss in 10s&lt;/strong&gt;&lt;br&gt;
+  Interact to pause the timer — try tabbing to this
+  &lt;a href="#" onclick="event.preventDefault()"&gt;focusable link&lt;/a&gt; or hovering over the alert.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Directionality ✦✦✦ -->
+  <h3 id="example-directionality">Directionality</h3>
+  <p>
+    The alert element supports both left-to-right (LTR) and right-to-left (RTL) text directions.
+    You can set the text direction using the <code>dir</code> attribute on the alert element or any of its ancestor elements.
+  </p>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/alert-element" icon>
+      <button type="button" data-action="toggle-alert">Toggle alert</button>
+
+      <form id="directionality-form" style="margin-top: 1rem;" autocomplete="off">
+        <label><input type="radio" name="directionality" value="ltr">Left to right (LTR)</label>
+        <label><input type="radio" name="directionality" value="rtl" checked>Right to left (RTL)</label>
+        <br>
+        <label><input type="checkbox" name="with-countdown">With countdown</label>
+      </form>
+
+      <alert-element id="dir-alert" open closable variant="info" dir="rtl">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+          </svg>
+        </span>
+        This alert is displayed in <strong class="dir" style="color: var(--alert-info-variant-color);">right-to-left (RTL)</strong> direction.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;alert-element open closable dir="rtl"&gt;
+  &lt;span slot="icon"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  This alert is displayed in right-to-left (RTL) direction.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <!-- ✦✦✦ 🧩 DEMO: Invoker commands ✦✦✦ -->
+  <h3 id="example-invoker-commands">Invoker commands</h3>
+  <p>
+    With invoker commands you can toggle alert's visibility in a declarative way using
+    <code>command</code> and <code>commandfor</code> attributes on a button element, targeting the alert element element by its <code>id</code> attribute.
+  </p>
+
+  <alert-element variant="info" open style="margin-block-end: 1rem; --alert-bg-color: var(--background); --alert-fg-color: var(--text-main);">
+    <span slot="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+      </svg>
+    </span>
+    The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API" target="_blank" rel="noopener noreferrer">Invoker Commands API</a>
+    is a new API that allows you to create declarative commands for HTML elements.
+    It is currently in the early stages and may not be supported by all browsers.
+    Check the <a href="https://caniuse.com/?search=HTML%20element%3A%20button%3A%20command%20HTML%20element%3A%20button%3A%20command" target="_blank" rel="noopener noreferrer">supported browsers</a>.
+  </alert-element>
+
+  <div class="card">
+    <browser-window url="https://github.com/georapbox/modal-element" icon>
+      <p style="margin-block-start: 0;">
+        Control the alert's visibility using invoker commands:
+      </p>
+
+      <ul>
+        <li><code>--alert-show</code> - shows the alert element</li>
+        <li><code>--alert-hide</code> - hides the alert element</li>
+      </ul>
+
+      <button type="button" commandfor="myAlert" command="--alert-show">Show alert</button>
+      <button type="button" commandfor="myAlert" command="--alert-hide">Hide alert</button>
+
+      <alert-element variant="info" id="myAlert">
+        <span slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+          </svg>
+        </span>
+        <strong>Alert with invoker commands</strong><br>
+        This alert uses invoker commands to toggle its visibility.
+      </alert-element>
+    </browser-window>
+
+    <details>
+      <summary>Source code</summary>
+
+<pre><code class="hljs language-xml">&lt;button type="button" commandfor="myAlert" command="--alert-show"&gt;Show alert&lt;/button&gt;
+&lt;button type="button" commandfor="myAlert" command="--alert-hide"&gt;Hide alert&lt;/button&gt;
+
+&lt;alert-element variant="info" id="myAlert"&gt;
+&lt;strong&gt;Alert with invoker commands&lt;/strong&gt;&lt;br&gt;
+This alert uses invoker commands to toggle its visibility.
+&lt;/alert-element&gt;</code></pre>
+    </details>
+  </div>
+
+  <h2>License</h2>
+  <p>Licensed under the <a href="https://github.com/georapbox/alert-element/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
+</body>
+</html>
