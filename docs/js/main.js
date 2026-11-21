@@ -1,8 +1,8 @@
 import '../lib/browser-window.js';
 
-const url = window.location.href;
-const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
-const componentUrl = isLocalhost ? '../../dist/alert-element.js' : '../lib/alert-element.js';
+const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+const basePath = isLocal ? '../..' : '..';
+const componentUrl = `${basePath}/dist/alert-element.js`;
 
 const { AlertElement, EVENT_ALERT_SHOW, EVENT_ALERT_AFTER_SHOW, EVENT_ALERT_HIDE, EVENT_ALERT_AFTER_HIDE } =
   await import(componentUrl);
