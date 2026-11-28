@@ -2,8 +2,8 @@
 [![npm license](https://img.shields.io/npm/l/@georapbox/alert-element.svg)](https://www.npmjs.com/package/@georapbox/alert-element)
 
 [demo]: https://georapbox.github.io/alert-element/
-[license]: https://github.com/georapbox/alert-element/blob/main/LICENSE
-[changelog]: https://github.com/georapbox/alert-element/blob/main/CHANGELOG.md
+[license]: ./LICENSE
+[changelog]: ./CHANGELOG.md
 
 # &lt;alert-element&gt;
 
